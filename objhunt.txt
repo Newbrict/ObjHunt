@@ -1,0 +1,7 @@
+"objhunt"
+{
+	"base"       "base"
+	"title"      "Prop Hunt++"
+	"maps"       "^ph_, ^cs_"
+	"menusystem" "1"
+}
