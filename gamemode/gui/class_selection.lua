@@ -11,13 +11,14 @@ local function class_selection()
 	cs_form:MakePopup()
 
 
+<<<<<<< Updated upstream
 	local HunterBtn = vgui.Create( "DButton" )
 	HunterBtn:SetParent( cs_form )
 	HunterBtn:SetPos( 10, 50 )
 	HunterBtn:SetText( "Hunter" )
 	HunterBtn:SetSize( 100, 30 )
 	HunterBtn.DoClick = function()
-	     RunConsoleCommand( "say", "hunter selected" ) 
+		RunConsoleCommand( "chooseTeam", "player_hunter" )
 	end
 
 	local PropBtn = vgui.Create( "DButton" )
@@ -26,7 +27,7 @@ local function class_selection()
 	PropBtn:SetText( "Prop" )
 	PropBtn:SetSize( 100, 30 )
 	PropBtn.DoClick = function()
-	     RunConsoleCommand( "say", "prop selected" ) 
+		RunConsoleCommand( "chooseTeam", "player_prop" ) 
 	end
 
 	local SpecBtn = vgui.Create( "DButton" )
@@ -35,7 +36,7 @@ local function class_selection()
 	SpecBtn:SetText( "Spectator" )
 	SpecBtn:SetSize( 100, 30 )
 	SpecBtn.DoClick = function()
-	     RunConsoleCommand( "say", "spectator selected" ) 
+		RunConsoleCommand( "say", "spectator selected" ) 
 	end
 end
 usermessage.Hook("class_selection", class_selection)

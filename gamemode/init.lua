@@ -26,8 +26,14 @@ resourceLoader( resources["shared"], AddCSLuaFile )
 resourceLoader( resources["client"], AddCSLuaFile )
 
 function GM:PlayerInitialSpawn( ply )
-	player_manager.SetPlayerClass( ply, "player_hunter" )
+	--player_manager.SetPlayerClass( ply, "player_hunter" )
 end
+
+concommand.Add( "chooseTeam", function( ply, _, class )
+	player_manager.SetPlayerClass( ply, class[1] )
+	ply:Kill()
+	ply:Spawn()
+end )
 
 hook.Add("PlayerSwitchFlashlight","test_hook" ,test)--this is a test works!
  local function test()
