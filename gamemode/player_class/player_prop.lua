@@ -23,8 +23,4 @@ function PLAYER:Loadout()
 
 end
 
-function PLAYER:Spawn()
-   self.Player:SetModel( "models/player/odessa.mdl" )
-end
-
 player_manager.RegisterClass( "player_prop", PLAYER, "player_default" )

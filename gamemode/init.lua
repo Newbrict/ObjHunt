@@ -33,13 +33,15 @@ concommand.Add( "chooseTeam", function( ply, _, class )
 	player_manager.SetPlayerClass( ply, class[1] )
 
 	ply:KillSilent()
-			if( class[1]== "player_hunter" ) then
-			ply:SetTeam( 2 )--set team to hunters
-			print("players team is "..team:GetName(2))
-		else
-			print("set "..ply:GetName().." to props")
-			ply:SetTeam( 1 ) --set team to props
-			print("players team is "..team:GetName(1))--not working?????
+	if( class[1] == "player_hunter" ) then
+		ply:SetTeam( TEAM_HUNTERS )--set team to hunters
+		print("players team is ".. ply:Team())
+	elseif( class[1] == "player_prop" ) then
+		ply:SetTeam( TEAM_PROPS ) --set team to props
+		print("players team is ".. ply:Team())
+	else
+		ply:SetTeam( TEAM_SPECTATOR ) --set team to props
+		print("players team is ".. ply:Team())
 	end
 	ply:Spawn()
 
@@ -75,9 +77,13 @@ end
 
 function GM:CreateTeams( )
 	print("creating teams")--this runs
+	TEAM_PROPS = 1
+	TEAM_HUNTERS = 2
 	--this must be problem here teams not being created for some reason???
-	team:SetUp( 1 , "Props" , Color( 255, 0, 0 ), true )---should create teams but appears it is not
-	team:SetUp( 2 , "Hunters" , Color( 0, 255, 0 ), true  )
+	team:SetUp( TEAM_PROPS , "Props" , Color( 255, 0, 0 ), true )---should create teams but appears it is not
+	team:SetUp( TEAM_HUNTERS , "Hunters" , Color( 0, 255, 0 ), true  )
+	team:SetClass( TEAM_PROPS, {"player_prop"})
+	team:SetClass( TEAM_HUNTERS, {"player_hunter"})
 
 end
 

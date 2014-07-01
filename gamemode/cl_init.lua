@@ -2,6 +2,7 @@ include( "shared.lua" )
 include("gui/class_selection.lua")
 include("gui/taunt_selection.lua")
 include("gui/show_team.lua")
+include("gui/scoreboard.lua")
 
 --intial startup gui probably should be in another file but not farmiliar enough with lua to do that
 
