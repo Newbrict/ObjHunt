@@ -44,3 +44,18 @@ function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
     umsg.Start( "class_selection", ply ) -- Sending a message to the client.
     umsg.End()
 end --Ends function	
+
+function GM:PlayerSetModel( ply )
+	class = player_manager.GetPlayerClass( ply )
+
+	if( class == "player_hunter" ) then
+		ply:SetModel( "models/player/Combine_Super_Soldier.mdl" )
+	elseif( class == "player_prop" ) then
+		ply:SetModel( "models/player/herecomestheerrorsign.mdl" )
+	else
+		return
+	end
+
+
+end
+
