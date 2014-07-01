@@ -34,4 +34,7 @@ hook.Add("PlayerSwitchFlashlight","test_hook" ,test)--this is a test works!
  	--print("here")
  end
 
-include( "shared.lua" )
+function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
+    umsg.Start( "class_selection", ply ) -- Sending a message to the client.
+    umsg.End()
+end --Ends function	
