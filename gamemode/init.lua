@@ -31,7 +31,7 @@ end
 
 concommand.Add( "chooseTeam", function( ply, _, class )
 	player_manager.SetPlayerClass( ply, class[1] )
-	ply:Kill()
+	ply:KillSilent()
 	ply:Spawn()
 end )
 

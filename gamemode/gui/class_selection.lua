@@ -10,8 +10,6 @@ local function class_selection()
 	cs_form.btnMinim:Hide()
 	cs_form:MakePopup()
 
-
-<<<<<<< Updated upstream
 	local HunterBtn = vgui.Create( "DButton" )
 	HunterBtn:SetParent( cs_form )
 	HunterBtn:SetPos( 10, 50 )
