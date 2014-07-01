@@ -14,14 +14,6 @@ PLAYER.AvoidPlayers     = false
 PLAYER.MaxHealth        = 100
 PLAYER.DuckSpeed        = 0.1
 PLAYER.UnDuckSpeed      = 0.1
-
-
---attempt for opening menu 
-hook.Add( "KeyPress", "openMenuTest", function(ply,key)
---	if(key == 262144) then 
-		print("in hunter")
-	--end
-end )
 	
 function PLAYER:Loadout()
 
