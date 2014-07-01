@@ -31,8 +31,18 @@ end
 
 concommand.Add( "chooseTeam", function( ply, _, class )
 	player_manager.SetPlayerClass( ply, class[1] )
+
 	ply:KillSilent()
+			if( class[1]== "player_hunter" ) then
+			ply:SetTeam( 2 )--set team to hunters
+			print("players team is "..team:GetName(2))
+		else
+			print("set "..ply:GetName().." to props")
+			ply:SetTeam( 1 ) --set team to props
+			print("players team is "..team:GetName(1))--not working?????
+	end
 	ply:Spawn()
+
 end )
 
 hook.Add("PlayerSwitchFlashlight","test_hook" ,test)--this is a test works!
@@ -64,9 +74,11 @@ function GM:PlayerSetModel( ply )
 end
 
 function GM:CreateTeams( )
-	print("creating teams")
-	team.SetUp( 1 , "Props" , Color( 255, 0, 0 )  )
-	team.SetUp( 2 , "Hunters" , Color( 0, 255, 0 )  )
+	print("creating teams")--this runs
+	--this must be problem here teams not being created for some reason???
+	team:SetUp( 1 , "Props" , Color( 255, 0, 0 ), true )---should create teams but appears it is not
+	team:SetUp( 2 , "Hunters" , Color( 0, 255, 0 ), true  )
+
 end
 
 function GM:ShowTeam( ply )
