@@ -1,11 +1,13 @@
 local Form = vgui.Create( "DFrame" )--works here not in play_hunter?????
-	Form:SetPos( ScrW() / 2 - 150, ScrH() / 2 - 50 ) -- Position form on your monitor
-	Form:SetTitle( "select a class" )
-	Form:SetSize( 400,100 ) -- Size form
-	Form:SetVisible( true ) -- Form rendered ( true or false )
-	Form:SetDraggable( false ) -- Form draggable
-	Form:ShowCloseButton( true ) -- Show buttons panel
-	Form:MakePopup()
+Form:SetPos( ScrW() / 2 - 200, ScrH() / 2 - 50 ) -- Position form on your monitor
+Form:SetTitle( "select a class" )
+Form:SetSize( 380,100) -- Size form
+Form:SetVisible( true ) -- Form rendered ( true or false )
+Form:SetDraggable( false ) -- Form draggable
+Form:ShowCloseButton( true ) -- Show buttons panel
+Form.btnMaxim:Hide()
+Form.btnMinim:Hide()
+Form:MakePopup()
 
 
 local HunterBtn = vgui.Create( "DButton" )
