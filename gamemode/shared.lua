@@ -5,4 +5,4 @@ GM.Website = "N/A"
 
 function GM:Initialize()
 
-end 
+end
