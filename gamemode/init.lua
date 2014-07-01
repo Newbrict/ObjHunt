@@ -26,7 +26,7 @@ resourceLoader( resources["shared"], AddCSLuaFile )
 resourceLoader( resources["client"], AddCSLuaFile )
 
 function GM:PlayerInitialSpawn( ply )
-	--player_manager.SetPlayerClass( ply, "player_hunter" )
+	player_manager.SetPlayerClass( ply, "player_spectator" )
 end
 
 concommand.Add( "chooseTeam", function( ply, _, class )
@@ -45,7 +45,32 @@ function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
     umsg.End()
 end --Ends function	
 
+
 function GM:ShowSpare1( ply ) -- This hook is called everytime F2 is pressed.
     umsg.Start( "taunt_selection", ply ) -- Sending a message to the client.
     umsg.End()
 end --Ends function	
+
+function GM:PlayerSetModel( ply )
+	class = player_manager.GetPlayerClass( ply )
+
+	if( class == "player_hunter" ) then
+		ply:SetModel( "models/player/Combine_Super_Soldier.mdl" )
+	elseif( class == "player_prop" ) then
+		ply:SetModel( "models/player/herecomestheerrorsign.mdl" )
+	else
+		return
+	end
+end
+
+function GM:CreateTeams( )
+	print("creating teams")
+	team.SetUp( 1 , "Props" , Color( 255, 0, 0 )  )
+	team.SetUp( 2 , "Hunters" , Color( 0, 255, 0 )  )
+end
+
+function GM:ShowTeam( ply )
+	umsg.Start( "show_team", ply )
+	umsg.End()
+end
+
