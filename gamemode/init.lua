@@ -26,7 +26,7 @@ resourceLoader( resources["shared"], AddCSLuaFile )
 resourceLoader( resources["client"], AddCSLuaFile )
 
 function GM:PlayerInitialSpawn( ply )
-	--player_manager.SetPlayerClass( ply, "player_hunter" )
+	player_manager.SetPlayerClass( ply, "player_spectator" )
 end
 
 concommand.Add( "chooseTeam", function( ply, _, class )

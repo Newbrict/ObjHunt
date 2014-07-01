@@ -34,7 +34,7 @@ local function class_selection()
 	SpecBtn:SetText( "Spectator" )
 	SpecBtn:SetSize( 100, 30 )
 	SpecBtn.DoClick = function()
-		RunConsoleCommand( "say", "spectator selected" ) 
+		RunConsoleCommand( "chooseTeam", "player_spectator" ) 
 	end
 end
 usermessage.Hook("class_selection", class_selection)
