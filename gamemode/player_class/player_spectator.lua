@@ -13,7 +13,7 @@ PLAYER.AvoidPlayers     = false
 
 
 function PLAYER:Spawn()
-	self.Player:Spectate(OBS_MODE_ROAMING)
+	self.Player:Spectate( OBS_MODE_ROAMING )
 end
 function PLAYER:Loadout()
 

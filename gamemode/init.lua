@@ -45,6 +45,7 @@ function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
     umsg.End()
 end --Ends function	
 
+<<<<<<< Updated upstream
 function GM:PlayerSetModel( ply )
 	class = player_manager.GetPlayerClass( ply )
 
@@ -57,5 +58,16 @@ function GM:PlayerSetModel( ply )
 	end
 
 
+=======
+function GM:CreateTeams( )
+	print("creating teams")
+	team.SetUp( 1 , "Props" , Color( 255, 0, 0 )  )
+	team.SetUp( 2 , "Hunters" , Color( 0, 255, 0 )  )
+end
+
+function GM:ShowTeam( ply )
+	umsg.Start( "show_team", ply )
+	umsg.End()
+>>>>>>> Stashed changes
 end
 

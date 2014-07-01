@@ -18,7 +18,7 @@ PLAYER.UnDuckSpeed      = 0.1
 function PLAYER:Loadout()
 
 	self.Player:RemoveAllAmmo()
-	self.Player:GiveAmmo( 256,	"Pistol", 		true )
+	self.Player:GiveAmmo( 256,	"Pistol", true )
 	self.Player:Give( "weapon_pistol" )
 
 end
