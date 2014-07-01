@@ -1,7 +1,7 @@
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 
-local csDirs = { "player_class" }
+local csDirs = { "player_class", "gui" }
 
 print( "Adding Client Side Lua Files..." )
 

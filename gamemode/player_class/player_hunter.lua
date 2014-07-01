@@ -16,9 +16,6 @@ PLAYER.DuckSpeed        = 0.1
 PLAYER.UnDuckSpeed      = 0.1
 
 
-
-
-
 --attempt for opening menu 
 hook.Add( "KeyPress", "openMenuTest", function(ply,key)
 --	if(key == 262144) then 
