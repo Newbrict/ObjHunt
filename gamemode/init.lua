@@ -44,3 +44,8 @@ function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
     umsg.Start( "class_selection", ply ) -- Sending a message to the client.
     umsg.End()
 end --Ends function	
+
+function GM:ShowSpare1( ply ) -- This hook is called everytime F2 is pressed.
+    umsg.Start( "taunt_selection", ply ) -- Sending a message to the client.
+    umsg.End()
+end --Ends function	
