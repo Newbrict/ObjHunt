@@ -27,30 +27,24 @@ resourceLoader( resources["client"], AddCSLuaFile )
 
 function GM:PlayerInitialSpawn( ply )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
+	print_timers( ply )
+
 end
 
 concommand.Add( "chooseTeam", function( ply, _, class )
 	player_manager.SetPlayerClass( ply, class[1] )
-
 	ply:KillSilent()
 	if( class[1] == "player_hunter" ) then
 		ply:SetTeam( TEAM_HUNTERS )--set team to hunters
-		print("players team is ".. ply:Team())
 	elseif( class[1] == "player_prop" ) then
 		ply:SetTeam( TEAM_PROPS ) --set team to props
-		print("players team is ".. ply:Team())
 	else
-		ply:SetTeam( TEAM_SPECTATOR ) --set team to props
-		print("players team is ".. ply:Team())
+		ply:SetTeam( TEAM_SPECTATOR ) --set team to spectator
 	end
 	ply:Spawn()
 
 end )
 
-hook.Add("PlayerSwitchFlashlight","test_hook" ,test)--this is a test works!
- local function test()
- 	--print("here")
- end
 
 function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
     umsg.Start( "class_selection", ply ) -- Sending a message to the client.
@@ -62,6 +56,12 @@ function GM:ShowSpare1( ply ) -- This hook is called everytime F2 is pressed.
     umsg.Start( "taunt_selection", ply ) -- Sending a message to the client.
     umsg.End()
 end --Ends function	
+
+function print_timers( ply )
+		umsg.Start( "create_time_panel", ply, intial )
+		umsg.End()
+		initial=false
+end
 
 function GM:PlayerSetModel( ply )
 	class = player_manager.GetPlayerClass( ply )
@@ -87,8 +87,30 @@ function GM:CreateTeams( )
 
 end
 
-function GM:ShowTeam( ply )
-	umsg.Start( "show_team", ply )
-	umsg.End()
+function GM:Initialize()
+	initial=true
+   timer.Create("round_timer", .8, 0, function()--ask for updated time every .8 seconds instead of every tick like previously
+   		for _,ply in pairs( player.GetAll() ) do
+			umsg.Start("update_timer", ply)
+			umsg.End()
+		end
+	end)
+    --timer that continuously asks for the tome update for each client orginally asked every server tick 
+	--however I figured this would increase effciency
+	--possibly implemnt only asks for new timer everytime round swithces or starts leave this for now
 end
+function test()
+		for _,ply in pairs( player.GetAll() ) do
+		umsg.Start("update_timer", ply)
+		umsg.End()
+	end
+end
+
+function GM:Tick()
+	
+end
+	
+
+
+
 
