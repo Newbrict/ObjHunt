@@ -16,19 +16,26 @@ local function mapTimerHUD()
 	else
 		textToDraw = textToDraw.."..."
 	end
-	local startX = ScrW() - 200
-	local startY = 10
+
+	surface.SetFont( "InfoFont" )
+	-- Determine some useful coordinates
+	local width = surface.GetTextSize( textToDraw )
+	local height = 16 
 	local padding = 5
-	local width = 150 
-	local height = 20
+	local startX = ScrW() - (width + 2*padding)
+	local startY = 10
 
 	surface.SetDrawColor( 127, 127, 127, 200 )
-	surface.DrawRect( startX - padding, startY - padding, width + padding, height + padding )
-	surface.SetFont( "InfoFont" )
+	surface.DrawRect(
+		startX - padding,
+		startY - padding,
+		width + 2*padding,
+		height + 2*padding
+	)
 	surface.SetTextColor( 255, 255, 255, 255 )
 	surface.SetTextPos(startX, startY)
-
 	surface.DrawText( textToDraw )
+
 end
 
 -- get the net message for map time
