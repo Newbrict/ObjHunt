@@ -2,7 +2,8 @@ include( "shared.lua" )
 include("gui/class_selection.lua")
 include("gui/taunt_selection.lua")
 include("gui/scoreboard.lua")
-include("gui/timer_gui.lua")
+include("gui/map_timer.lua")
+--include("gui/timer_gui.lua")
 
 
 	

@@ -69,7 +69,7 @@ function GM:PlayerSetModel( ply )
 	if( class == "player_hunter" ) then
 		ply:SetModel( "models/player/Combine_Super_Soldier.mdl" )
 	elseif( class == "player_prop" ) then
-		ply:SetModel( "models/player/herecomestheerrorsign.mdl" )
+		ply:SetModel( "models/error.mdl" )
 	else
 		return
 	end
@@ -88,9 +88,9 @@ function GM:CreateTeams( )
 end
 
 function GM:Initialize()
-	initial=true
-   timer.Create("round_timer", .8, 0, function()--ask for updated time every .8 seconds instead of every tick like previously
-   		for _,ply in pairs( player.GetAll() ) do
+--[[	initial=true
+	timer.Create("round_timer", .8, 0, function()--ask for updated time every .8 seconds instead of every tick like previously
+		for _,ply in pairs( player.GetAll() ) do
 			umsg.Start("update_timer", ply)
 			umsg.End()
 		end
@@ -98,7 +98,17 @@ function GM:Initialize()
     --timer that continuously asks for the tome update for each client orginally asked every server tick 
 	--however I figured this would increase effciency
 	--possibly implemnt only asks for new timer everytime round swithces or starts leave this for now
+	--]]
 end
+
+hook.Add( "Initialize", "Set Map Time", function() mapStartTime = os.time() end )
+hook.Add( "PlayerInitialSpawn", "Send Map Time To New Player", function( ply )
+	util.AddNetworkString( "Map Time" )
+	net.Start( "Map Time" )
+	net.WriteUInt( mapStartTime, 32 )
+	net.Send( ply )
+end )
+
 function test()
 		for _,ply in pairs( player.GetAll() ) do
 		umsg.Start("update_timer", ply)
