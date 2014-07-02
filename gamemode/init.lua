@@ -101,11 +101,15 @@ function GM:Initialize()
 	--]]
 end
 
+hook.Add( "Initialize", "Precache all network strings", function()
+	util.AddNetworkString( "Map Time" )
+end )
+
 hook.Add( "Initialize", "Set Map Time", function() mapStartTime = os.time() end )
 hook.Add( "PlayerInitialSpawn", "Send Map Time To New Player", function( ply )
-	util.AddNetworkString( "Map Time" )
 	net.Start( "Map Time" )
-	net.WriteUInt( mapStartTime, 32 )
+	local toSend = ( mapStartTime || os.time() )
+	net.WriteUInt( toSend, 32 )
 	net.Send( ply )
 end )
 
