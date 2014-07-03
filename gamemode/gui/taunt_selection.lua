@@ -29,7 +29,7 @@ local function taunt_selection()
 	PlaySelectedBtn:SetSize( 100, 30 )
 
 	PlaySelectedBtn.DoClick = function()
-		sound.Play("sounds/taunt_sounds/aliens_game_over.wav", LocalPlayer():GetPos(), 75, 100, 1)
+		sound.Play("taunts/aliens_game_over.wav", LocalPlayer():GetPos(), 75, 100, 1)
 	end
 
 	local SoundList = vgui.Create("DListView")
