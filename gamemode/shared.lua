@@ -3,6 +3,9 @@ GM.Author  = "Newbrict, Pepsi, Maxwellstorm"
 GM.Email   = "N/A"
 GM.Website = "N/A"
 
+TEAM_PROPS = 1
+TEAM_HUNTERS = 2
+
 --[[ Add all the files on server/client ]]--
 local resources = {}
 resources["server"] = { "server" }

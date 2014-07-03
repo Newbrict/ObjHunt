@@ -1,6 +1,6 @@
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
-
+include( "shared.lua" )
 
 function GM:PlayerInitialSpawn( ply )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
@@ -28,8 +28,6 @@ function GM:PlayerSetModel( ply )
 end
 
 function GM:CreateTeams( )
-	TEAM_PROPS = 1
-	TEAM_HUNTERS = 2
 
 	team:SetUp( TEAM_PROPS , "Props" , Color( 255, 0, 0 ), true )
 	team:SetUp( TEAM_HUNTERS , "Hunters" , Color( 0, 255, 0 ), true  )
@@ -52,4 +50,12 @@ hook.Add( "PlayerInitialSpawn", "Send Map Time To New Player", function( ply )
 	net.Send( ply )
 end )
 
-include( "shared.lua" )
+--[[ When a player presses +use on a prop ]]--
+hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
+	local tModel = ent:GetModel()
+	local tHitboxMin, tHitboxMax = ent:GetHitBoxBounds( 0, 0 )
+
+	ply:SetModel( tModel )
+	ply:SetHull( tHitboxMin, tHitboxMax )
+	ply:SetHullDuck( tHitboxMin, tHitboxMax )
+end )
