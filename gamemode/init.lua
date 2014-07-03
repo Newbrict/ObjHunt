@@ -2,6 +2,8 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
+resource.AddFile("content/sounds/taunt_sounds/aliens_game_over.wav") 
+
 function GM:PlayerInitialSpawn( ply )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
 end
