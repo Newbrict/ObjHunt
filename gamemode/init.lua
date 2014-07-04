@@ -47,6 +47,7 @@ end
 --[[ All network strings should be precached HERE ]]--
 hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Map Time" )
+	util.AddNetworkString( "Hull Update" )
 end )
 
 --[[ Map Time ]]--
@@ -73,6 +74,10 @@ hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
 	ply.chosenProp:SetAngles( ply:GetAngles() )
 	ply:SetHull( tHitboxMin, tHitboxMax )
 	ply:SetHullDuck( tHitboxMin, tHitboxMax )
+	net.Start( "Hull Update" )
+		net.WriteVector( tHitboxMax )
+		net.WriteVector( tHitboxMin )
+	net.Send( ply )
 
 end )
 

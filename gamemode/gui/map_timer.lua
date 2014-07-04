@@ -11,11 +11,7 @@ surface.CreateFont( "InfoFont",
 local function mapTimerHUD()
 	local textToDraw = "Time On Map: "
 	-- make sure we don't blow it if var is undefined
-	if( mapStartTime ) then
-		textToDraw = textToDraw..os.time() - mapStartTime
-	else
-		textToDraw = textToDraw.."..."
-	end
+	textToDraw = textToDraw..os.time() - mapStartTime
 
 	surface.SetFont( "InfoFont" )
 	-- Determine some useful coordinates
@@ -38,11 +34,9 @@ local function mapTimerHUD()
 
 end
 
--- get the net message for map time
-hook.Add( "Initialize", "Map Timer HUD element", function()
-	net.Receive( "Map Time", function( len )
-		mapStartTime = net.ReadUInt(32)
-	end )
+-- get the net message for map time, then load the hud element
+net.Receive( "Map Time", function( len )
+	mapStartTime = net.ReadUInt(32)
+	hook.Add( "HUDPaint", "Map Timer HUD element", mapTimerHUD )
 end )
 
-hook.Add( "HUDPaint", "Map Timer HUD element", mapTimerHUD )
