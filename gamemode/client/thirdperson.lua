@@ -21,7 +21,7 @@ function ThirdPersonCalcView(ply, pos, angles, fov)
 		Distance = Distance * tr.Fraction
 	end
 	
-	View.origin = Trace.start + View.angles:Forward() * -Distance * 0.95
+	View.origin = Trace.start + View.angles:Forward() * -Distance * 0.4
 	return View
 end
 

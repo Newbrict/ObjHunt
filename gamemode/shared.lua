@@ -3,6 +3,8 @@ GM.Author  = "Newbrict, Pepsi, Maxwellstorm"
 GM.Email   = "N/A"
 GM.Website = "N/A"
 
+DeriveGamemode("PolyBase")
+
 TEAM_PROPS = 1
 TEAM_HUNTERS = 2
 
@@ -10,6 +12,8 @@ USABLE_PROP_ENTITIES = {
 	"prop_physics",
 	"prop_physics_multiplayer"
 }
+
+PROP_SELECT_DISTANCE = 150
 
 --[[ Add all the files on server/client ]]--
 local resources = {}
@@ -47,7 +51,7 @@ function playerCanBeEnt( ply, ent )
 	if(	!table.HasValue( USABLE_PROP_ENTITIES, ent:GetClass() ) ) then return false end
 
 	-- make sure it's a valid phys object
-	if(	!IsValid(ent) ) then return false end
+	if(	!IsValid(ent:GetPhysicsObject()) ) then return false end
 
 	return true
 end
