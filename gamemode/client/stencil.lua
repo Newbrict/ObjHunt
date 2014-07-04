@@ -1,12 +1,12 @@
 hook.Add("PostDrawOpaqueRenderables","PlayerBorders",function()
-	if( LocalPlayer():Team() != TEAM_PROPS ) then return end
+	local prop = LocalPlayer():GetEyeTrace().Entity
+	if( !playerCanBeEnt( LocalPlayer(), prop ) ) then return end
 	--stencil work is done in postdrawopaquerenderables, where surface doesn't work correctly
 	--workaround via 3D2D
 	local pos = LocalPlayer():EyePos()+LocalPlayer():EyeAngles():Forward()*10
-	local ang = LocalPlayer():EyeAngles()
+	local ang = LocalPlayer():GetAngles()
 	ang = Angle(ang.p+90,ang.y,0)
-	local prop = LocalPlayer():GetEyeTrace().Entity
-	if( !IsValid(prop) ) then return end
+	print( prop:GetPhysicsObject():GetMass() )
 	render.ClearStencil()
 	render.SetStencilEnable(true)
 		render.SetStencilWriteMask(255)

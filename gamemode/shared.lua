@@ -6,6 +6,11 @@ GM.Website = "N/A"
 TEAM_PROPS = 1
 TEAM_HUNTERS = 2
 
+USABLE_PROP_ENTITIES = {
+	"prop_physics",
+	"prop_physics_multiplayer"
+}
+
 --[[ Add all the files on server/client ]]--
 local resources = {}
 resources["server"] = { "server" }
@@ -32,4 +37,17 @@ else
 	print( "Adding Client Side Lua Files..." )
 	resourceLoader( resources["shared"], include )
 	resourceLoader( resources["client"], include )
+end
+
+function playerCanBeEnt( ply, ent )
+	-- make sure we're living props
+	if( !ply:Alive() || ply:Team() != TEAM_PROPS ) then return false end
+
+	-- make sure ent is a valid prop type
+	if(	!table.HasValue( USABLE_PROP_ENTITIES, ent:GetClass() ) ) then return false end
+
+	-- make sure it's a valid phys object
+	if(	!IsValid(ent) ) then return false end
+
+	return true
 end

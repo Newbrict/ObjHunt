@@ -2,7 +2,13 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
-resource.AddFile("sound/taunts/aliens_game_over.wav") 
+resource.AddFile("sound/taunts/jihad.wav") 
+for k, v in pairs(ents.FindByClass("prop_physics*")) do
+	if IsValid(v:GetPhysicsObject()) then
+	v:GetPhysicsObject():Wake()
+	end
+end
+
 
 function GM:PlayerInitialSpawn( ply )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
@@ -23,7 +29,7 @@ function GM:PlayerSetModel( ply )
 	if( class == "player_hunter" ) then
 		ply:SetModel( "models/player/Combine_Super_Soldier.mdl" )
 	elseif( class == "player_prop" ) then
-		ply:SetModel( "models/error.mdl" )
+		ply:SetModel( "models/player.mdl" )
 	else
 		return
 	end
@@ -52,12 +58,37 @@ hook.Add( "PlayerInitialSpawn", "Send Map Time To New Player", function( ply )
 	net.Send( ply )
 end )
 
+
+
 --[[ When a player presses +use on a prop ]]--
 hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
-	local tModel = ent:GetModel()
+	if( !playerCanBeEnt( ply, ent) ) then return end
+
 	local tHitboxMin, tHitboxMax = ent:GetHitBoxBounds( 0, 0 )
 
-	ply:SetModel( tModel )
+	ply.chosenProp:SetModel( ent:GetModel() )
+	ply.chosenProp:SetSkin( ent:GetSkin() )
+	ply.chosenProp:SetSolid( SOLID_BSP )
+	ply.chosenProp:SetPos( ply:GetPos() - Vector(0, 0, ent:OBBMins().z) )
+	ply.chosenProp:SetAngles( ply:GetAngles() )
 	ply:SetHull( tHitboxMin, tHitboxMax )
 	ply:SetHullDuck( tHitboxMin, tHitboxMax )
+
+end )
+
+--[[ When a player on team_props spawns ]]--
+hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
+	if( ply:Team() != TEAM_PROPS ) then return end
+
+	-- make the player invisible
+	ply:SetRenderMode( RENDERMODE_TRANSALPHA )
+	ply:SetColor( Color(0,0,0,0) )
+	
+	ply.chosenProp = ents.Create("player_prop_ent")
+	ply.chosenProp:SetPos( ply:GetPos() )
+	ply.chosenProp:SetAngles( ply:GetAngles() )
+	ply.chosenProp:Spawn()
+	ply.chosenProp:SetSolid(SOLID_BBOX)
+	ply.chosenProp:SetParent( ply )
+	ply.chosenProp:SetOwner( ply )
 end )
