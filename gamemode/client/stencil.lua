@@ -27,6 +27,7 @@ end
 hook.Add("PostDrawOpaqueRenderables","PlayerBorders",function()
 	--DEBUG
 	if( false ) then	
+		theTeamers = team.GetPlayers( TEAM_PROPS )
 		for _, v in pairs(theTeamers) do
 			local hitpos  = v:GetEyeTrace().HitPos
 			local hitpos  = v:GetEyeTrace().HitPos
@@ -43,7 +44,6 @@ hook.Add("PostDrawOpaqueRenderables","PlayerBorders",function()
 	local pos = LocalPlayer():EyePos()+LocalPlayer():EyeAngles():Forward()*10
 	local ang = LocalPlayer():GetAngles()
 	ang = Angle(ang.p+90,ang.y,0)
-	theTeamers = team.GetPlayers( TEAM_PROPS )
 	render.ClearStencil()
 	render.SetStencilEnable(true)
 		render.SetStencilWriteMask(255)
