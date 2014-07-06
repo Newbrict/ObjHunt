@@ -14,11 +14,10 @@ function ENT:OnTakeDamage(dmg)
 	
 	if ply && ply:IsValid() && ply:Alive() && ply:IsPlayer() && attacker:IsPlayer() && dmg:GetDamage() > 0 then
 		self.health = self.health - dmg:GetDamage()
-		ply:SetHealth(self.health)
-		
 		if self.health <= 0 then
 			ply:KillSilent()
-			
+			RemoveProp( ply )
 		end
+		ply:SetHealth(self.health)
 	end
 end 
