@@ -114,6 +114,10 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 	ply.chosenProp:SetOwner( ply )
 end )
 
+hook.Add( "PlayerDisconnected", "Remove ent prop on dc", function( ply )
+	RemoveProp( ply )
+end )
+
 --[[ remove the ent prop ]]--
 function RemoveProp( ply )
 	if( ply.chosenProp ) then
