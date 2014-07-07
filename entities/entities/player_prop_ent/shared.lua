@@ -7,7 +7,8 @@ function ENT:Draw()
 
 	if !self:IsValid() || !IsValid(owner) then return end
 
-	self:SetPos(owner:GetPos())
+	self:SetPos( owner:GetPos() )
+
 	local propAngle = owner:EyeAngles()
 	propAngle:SnapTo("p",180)
 	propAngle:SnapTo("y",45)

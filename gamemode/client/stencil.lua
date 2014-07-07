@@ -11,6 +11,9 @@ local function stencilColor( ply, ent )
 
 	-- must have a bounding box
 	if( !ent:GetHitBoxBounds(0,0) ) then return false end
+	
+	-- make sure we're on the ground and standing tall
+	if( ply:Crouching() || !ply:OnGround() ) then return false end
 
 	-- make sure the distance is beneath the max
 	local pos = LocalPlayer():EyePos()+LocalPlayer():EyeAngles():Forward()*10

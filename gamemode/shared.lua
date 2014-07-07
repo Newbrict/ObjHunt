@@ -53,5 +53,11 @@ function playerCanBeEnt( ply, ent )
 	-- make sure it's a valid phys object
 	if(	!IsValid(ent:GetPhysicsObject()) ) then return false end
 
+	-- make sure we can get the model and class
+	if(	!ent:GetClass() || !ent:GetModel() ) then return false end
+
+	-- make sure we're on the ground and standing tall
+	if( ply:Crouching() || !ply:OnGround() ) then return false end
+
 	return true
 end

@@ -40,13 +40,12 @@ function GM:CreateTeams( )
 	team:SetUp( TEAM_HUNTERS , "Hunters" , Color( 0, 255, 0 ), true  )
 	team:SetClass( TEAM_PROPS, {"player_prop"})
 	team:SetClass( TEAM_HUNTERS, {"player_hunter"})
+	team:SetSpawnPoint( TEAM_PROPS, {"info_player_terrorist", "info_player_rebel", "info_player_deathmatch", "info_player_allies"} )
+	team:SetSpawnPoint( TEAM_HUNTERS, {"info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
+
 end
 
 function GM:PlayerShouldTakeDamage( victim, attacker )
-	-- player attacks other team
-	if( attacker:IsPlayer() && attacker:Team() != victim:Team() )then
-		return true
-	end
 	-- non prop falls
 	if( victim:Team() == TEAM_HUNTERS && attacker:GetClass() == "worldspawn" ) then
 		return true
@@ -75,21 +74,26 @@ end )
 hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
 	if( !playerCanBeEnt( ply, ent) ) then return end
 
-	local tHitboxMin, tHitboxMax = ent:GetHitBoxBounds( 0, 0 )
-	if( !tHitboxMin || !tHitboxMax ) then return end
-
 	local oldHP = ply.chosenProp.health
+
+	local tHitboxMin, tHitboxMax = ent:GetHitBoxBounds( 0, 0 )
 
 	ply.chosenProp:SetModel( ent:GetModel() )
 	ply.chosenProp:SetSkin( ent:GetSkin() )
-	ply.chosenProp:SetSolid( SOLID_BSP )
-	ply.chosenProp:SetPos( ply:GetPos() - Vector(0, 0, ent:OBBMins().z) )
+	ply.chosenProp:SetSolid( SOLID_BBOX )
 	ply.chosenProp:SetAngles( ply:GetAngles() )
-
-	ply.chosenProp.health = oldHP
 
 	ply:SetHull( tHitboxMin, tHitboxMax )
 	ply:SetHullDuck( tHitboxMin, tHitboxMax )
+
+	-- Make them not stuck
+	while(isStuck( ply , ply.chosenProp)) do
+		ply:SetPos(ply:GetPos() + Vector(0,0,1))
+	end
+
+
+	ply.chosenProp.health = oldHP
+
 	net.Start( "Hull Update" )
 		net.WriteVector( tHitboxMax )
 		net.WriteVector( tHitboxMin )
@@ -115,6 +119,10 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 end )
 
 hook.Add( "PlayerDisconnected", "Remove ent prop on dc", function( ply )
+	RemoveProp( ply )
+end )
+
+hook.Add( "PlayerDeath", "Remove ent prop on death", function( ply )
 	RemoveProp( ply )
 end )
 
