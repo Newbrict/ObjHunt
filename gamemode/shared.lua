@@ -7,6 +7,7 @@ DeriveGamemode("PolyBase")
 
 TEAM_PROPS = 1
 TEAM_HUNTERS = 2
+PROP_CHOOSE_COOLDOWN = 5
 
 USABLE_PROP_ENTITIES = {
 	"prop_physics",
@@ -58,6 +59,10 @@ function playerCanBeEnt( ply, ent )
 
 	-- make sure we're on the ground and standing tall
 	if( ply:Crouching() || !ply:OnGround() ) then return false end
+
+	-- cooldown on switching props
+	if( ply.lastPropChange &&
+		os.time() - ply.lastPropChange < PROP_CHOOSE_COOLDOWN ) then return false end
 
 	return true
 end

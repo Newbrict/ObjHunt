@@ -69,16 +69,12 @@ hook.Add( "PlayerInitialSpawn", "Send Map Time To New Player", function( ply )
 end )
 
 
-
---[[ When a player presses +use on a prop ]]--
-hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
-	if( !playerCanBeEnt( ply, ent) ) then return end
-
-	local oldHP = ply.chosenProp.health
+--[[ sets the players prop, run PlayerCanBeEnt before using this ]]--
+function SetPlayerProp( ply, ent )
 
 	local tHitboxMin, tHitboxMax = ent:GetHitBoxBounds( 0, 0 )
 
-	if( !tHitboxMin || !tHitboxMax ) then return end
+	if( !tHitboxMin || !tHitboxMax ) then return false, "Invalid Hull" end
 
 	ply.chosenProp:SetModel( ent:GetModel() )
 	ply.chosenProp:SetSkin( ent:GetSkin() )
@@ -91,20 +87,29 @@ hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
 
 	ply:SetHull( tHitboxMin, tHitboxMax )
 	ply:SetHullDuck( tHitboxMin, tHitboxMax )
-	ply:SetStepSize( math.Round( (tHitboxMax.z-tHitboxMin.z)/3 ) )
+	ply:SetStepSize( math.Round( 4+(tHitboxMax.z-tHitboxMin.z)/4 ) )
 
 	-- Make them not stuck
 	while(isStuck( ply , ply.chosenProp)) do
 		ply:SetPos(ply:GetPos() + Vector(0,0,1))
 	end
 
-
-	ply.chosenProp.health = oldHP
-
 	net.Start( "Hull Update" )
 		net.WriteVector( tHitboxMax )
 		net.WriteVector( tHitboxMin )
 	net.Send( ply )
+
+end
+
+--[[ When a player presses +use on a prop ]]--
+hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
+	if( !playerCanBeEnt( ply, ent) ) then return end
+
+	print( "beef" )
+	local oldHP = ply.chosenProp.health
+	SetPlayerProp( ply, ent )
+	ply.lastPropChange = os.time()
+	ply.chosenProp.health = oldHP
 
 end )
 
@@ -118,11 +123,14 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 	ply:SetBloodColor( DONT_BLEED )
 	
 	ply.chosenProp = ents.Create("player_prop_ent")
-	ply.chosenProp:SetPos( ply:GetPos() )
-	ply.chosenProp:SetAngles( ply:GetAngles() )
 	ply.chosenProp:Spawn()
-	ply.chosenProp:SetSolid(SOLID_BBOX)
 	ply.chosenProp:SetOwner( ply )
+
+	SetPlayerProp( ply, ply.chosenProp )
+
+	-- default prop should be able to step wherever
+	ply:SetStepSize( 20 )
+
 end )
 
 hook.Add( "PlayerDisconnected", "Remove ent prop on dc", function( ply )
