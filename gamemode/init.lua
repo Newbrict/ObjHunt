@@ -91,7 +91,7 @@ hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
 
 	ply:SetHull( tHitboxMin, tHitboxMax )
 	ply:SetHullDuck( tHitboxMin, tHitboxMax )
-	ply:SetStepSize( math.Round( (tHitboxMax.z-tHitboxMin.z)/5 ) )
+	ply:SetStepSize( math.Round( (tHitboxMax.z-tHitboxMin.z)/3 ) )
 
 	-- Make them not stuck
 	while(isStuck( ply , ply.chosenProp)) do
