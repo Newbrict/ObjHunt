@@ -21,11 +21,15 @@ local function stencilColor( ply, ent )
 	gCol = Color(0,255,0,255)
 	bCol = Color(255,0,0,255)
 
-	-- make sure we're on the ground and standing tall
-	if( ply:Crouching() || !ply:OnGround() ) then return bCol end
-
 	-- make sure ent is a valid prop type
 	if(	!table.HasValue( USABLE_PROP_ENTITIES, ent:GetClass() ) ) then return bCol end
+
+	-- make sure ent is a valid prop type
+	if( WouldBeStuck( ply, ent, ply.chosenProp ) ) then return bCol end
+
+	-- cooldown on switching props
+	if( ply.lastPropChange &&
+		os.time() - ply.lastPropChange < PROP_CHOOSE_COOLDOWN ) then return bCol end
 
 	return gCol
 end

@@ -56,7 +56,7 @@ end
 --[[ All network strings should be precached HERE ]]--
 hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Map Time" )
-	util.AddNetworkString( "Hull Update" )
+	util.AddNetworkString( "Prop Update" )
 end )
 
 --[[ Map Time ]]--
@@ -87,16 +87,21 @@ function SetPlayerProp( ply, ent )
 
 	ply:SetHull( tHitboxMin, tHitboxMax )
 	ply:SetHullDuck( tHitboxMin, tHitboxMax )
-	ply:SetStepSize( math.Round( 4+(tHitboxMax.z-tHitboxMin.z)/4 ) )
+	local tHeight = tHitboxMax.z-tHitboxMin.z
 
-	-- Make them not stuck
-	while(isStuck( ply , ply.chosenProp)) do
-		ply:SetPos(ply:GetPos() + Vector(0,0,1))
-	end
+	-- scale steps to prop size
+	ply:SetStepSize( math.Round( 4+(tHeight)/4 ) )
 
-	net.Start( "Hull Update" )
+	-- give bigger props a bonus for being big
+	ply:SetJumpPower( 200 + math.sqrt(tHeight) )
+
+	ply.lastPropChange = os.time()
+
+	net.Start( "Prop Update" )
 		net.WriteVector( tHitboxMax )
 		net.WriteVector( tHitboxMin )
+		net.WriteEntity( ply.chosenProp )
+		net.WriteUInt( ply.lastPropChange, 32 )
 	net.Send( ply )
 
 end
@@ -105,10 +110,8 @@ end
 hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
 	if( !playerCanBeEnt( ply, ent) ) then return end
 
-	print( "beef" )
 	local oldHP = ply.chosenProp.health
 	SetPlayerProp( ply, ent )
-	ply.lastPropChange = os.time()
 	ply.chosenProp.health = oldHP
 
 end )
