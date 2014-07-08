@@ -78,13 +78,20 @@ hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
 
 	local tHitboxMin, tHitboxMax = ent:GetHitBoxBounds( 0, 0 )
 
+	if( !tHitboxMin || !tHitboxMax ) then return end
+
 	ply.chosenProp:SetModel( ent:GetModel() )
 	ply.chosenProp:SetSkin( ent:GetSkin() )
 	ply.chosenProp:SetSolid( SOLID_BBOX )
 	ply.chosenProp:SetAngles( ply:GetAngles() )
 
+	-- we round to reduce getting stuck
+	tHitboxMin = Vector( math.Round(tHitboxMin.x),math.Round(tHitboxMin.y),math.Round(tHitboxMin.z) )
+	tHitboxMax = Vector( math.Round(tHitboxMax.x),math.Round(tHitboxMax.y),math.Round(tHitboxMax.z) )
+
 	ply:SetHull( tHitboxMin, tHitboxMax )
 	ply:SetHullDuck( tHitboxMin, tHitboxMax )
+	ply:SetStepSize( math.Round( (tHitboxMax.z-tHitboxMin.z)/5 ) )
 
 	-- Make them not stuck
 	while(isStuck( ply , ply.chosenProp)) do

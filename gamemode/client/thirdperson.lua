@@ -1,8 +1,5 @@
 function ThirdPersonCalcView(ply, pos, angles, fov)
-	local class = player_manager.GetPlayerClass( ply )
-	if( class != "player_prop" ) then
-		return
-	end
+	if( !ply.wantThirdPerson ) then return end
 	local View = {}
 	local Trace = {}
 	local AddToPlayer = Vector(0, 0, 60)
@@ -27,5 +24,5 @@ end
 
 hook.Add("CalcView", "Thirdperson CalcView", ThirdPersonCalcView)
 hook.Add("ShouldDrawLocalPlayer", "Draw Local Player For Thirdperson", function(ply)
-	return player_manager.GetPlayerClass( ply ) == "player_prop"
+	return ply.wantThirdPerson
 end )
