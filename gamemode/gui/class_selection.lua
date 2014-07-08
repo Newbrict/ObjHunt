@@ -1,40 +1,74 @@
+surface.CreateFont( "Sharp HUD",
+{
+	font = "Helvetica",
+	size = 32,
+	weight = 800,
+	antialias = true,
+	outline = false,
+	shadow = true,
+})
+
 local function class_selection()
-	local cs_form = vgui.Create( "DFrame" ) -- works here not in play_hunter?????
-	cs_form:SetPos( ScrW() / 2 - 200, ScrH() / 2 - 50 ) -- Position form on your monitor
-	cs_form:SetTitle( "Select a class" )
-	cs_form:SetSize( 380,100) 		  -- Size form
-	cs_form:SetVisible( true ) 		  -- Form rendered ( true or false )
-	cs_form:SetDraggable( false ) 	  -- Form draggable
-	cs_form:ShowCloseButton( true )   -- Show buttons panel
-	cs_form.btnMaxim:Hide()
-	cs_form.btnMinim:Hide()
-	cs_form:MakePopup()
+	local width   = 300
+	local height  = 100
+	local padding = 10
+	local startX  = ScrW()/2 - (width/2)
+	local startY  = ScrH()/2 - (height/2) 
+	local btnHeight = 30
+	local btnWidth  = 80
 
-	local HunterBtn = vgui.Create( "DButton" )
-	HunterBtn:SetParent( cs_form )
-	HunterBtn:SetPos( 10, 50 )
-	HunterBtn:SetText( "Hunter" )
-	HunterBtn:SetSize( 100, 30 )
-	HunterBtn.DoClick = function()
+	local cSPanel = vgui.Create( "DPanel" )
+	cSPanel:SetSize( width, height )
+	cSPanel:Center()
+	cSPanel:SetVisible( true )
+	cSPanel:MakePopup()
+
+	local hunterBtn = vgui.Create( "DButton", cSPanel )
+	hunterBtn:SetText( "Hunter" )
+	hunterBtn:SetSize( btnWidth, btnHeight )
+	hunterBtn.DoClick = function()
 		RunConsoleCommand( "chooseTeam", "player_hunter" )
+		cSPanel:SetVisible( false )
 	end
 
-	local PropBtn = vgui.Create( "DButton" )
-	PropBtn:SetParent( cs_form )
-	PropBtn:SetPos( 140, 50 )
-	PropBtn:SetText( "Prop" )
-	PropBtn:SetSize( 100, 30 )
-	PropBtn.DoClick = function()
+	local propBtn = vgui.Create( "DButton", cSPanel )
+	propBtn:SetText( "Prop" )
+	propBtn:SetSize( btnWidth, btnHeight )
+	propBtn.DoClick = function()
 		RunConsoleCommand( "chooseTeam", "player_prop" ) 
+		cSPanel:SetVisible( false )
 	end
 
-	local SpecBtn = vgui.Create( "DButton" )
-	SpecBtn:SetParent( cs_form )
-	SpecBtn:SetPos( 270, 50 )
-	SpecBtn:SetText( "Spectator" )
-	SpecBtn:SetSize( 100, 30 )
-	SpecBtn.DoClick = function()
+	local specBtn = vgui.Create( "DButton", cSPanel )
+	specBtn:SetText( "Spectator" )
+	specBtn:SetSize( btnWidth, btnHeight )
+	specBtn.DoClick = function()
 		RunConsoleCommand( "chooseTeam", "player_spectator" ) 
+		cSPanel:SetVisible( false )
 	end
+
+	cSPanel.Paint = function(self,w,h)
+		Derma_DrawBackgroundBlur( self, CurTime() )
+
+
+		surface.SetFont( "Sharp HUD" )
+		surface.SetTextColor( 255, 255, 255, 255 )
+		local textToDraw = "Select Your Team"
+		local tw, th = surface.GetTextSize( textToDraw )
+		surface.SetTextPos(0, 0)
+		surface.DrawText( textToDraw )
+	
+		surface.SetDrawColor( 255,255,255,10 )
+		surface.DrawRect( 0, th,  4*padding + 3*btnWidth, 2*padding + btnHeight )
+		surface.SetDrawColor( 200,200,200,255 )
+		surface.DrawOutlinedRect( 0, th, 4*padding + 3*btnWidth, 2*padding + btnHeight)
+
+
+		hunterBtn:SetPos( padding, th + padding )
+		propBtn:SetPos( padding*2 + btnWidth, th + padding )
+		specBtn:SetPos( padding*3 + btnWidth*2, th + padding )
+
+	end
+
 end
 usermessage.Hook("class_selection", class_selection)
