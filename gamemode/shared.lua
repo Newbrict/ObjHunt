@@ -78,14 +78,19 @@ function GM:HUDDrawTargetID()
 	local font = "TargetID"
 
 	if (trace.Entity:IsPlayer()) then
-		if( trace.Entity:Team() != LocalPlayer.Team() ||
+		if( trace.Entity:Team() != LocalPlayer():Team() ||
 			trace.Entity:Team() != TEAM_SPECTATOR) then
 			return
 		end
 		text = trace.Entity:Nick()
+	elseif ( trace.Entity:GetOwner():IsPlayer() ) then
+		if( trace.Entity:GetOwner():Team() != LocalPlayer():Team() ||
+			trace.Entity:GetOwner() == LocalPlayer()) then
+			return
+		end
+		text = trace.Entity:GetOwner():Nick()
 	else
 		return
-		--text = trace.Entity:GetClass()
 	end
 
 	surface.SetFont( font )
