@@ -36,12 +36,13 @@ function GM:PlayerSetModel( ply )
 end
 
 function GM:CreateTeams( )
-	team:SetUp( TEAM_PROPS , "Props" , Color( 255, 0, 0 ), true )
-	team:SetUp( TEAM_HUNTERS , "Hunters" , Color( 0, 255, 0 ), true  )
-	team:SetClass( TEAM_PROPS, {"player_prop"})
-	team:SetClass( TEAM_HUNTERS, {"player_hunter"})
-	team:SetSpawnPoint( TEAM_PROPS, {"info_player_terrorist", "info_player_rebel", "info_player_deathmatch", "info_player_allies"} )
-	team:SetSpawnPoint( TEAM_HUNTERS, {"info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
+	team.SetUp( TEAM_PROPS , "Props" , Color( 255, 0, 0 ), true )
+	team.SetUp( TEAM_HUNTERS , "Hunters" , Color( 0, 255, 0 ), true  )
+	team.SetClass( TEAM_PROPS, {"player_prop"})
+	team.SetClass( TEAM_HUNTERS, {"player_hunter"})
+	team.SetSpawnPoint( TEAM_PROPS, {"info_player_terrorist", "info_player_rebel", "info_player_deathmatch", "info_player_allies"} )
+	team.SetSpawnPoint( TEAM_HUNTERS, {"info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
+	team.SetSpawnPoint( TEAM_SPECTATOR, {"info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
 
 end
 
@@ -155,4 +156,12 @@ function RemovePlayerProp( ply )
 			-- empty, just used for the hook
 		net.Send( ply )
 	end
+end
+
+function GM:PlayerSelectSpawn( ply )
+	local spawns = team.GetSpawnPoints( ply:Team() )
+	if( !spawns ) then return false end
+
+    local ret, _ = table.Random( spawns )
+    return ret
 end
