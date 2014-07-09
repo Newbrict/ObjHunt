@@ -15,7 +15,7 @@ function ENT:Draw()
 	self:SetAngles(propAngle)
 
 	if (CLIENT) then
-		if( LocalPlayer().wantThirdPerson ) then
+		if( LocalPlayer().wantThirdPerson || self:GetOwner() != LocalPlayer() ) then
 			self:DrawModel()
 		end
 	end
