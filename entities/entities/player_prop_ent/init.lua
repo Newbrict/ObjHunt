@@ -16,7 +16,7 @@ function ENT:OnTakeDamage(dmg)
 		self.health = self.health - dmg:GetDamage()
 		if self.health <= 0 then
 			ply:KillSilent()
-			RemoveProp( ply )
+			RemovePlayerProp( ply )
 		end
 		ply:SetHealth(self.health)
 	end

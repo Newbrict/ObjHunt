@@ -57,6 +57,7 @@ end
 hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Map Time" )
 	util.AddNetworkString( "Prop Update" )
+	util.AddNetworkString( "Reset Prop" )
 end )
 
 --[[ Map Time ]]--
@@ -128,8 +129,8 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 	ply.chosenProp = ents.Create("player_prop_ent")
 	ply.chosenProp:Spawn()
 	ply.chosenProp:SetOwner( ply )
-
-	SetPlayerProp( ply, ply.chosenProp )
+	ply.chosenProp:SetSolid( SOLID_BBOX )
+	ply.chosenProp:SetAngles( ply:GetAngles() )
 
 	-- default prop should be able to step wherever
 	ply:SetStepSize( 20 )
@@ -137,17 +138,21 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 end )
 
 hook.Add( "PlayerDisconnected", "Remove ent prop on dc", function( ply )
-	RemoveProp( ply )
+	RemovePlayerProp( ply )
 end )
 
 hook.Add( "PlayerDeath", "Remove ent prop on death", function( ply )
-	RemoveProp( ply )
+	RemovePlayerProp( ply )
 end )
 
 --[[ remove the ent prop ]]--
-function RemoveProp( ply )
+function RemovePlayerProp( ply )
 	if( ply.chosenProp ) then
 		ply.chosenProp:Remove()
 		ply.chosenProp = nil
+		ply:ResetHull()
+		net.Start( "Reset Prop" )
+			-- empty, just used for the hook
+		net.Send( ply )
 	end
 end

@@ -9,3 +9,8 @@ net.Receive( "Prop update", function( length, client )
 	LocalPlayer():SetHull( tHitboxMin, tHitboxMax )
 	LocalPlayer():SetHullDuck( tHitboxMin, tHitboxMax )
 end )
+
+net.Receive( "Reset Prop", function( length, client ) 
+	LocalPlayer().chosenProp = nil
+	LocalPlayer():ResetHull()
+end )

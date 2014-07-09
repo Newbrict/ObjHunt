@@ -1,6 +1,6 @@
 concommand.Add( "chooseTeam", function( ply, _, class )
 	player_manager.SetPlayerClass( ply, class[1] )
-	RemoveProp( ply )
+	RemovePlayerProp( ply )
 	ply:KillSilent()
 	if( class[1] == "player_hunter" ) then
 		ply:SetTeam( TEAM_HUNTERS )
