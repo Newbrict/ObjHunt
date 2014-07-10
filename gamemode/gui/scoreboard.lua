@@ -11,8 +11,6 @@ surface.CreateFont( "ScoreboardObjHuntTitle",
 	size		= 32,
 	weight		= 800
 })
-
-
 --
 -- This defines a new panel type for the player row. The player row is given a player
 -- and then from that point on it pretty much looks after itself. It updates player info
@@ -27,7 +25,7 @@ local PLAYER_LINE =
 		self.AvatarButton:SetSize( 32, 32 )
 		self.AvatarButton.DoClick = function() self.Player:ShowProfile() end
 
-		self.Avatar		= vgui.Create( "AvatarImage", self.AvatarButton )
+		self.Avatar = vgui.Create( "AvatarImage", self.AvatarButton )
 		self.Avatar:SetSize( 32, 32 )
 		self.Avatar:SetMouseInputEnabled( false )		
 
@@ -61,27 +59,24 @@ local PLAYER_LINE =
 		self:Dock( TOP )
 		self:DockPadding( 3, 3, 3, 3 )
 		self:SetHeight( 32 + 3*2 )
-		self:DockMargin( 2, 0, 2, 2 )
-
+		self:DockMargin( 2, 0, 2, 2)
+		
 	end,
-
+	
 	Setup = function( self, pl )
-
+		
 		self.Player = pl
 
 		self.Avatar:SetPlayer( pl )
 		self.Name:SetText( pl:Nick() )
 
-		self:Think( self )
-
-		--local friend = self.Player:GetFriendStatus()
-		--MsgN( pl, " Friend: ", friend )
+		self:Think(self )
 
 	end,
 
 	Think = function( self )
 
-		if ( !IsValid( self.Player ) ) then
+		if ( !IsValid( self.Player ) )then
 			self:Remove()
 			return
 		end
@@ -116,24 +111,26 @@ local PLAYER_LINE =
 			self.Mute.DoClick = function() self.Player:SetMuted( !self.Muted ) end
 
 		end
-
+		
 		--
 		-- Connecting players go at the very bottom
 		--
+		/*
 		if ( self.Player:Team() == TEAM_CONNECTING ) then
 			self:SetZPos( 2000 )
 		end
-
+		*/
 		--
 		-- This is what sorts the list. The panels are docked in the z order, 
 		-- so if we set the z order according to kills they'll be ordered that way!
 		-- Careful though, it's a signed short internally, so needs to range between -32,768k and +32,767
 		--
 		self:SetZPos( -(self.Player:Team()*100) +
-			(self.NumKills * -50) +
+		(
+			self.NumKills * -50) +
 			self.NumDeaths +
 			math.min(string.byte(self.Player:Nick(), -1)/2, 99)
-			)
+		)
 	end,
 
 	Paint = function( self, w, h )
@@ -164,20 +161,16 @@ local PLAYER_LINE =
 --
 -- Convert it from a normal table into a Panel Table based on DPanel
 --
-PLAYER_LINE = vgui.RegisterTable( PLAYER_LINE, "DPanel" );
+PLAYER_LINE = vgui.RegisterTable( PLAYER_LINE, "DPanel" )
 
---
--- Here we define a new panel table for the scoreboard. It basically consists 
--- of a header and a scrollpanel - into which the player lines are placed.
---
-local SCORE_BOARD = 
+local HUNTERS_BOARD = 
 {
 	Init = function( self )
 
 		self.Header = self:Add( "Panel" )
 		self.Header:Dock( TOP )
-		self.Header:SetHeight( 100 )
-
+		self.Header:SetHeight( 50 )
+		
 		self.Name = self.Header:Add( "DLabel" )
 		self.Name:SetFont( "ScoreboardObjHuntTitle" )
 		self.Name:SetTextColor( Color( 255, 255, 255, 255 ) )
@@ -185,7 +178,7 @@ local SCORE_BOARD =
 		self.Name:SetHeight( 40 )
 		self.Name:SetContentAlignment( 5 )
 		self.Name:SetExpensiveShadow( 2, Color( 0, 0, 0, 200 ) )
-
+		
 		--self.NumPlayers = self.Header:Add( "DLabel" )
 		--self.NumPlayers:SetFont( "ScoreboardObjHunt" )
 		--self.NumPlayers:SetTextColor( Color( 255, 255, 255, 255 ) )
@@ -194,73 +187,253 @@ local SCORE_BOARD =
 		--self.NumPlayers:SetContentAlignment( 4 )
 
 		self.Scores = self:Add( "DScrollPanel" )
-		self.Scores:Dock( FILL )
+		self.Scores:Dock( FILL)//fill
 
 	end,
 
 	PerformLayout = function( self )
-
-		self:SetSize( 700, ScrH() - 200 )
-		self:SetPos( ScrW() / 2 - 350, 100 )
-
+		
+		self:SetSize(ScrW()/4, ScrH() - 200 )
+		self:Dock(LEFT)
+		self:DockMargin(ScrW()/4-100,ScrH()/7,0,0)
+		
 	end,
 
-	Paint = function( self, w, h )
+	/*Paint = function( self, w, h )
 
-		--draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 0, 200 ) )
+		draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 0, 200 ) )
 
-	end,
+	end,*/
 
 	Think = function( self, w, h )
 
-		self.Name:SetText( GetHostName() )
+		self.Name:SetText("Hunters")
 
 		--
 		-- Loop through each player, and if one doesn't have a score entry - create it.
 		--
 		local plyrs = player.GetAll()
+		
 		for id, pl in pairs( plyrs ) do
-
+		
+		if(pl:Team()==TEAM_HUNTERS) then
+			
 			if ( IsValid( pl.ScoreEntry ) ) then continue end
-
+			
 			pl.ScoreEntry = vgui.CreateFromTable( PLAYER_LINE, pl.ScoreEntry )
 			pl.ScoreEntry:Setup( pl )
-
+			
 			self.Scores:AddItem( pl.ScoreEntry )
-
-		end		
-
+		
+		else if(IsValid(pl.ScoreEntry)) then
+			
+			if(pl.ScoreEntry:HasParent(self.Scores)) then
+			
+			pl.ScoreEntry:Remove()
+		
+			end
+		end
+		end
+		end
 	end,
+
+
 }
 
-SCORE_BOARD = vgui.RegisterTable( SCORE_BOARD, "EditablePanel" );
+HUNTERS_BOARD = vgui.RegisterTable( HUNTERS_BOARD, "EditablePanel" )
 
+local PROPS_BOARD = 
+{
+	Init = function( self )
+
+		self.Header = self:Add( "Panel" )
+		self.Header:Dock( TOP )
+		self.Header:SetHeight( 50 )
+
+		self.Name = self.Header:Add( "DLabel" )
+		self.Name:SetFont( "ScoreboardObjHuntTitle" )
+		self.Name:SetTextColor( Color( 255, 255, 255, 255 ) )
+		self.Name:Dock( TOP )
+		self.Name:SetHeight( 40 )
+		self.Name:SetContentAlignment( 5 )
+		self.Name:SetExpensiveShadow( 2, Color( 0, 0, 0, 200 ) )
+		
+		--self.NumPlayers = self.Header:Add( "DLabel" )
+		--self.NumPlayers:SetFont( "ScoreboardObjHunt" )
+		--self.NumPlayers:SetTextColor( Color( 255, 255, 255, 255 ) )
+		--self.NumPlayers:SetPos( 0, 100 - 30 )
+		--self.NumPlayers:SetSize( 300, 30 )
+		--self.NumPlayers:SetContentAlignment( 4 )
+
+		self.Scores = self:Add( "DScrollPanel" )
+		self.Scores:Dock(FILL)//fill
+
+	end,
+
+	PerformLayout = function( self )
+
+		self:SetSize(ScrW()/4, ScrH() - 200 )
+		self:Dock(RIGHT)
+		self:DockMargin(0,ScrH()/7,ScrW()/4-100,0)
+		
+	end,
+
+	/*Paint = function( self, w, h )
+
+		draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 0, 200 ) )
+
+	end,*/
+
+	Think = function( self, w, h )
+
+		self.Name:SetText("Props")
+		
+		--
+		-- Loop through each player, and if one doesn't have a score entry - create it.
+		--
+		local plyrs = player.GetAll()
+		
+		for id, pl in pairs( plyrs ) do
+		
+		if(pl:Team()==TEAM_PROPS) then
+			
+			if ( IsValid( pl.ScoreEntry ) ) then continue end
+			
+			pl.ScoreEntry = vgui.CreateFromTable( PLAYER_LINE, pl.ScoreEntry )
+			pl.ScoreEntry:Setup( pl )
+			
+			self.Scores:AddItem( pl.ScoreEntry )
+		
+		else if(IsValid(pl.ScoreEntry)) then
+		
+			if(pl.ScoreEntry:HasParent(self.Scores)) then
+		
+			pl.ScoreEntry:Remove()
+		
+			end
+		end
+		end
+		end
+	end,
+
+}
+
+PROPS_BOARD = vgui.RegisterTable( PROPS_BOARD, "EditablePanel" )
+
+local SPECS_BOARD =
+{
+	Init = function( self )
+	
+		self.Header=self:Add("Panel")
+		self.Header:Dock(BOTTOM)
+		self.Header:SetHeight(100)
+		self.Header:SetWidth(200)
+		
+		self.Name=self.Header:Add("DLabel")
+		self.Name:SetFont("ScoreboardObjHuntTitle")
+		self.Name:SetTextColor( Color( 255, 255, 255, 255 ) )
+		self.Name:Dock( TOP )
+		self.Name:SetHeight( 40 )
+		self.Name:SetContentAlignment( 5 )
+		self.Name:SetExpensiveShadow( 2, Color( 0, 0, 0, 200 ) )
+		
+		
+		self.Spec_Players=self.Header:Add("DLabel")
+		self.Spec_Players:SetFont("ScoreboardObjHuntTitle")
+		self.Spec_Players:SetTextColor( Color( 255, 255, 255, 255 ) )
+		self.Spec_Players:Dock( BOTTOM)
+		self.Spec_Players:SetHeight( 40 )
+		self.Spec_Players:SetContentAlignment( 5 )
+		self.Spec_Players:SetExpensiveShadow( 2, Color( 0, 0, 0, 200 ) )
+		self.Spec_Players:DockMargin(-ScrW()/5,0,0,0)
+	
+	end,
+	
+	PerformLayout = function( self )
+
+		self:SetSize(ScrW()/3, ScrH()/2)
+		self:Dock(BOTTOM)
+		self:DockMargin(-ScrW()/8+15,0,0,ScrH()/3)
+		
+	end,
+	
+	Think = function(self , w, h)
+	
+	self.Name:SetText("Spectators:")
+	Spectators=""
+	
+	
+	
+	local plyrs=player.GetAll()
+	
+	for id, pl in pairs ( plyrs ) do
+		
+		if(pl:Team()==0||pl:Team()==1002) then
+			
+			if(Spectators:find(pl:Nick())==nil) then
+		
+			Spectators=Spectators..pl:Nick()..","
+			
+			else
+			
+			continue
+			
+			end
+		
+		else if(Spectators:find(pl:Nick())!=nil)  then
+		
+		Spectators:gsub(pl:Nick(),"")
+		
+		end
+	
+	end
+	
+	
+	end
+	self.Spec_Players:SetText(Spectators)
+	end,
+}
+SPECS_BOARD = vgui.RegisterTable( SPECS_BOARD, "EditablePanel" )	
+	
 --[[---------------------------------------------------------
    Name: gamemode:ScoreboardShow( )
    Desc: Sets the scoreboard to visible
 -----------------------------------------------------------]]
 function GM:ScoreboardShow()
 
-	if ( !IsValid( g_Scoreboard ) ) then
-		g_Scoreboard = vgui.CreateFromTable( SCORE_BOARD )
+	if ( !IsValid( h_Scoreboard )&& !IsValid(p_Scoreboard)&&!IsValid(s_Scoreboard)) then
+		h_Scoreboard = vgui.CreateFromTable( HUNTERS_BOARD )
+		p_Scoreboard = vgui.CreateFromTable( PROPS_BOARD )
+		s_Scoreboard = vgui.CreateFromTable( SPECS_BOARD )
 	end
 
-	if ( IsValid( g_Scoreboard ) ) then
-		g_Scoreboard:Show()
-		g_Scoreboard:MakePopup()
-		g_Scoreboard:SetKeyboardInputEnabled( false )
+	if ( IsValid( h_Scoreboard ) && IsValid(p_Scoreboard)) then
+		h_Scoreboard:Show()
+		h_Scoreboard:MakePopup()
+		h_Scoreboard:SetKeyboardInputEnabled( false )
+		
+		p_Scoreboard:Show()
+		p_Scoreboard:MakePopup()
+		p_Scoreboard:SetKeyboardInputEnabled( false )
+		
+		s_Scoreboard:Show()
+		s_Scoreboard:MakePopup()
+		s_Scoreboard:SetKeyboardInputEnabled( false )
+		s_Scoreboard:DrawOutlinedRect()
 	end
 
 end
 
 --[[---------------------------------------------------------
-   Name: gamemode:ScoreboardHide( )
+   Name: GameMode:ScoreboardHide( )
    Desc: Hides the scoreboard
 -----------------------------------------------------------]]
 function GM:ScoreboardHide()
 
-	if ( IsValid( g_Scoreboard ) ) then
-		g_Scoreboard:Hide()
+	if ( IsValid( h_Scoreboard ) && IsValid(p_Scoreboard)) then
+		h_Scoreboard:Hide()
+		p_Scoreboard:Hide()
+		s_Scoreboard:Hide()
 	end
 
 end
