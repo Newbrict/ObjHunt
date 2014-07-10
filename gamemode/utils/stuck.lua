@@ -22,6 +22,7 @@ function WouldBeStuck( ply, prop )
 	tracedata.endpos = pos
 	tracedata.filter = {ply, ply.chosenProp}
 	local hbMin, hbMax = prop:GetHitBoxBounds( 0, 0 )
+	if( !hbMin || !hbMax ) then return true end
 	local hbMin = Vector( math.Round(hbMin.x),math.Round(hbMin.y),math.Round(hbMin.z) )
 	local hbMax = Vector( math.Round(hbMax.x),math.Round(hbMax.y),math.Round(hbMax.z) )
 	tracedata.mins = hbMin

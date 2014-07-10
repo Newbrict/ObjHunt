@@ -59,6 +59,7 @@ hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Map Time" )
 	util.AddNetworkString( "Prop Update" )
 	util.AddNetworkString( "Reset Prop" )
+	util.AddNetworkString( "Prop Initialize" )
 end )
 
 --[[ Map Time ]]--
@@ -99,6 +100,7 @@ function SetPlayerProp( ply, ent )
 
 	ply.lastPropChange = os.time()
 
+	print( "CLASS ON SERVER->"..ply.chosenProp:GetClass() )
 	net.Start( "Prop Update" )
 		net.WriteVector( tHitboxMax )
 		net.WriteVector( tHitboxMin )
@@ -130,8 +132,7 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 	ply.chosenProp = ents.Create("player_prop_ent")
 	ply.chosenProp:Spawn()
 	ply.chosenProp:SetOwner( ply )
-	ply.chosenProp:SetSolid( SOLID_BBOX )
-	ply.chosenProp:SetAngles( ply:GetAngles() )
+	SetPlayerProp( ply, ply.chosenProp )
 
 	-- default prop should be able to step wherever
 	ply:SetStepSize( 20 )
