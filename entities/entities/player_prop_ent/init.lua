@@ -4,7 +4,6 @@ include("shared.lua")
 
 function ENT:Initialize()
 	self:SetModel("models/player.mdl")
-	self:SetModelScale( 0.5, 0 )
 	self.health = 100
 end 
 

@@ -59,7 +59,6 @@ hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Map Time" )
 	util.AddNetworkString( "Prop Update" )
 	util.AddNetworkString( "Reset Prop" )
-	util.AddNetworkString( "Prop Initialize" )
 end )
 
 --[[ Map Time ]]--
@@ -73,16 +72,24 @@ end )
 
 
 --[[ sets the players prop, run PlayerCanBeEnt before using this ]]--
-function SetPlayerProp( ply, ent )
+function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 
-	local tHitboxMin, tHitboxMax = ent:GetHitBoxBounds( 0, 0 )
-
-	if( !tHitboxMin || !tHitboxMax ) then return false, "Invalid Hull" end
+	local tHitboxMin, tHitboxMax
+	if( !hbMin || !hbMax ) then
+		tHitboxMin, tHitboxMax = ent:GetHitBoxBounds( 0, 0 )
+		if( !tHitboxMin || !tHitboxMax ) then return false, "Invalid Hull" end
+	else
+		tHitboxMin = hbMin
+		tHitboxMax = hbMax
+	end
 
 	ply.chosenProp:SetModel( ent:GetModel() )
 	ply.chosenProp:SetSkin( ent:GetSkin() )
 	ply.chosenProp:SetSolid( SOLID_BBOX )
 	ply.chosenProp:SetAngles( ply:GetAngles() )
+
+	-- scaling
+	ply.chosenProp:SetModelScale( scale, 0)
 
 	-- we round to reduce getting stuck
 	tHitboxMin = Vector( math.Round(tHitboxMin.x),math.Round(tHitboxMin.y),math.Round(tHitboxMin.z) )
@@ -100,11 +107,10 @@ function SetPlayerProp( ply, ent )
 
 	ply.lastPropChange = os.time()
 
-	print( "CLASS ON SERVER->"..ply.chosenProp:GetClass() )
 	net.Start( "Prop Update" )
 		net.WriteVector( tHitboxMax )
 		net.WriteVector( tHitboxMin )
-		net.WriteEntity( ply.chosenProp )
+		net.WriteUInt( ply.chosenProp:EntIndex(), 8 )
 		net.WriteUInt( ply.lastPropChange, 32 )
 	net.Send( ply )
 
@@ -112,10 +118,11 @@ end
 
 --[[ When a player presses +use on a prop ]]--
 hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
+	local tHitboxMin, tHitboxMax = ply.chosenProp:GetHitBoxBounds( 0, 0 )
 	if( !playerCanBeEnt( ply, ent) ) then return end
 
 	local oldHP = ply.chosenProp.health
-	SetPlayerProp( ply, ent )
+	SetPlayerProp( ply, ent, 1 )
 	ply.chosenProp.health = oldHP
 
 end )
@@ -132,7 +139,10 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 	ply.chosenProp = ents.Create("player_prop_ent")
 	ply.chosenProp:Spawn()
 	ply.chosenProp:SetOwner( ply )
-	SetPlayerProp( ply, ply.chosenProp )
+	-- custom initial hb
+	local chbMin = Vector( -10,-10,0 )
+	local chbMax = Vector( 10,10,35 )
+	SetPlayerProp( ply, ply.chosenProp, 0.5, chbMin, chbMax )
 
 	-- default prop should be able to step wherever
 	ply:SetStepSize( 20 )
