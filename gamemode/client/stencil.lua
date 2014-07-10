@@ -34,8 +34,17 @@ local function stencilColor( ply, ent )
 	return gCol
 end
 
+local function getViewEnt(ply)
+	local Trace = {}
+	Trace.start = ply.viewOrigin
+	Trace.endpos = Trace.start + ply:GetAngles():Forward() * 1000
+	Trace.filter = {ply.chosenProp}
+	tr = util.TraceLine(Trace)
+	return tr.Entity
+end
+
 hook.Add( "PreDrawHalos", "Selectable Prop Halos", function()
-	local prop = LocalPlayer():GetEyeTrace().Entity
+	local prop = getViewEnt( LocalPlayer() )
 	sColor = stencilColor( LocalPlayer(), prop ) 
 	if( !sColor ) then return end
 	halo.Add( {prop}, sColor, 3, 3, 1 )
