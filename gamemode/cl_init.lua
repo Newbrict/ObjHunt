@@ -14,13 +14,15 @@ net.Receive( "Prop update", function( length )
 	LocalPlayer().propHeight = propHeight
 
 	-- INITIALIZATION STUFF GOES HERE, this only gets run once the player becomes a prop!
-	hook.Add( "OnEntityCreated", "Inital Prop Creation", function( ent )
-        if ( LocalPlayer().chosenPropIndex and LocalPlayer().chosenPropIndex == ent:EntIndex() ) then
-            LocalPlayer().chosenProp = ent
-            LocalPlayer().lastPropChange = 0
-            hook.Remove( "OnEntityCreated", "Get Player Prop" ) -- no longer needed, so remove it
-        end
-    end )
+	if( !LocalPlayer().chosenProp ) then
+		hook.Add( "OnEntityCreated", "Inital Prop Creation", function( ent )
+    	    if ( LocalPlayer().chosenPropIndex and LocalPlayer().chosenPropIndex == ent:EntIndex() ) then
+    	        LocalPlayer().chosenProp = ent
+    	        LocalPlayer().lastPropChange = 0
+    	        hook.Remove( "OnEntityCreated", "Get Player Prop" ) -- no longer needed, so remove it
+    	    end
+    	end )
+	end
 
 end )
 

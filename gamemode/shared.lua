@@ -58,7 +58,7 @@ function playerCanBeEnt( ply, ent )
 	if(	!ent:GetClass() || !ent:GetModel() ) then return false end
 
 	-- cooldown on switching props
-	if( !ply.chosenProp:GetModel() == "models/player.mdl" ) then
+	if( ply.chosenProp:GetModel() != "models/player.mdl" ) then
 		if( ply.lastPropChange && os.time() - ply.lastPropChange < PROP_CHOOSE_COOLDOWN ) then
 			return false
 		end

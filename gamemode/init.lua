@@ -83,13 +83,13 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 		tHitboxMax = hbMax
 	end
 
+	-- scaling
+	ply.chosenProp:SetModelScale( scale, 0)
+
 	ply.chosenProp:SetModel( ent:GetModel() )
 	ply.chosenProp:SetSkin( ent:GetSkin() )
 	ply.chosenProp:SetSolid( SOLID_BBOX )
 	ply.chosenProp:SetAngles( ply:GetAngles() )
-
-	-- scaling
-	ply.chosenProp:SetModelScale( scale, 0)
 
 	-- we round to reduce getting stuck
 	tHitboxMin = Vector( math.Round(tHitboxMin.x),math.Round(tHitboxMin.y),math.Round(tHitboxMin.z) )

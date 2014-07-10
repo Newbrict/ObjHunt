@@ -1,5 +1,4 @@
 function ThirdPersonCalcView(ply, pos, angles, fov)
-	if( !ply.propHeight ) then ply.propHeight = 70 end
 	if( ply.wantThirdPerson ) then
 		local View = {}
 		local Trace = {}
