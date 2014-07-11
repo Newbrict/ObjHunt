@@ -1,37 +1,30 @@
-function ThirdPersonCalcView(ply, pos, angles, fov)
+hook.Add("CalcView", "ObjHunt CalcView", function( ply, pos, angles, fov )
+	local view = {}
+	view.angles = angles
+	view.fov = fov
+	view.drawviewer = ply.wantThirdPerson
+
 	if( ply.wantThirdPerson ) then
-		local View = {}
-		local Trace = {}
-		local AddToPlayer = Vector(0, 0, ply.propHeight)
-		View.angles = angles
-		View.fov = fov
+		local trace = {}
+		local addToPlayer = Vector(0, 0, ply.propHeight)
+		local viewDist = 100
 		
-		Distance = 100
+		trace.start = ply:GetPos() + addToPlayer
+		trace.endpos = trace.start + view.angles:Forward() * -viewDist
+		trace.mask = MASK_SOLID_BRUSHONLY
+		tr = util.TraceLine(trace)
 		
-		Trace.start = ply:GetPos() + AddToPlayer
-		
-		Trace.endpos = Trace.start + View.angles:Forward() * -Distance
-		Trace.mask = MASK_SOLID_BRUSHONLY
-		tr = util.TraceLine(Trace)
-		
+		-- efficient check when not hitting walls
 		if(tr.Fraction < 1) then
-			Distance = Distance * tr.Fraction
+			viewDist = viewDist * tr.Fraction
 		end
 		
-		View.origin = Trace.start + View.angles:Forward() * -Distance
-		ply.viewOrigin = View.origin
-		return View
+		view.origin = trace.start + view.angles:Forward() * -viewDist
+		ply.viewOrigin = view.origin
+		return view
 	elseif( ply:Team() == TEAM_PROPS ) then
-		local View = {}
-		View.angles = angles
-		View.fov = fov
-		View.origin = ply:GetPos() + Vector(0,0,ply.propHeight)
-		ply.viewOrigin = View.origin
-		return View
+		view.origin = ply:GetPos() + Vector(0,0,ply.propHeight)
+		ply.viewOrigin = view.origin
+		return view
 	end
-end
-
-hook.Add("CalcView", "Thirdperson CalcView", ThirdPersonCalcView)
-hook.Add("ShouldDrawLocalPlayer", "Draw Local Player For Thirdperson", function(ply)
-	return ply.wantThirdPerson
 end )
