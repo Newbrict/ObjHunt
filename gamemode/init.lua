@@ -107,6 +107,22 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 
 	ply.lastPropChange = os.time()
 
+	-- Update the player's mass to be something more reasonable to the prop
+	local phys = ent:GetPhysicsObject()
+	if IsValid(ent) and phys:IsValid() then
+		ply:GetPhysicsObject():SetMass(phys:GetMass())
+	else
+		-- Entity doesn't have a physics object so calculate mass
+		local density = PROP_DEFAULT_DENSITY
+		local volume = (tHitboxMax.x-tHitboxMin.x)*(tHitboxMax.y-tHitboxMin.y)*(tHitboxMax.z-tHitboxMin.z)
+		local mass = volume * density
+
+		mass = math.min(100, mass)
+		mass = math.max(0, mass)
+
+		ply:GetPhysicsObject():SetMass(mass)
+	end
+
 	net.Start( "Prop Update" )
 		net.WriteVector( tHitboxMax )
 		net.WriteVector( tHitboxMin )
