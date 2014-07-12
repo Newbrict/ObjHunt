@@ -19,6 +19,7 @@ net.Receive( "Prop update", function( length )
     	    if ( LocalPlayer().chosenPropIndex and LocalPlayer().chosenPropIndex == ent:EntIndex() ) then
     	        LocalPlayer().chosenProp = ent
     	        LocalPlayer().lastPropChange = 0
+    	        LocalPlayer().wantAngleLock = false
     	        hook.Remove( "OnEntityCreated", "Get Player Prop" ) -- no longer needed, so remove it
     	    end
     	end )
@@ -26,10 +27,19 @@ net.Receive( "Prop update", function( length )
 
 end )
 
-net.Receive( "Reset Prop", function( length, client ) 
+net.Receive( "Reset Prop", function( length ) 
 	LocalPlayer().chosenProp = nil
 	LocalPlayer():ResetHull()
 	LocalPlayer().propHeight = 70
 end )
 
-
+net.Receive( "Prop Angle Lock BROADCAST", function( length ) 
+	local prop = net.ReadEntity()
+	local lockStatus = net.ReadBit()
+	
+	if( lockStatus == 1 ) then
+		prop.angleLock = true
+	else
+		prop.angleLock = false
+	end
+end )

@@ -61,6 +61,8 @@ hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Reset Prop" )
 	util.AddNetworkString( "round Time" )
 	util.AddNetworkString( "Selected Prop" )
+	util.AddNetworkString( "Prop Angle Lock" )
+	util.AddNetworkString( "Prop Angle Lock BROADCAST" )
 end )
 
 --[[ Map Time ]]--
@@ -155,11 +157,7 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 
 end
 
-
-
-
 --[[ When a player presses +use on a prop ]]--
---hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
 net.Receive( "Selected Prop", function( len, ply )
 	local ent = net.ReadEntity()
 	
@@ -188,6 +186,22 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 	-- default prop should be able to step wherever
 	ply:SetStepSize( 20 )
 
+end )
+
+--[[ When a player wants to lock world angles on their prop ]]--
+net.Receive( "Prop Angle Lock", function( len, ply )
+	local lockStatus = net.ReadBit()
+	-- this is literally retarded
+	if( lockStatus == 1 ) then
+		lockStatus = true 
+	else
+		lockStatus = false
+	end
+
+	net.Start( "Prop Angle Lock BROADCAST" )
+		net.WriteEntity( ply.chosenProp )
+		net.WriteBit( lockStatus ) 
+	net.Broadcast()
 end )
 
 hook.Add( "PlayerDisconnected", "Remove ent prop on dc", function( ply )

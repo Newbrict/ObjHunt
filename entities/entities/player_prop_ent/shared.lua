@@ -12,9 +12,18 @@ function ENT:Draw()
 	local propAngle = owner:EyeAngles()
 	-- snap to 45 degree increments on yaw, and dissallow pitch movement
 	propAngle:SnapTo("p",180):SnapTo("y",45)
-	self:SetAngles(propAngle)
 
-	if (CLIENT) then
+
+	if( CLIENT ) then
+		if( !self.angleLock ) then 
+			self:SetAngles(propAngle)
+			self.lockedAngle = propAngle
+		else
+			self:SetAngles(self.lockedAngle)
+		end
+	end
+
+	if( CLIENT ) then
 		if( LocalPlayer().wantThirdPerson || self:GetOwner() != LocalPlayer() ) then
 			self:DrawModel()
 		end
