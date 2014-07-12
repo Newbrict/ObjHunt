@@ -59,6 +59,7 @@ hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Map Time" )
 	util.AddNetworkString( "Prop Update" )
 	util.AddNetworkString( "Reset Prop" )
+	util.AddNetworkString( "round Time" )
 end )
 
 --[[ Map Time ]]--
@@ -71,13 +72,26 @@ end )
 hook.Add( "PlayerInitialSpawn", "Send Map Time To New Player", function( ply )
 	net.Start( "Map Time" )
 	local toSend = ( mapStartTime || os.time() )
-	net.WriteUInt( toSend, 32 )
-	net.WriteUInt( roundWaitTime, 32)
-	net.WriteUInt( roundsPlayed, 32)
-	net.WriteUInt( roundGoing, 32)
 	net.Send( ply )
 end )
 
+
+--[[ round time ]]--
+hook.Add( "Initialize", "Set round Time", function() 
+	mapStartTimeForRound = os.time() 
+	roundWaitTime = 60
+	roundsPlayed = 0
+	--roundGoing = -1
+end )
+hook.Add( "PlayerInitialSpawn", "Send round Time To New Player", function( ply )
+	net.Start( "round Time" )
+	local toSend = ( mapStartTimeForRound || os.time() )
+	net.WriteUInt( toSend, 32 )
+	net.WriteUInt( roundWaitTime, 32)
+	net.WriteUInt( roundsPlayed, 32)
+	--net.WriteUInt( roundGoing, 32)
+	net.Send( ply )
+end )
 
 --[[ sets the players prop, run PlayerCanBeEnt before using this ]]--
 function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
