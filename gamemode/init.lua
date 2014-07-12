@@ -27,9 +27,9 @@ end
 function GM:PlayerSetModel( ply )
 	class = player_manager.GetPlayerClass( ply )
 	if( class == "player_hunter" ) then
-		ply:SetModel( "models/player/Combine_Super_Soldier.mdl" )
+		ply:SetModel( TEAM_HUNTERS_DEFAULT_MODEL )
 	elseif( class == "player_prop" ) then
-		ply:SetModel( "models/player.mdl" )
+		ply:SetModel( TEAM_PROPS_DEFAULT_MODEL )
 	else
 		return
 	end
@@ -115,6 +115,22 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 
 	ply.lastPropChange = os.time()
 
+	-- Update the player's mass to be something more reasonable to the prop
+	local phys = ent:GetPhysicsObject()
+	if IsValid(ent) and phys:IsValid() then
+		ply:GetPhysicsObject():SetMass(phys:GetMass())
+	else
+		-- Entity doesn't have a physics object so calculate mass
+		local density = PROP_DEFAULT_DENSITY
+		local volume = (tHitboxMax.x-tHitboxMin.x)*(tHitboxMax.y-tHitboxMin.y)*(tHitboxMax.z-tHitboxMin.z)
+		local mass = volume * density
+
+		mass = math.min(100, mass)
+		mass = math.max(0, mass)
+
+		ply:GetPhysicsObject():SetMass(mass)
+	end
+
 	net.Start( "Prop Update" )
 		net.WriteVector( tHitboxMax )
 		net.WriteVector( tHitboxMin )
@@ -129,6 +145,7 @@ hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
 	local tHitboxMin, tHitboxMax = ply.chosenProp:GetHitBoxBounds( 0, 0 )
 	if( !playerCanBeEnt( ply, ent) ) then return end
 
+	print( ply:EyeAngles() )
 	local oldHP = ply.chosenProp.health
 	SetPlayerProp( ply, ent, 1 )
 	ply.chosenProp.health = oldHP

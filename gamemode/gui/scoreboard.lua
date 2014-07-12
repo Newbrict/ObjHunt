@@ -149,12 +149,12 @@ local PLAYER_LINE =
 		--
 		-- We draw our background a different colour based on the status of the player
 		--
-		if ( self.Player:Team() == 1) then
-			draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 255, 127 ) )
+		if ( self.Player:Team() == TEAM_PROPS) then
+			draw.RoundedBox( 4, 0, 0, w, h, TEAM_PROPS_COLOR )
 			return
 		end
-		if ( self.Player:Team() == 2) then
-			draw.RoundedBox( 4, 0, 0, w, h, Color( 255, 0, 0, 127 ) )
+		if ( self.Player:Team() == TEAM_HUNTERS) then
+			draw.RoundedBox( 4, 0, 0, w, h, TEAM_HUNTERS_COLOR )
 			return
 		end
 
