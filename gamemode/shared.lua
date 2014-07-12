@@ -5,17 +5,6 @@ GM.Website = "N/A"
 
 DeriveGamemode("PolyBase")
 
-TEAM_PROPS = 1
-TEAM_HUNTERS = 2
-PROP_CHOOSE_COOLDOWN = 5
-
-USABLE_PROP_ENTITIES = {
-	"prop_physics",
-	"prop_physics_multiplayer"
-}
-
-PROP_SELECT_DISTANCE = 150
-
 --[[ Add all the files on server/client ]]--
 local resources = {}
 resources["server"] = { "server" }

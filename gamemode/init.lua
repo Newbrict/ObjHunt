@@ -27,9 +27,9 @@ end
 function GM:PlayerSetModel( ply )
 	class = player_manager.GetPlayerClass( ply )
 	if( class == "player_hunter" ) then
-		ply:SetModel( "models/player/Combine_Super_Soldier.mdl" )
+		ply:SetModel( TEAM_HUNTERS_DEFAULT_MODEL )
 	elseif( class == "player_prop" ) then
-		ply:SetModel( "models/player.mdl" )
+		ply:SetModel( TEAM_PROPS_DEFAULT_MODEL )
 	else
 		return
 	end
@@ -121,6 +121,7 @@ hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
 	local tHitboxMin, tHitboxMax = ply.chosenProp:GetHitBoxBounds( 0, 0 )
 	if( !playerCanBeEnt( ply, ent) ) then return end
 
+	print( ply:EyeAngles() )
 	local oldHP = ply.chosenProp.health
 	SetPlayerProp( ply, ent, 1 )
 	ply.chosenProp.health = oldHP
