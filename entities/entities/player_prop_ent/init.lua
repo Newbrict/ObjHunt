@@ -5,6 +5,7 @@ include("shared.lua")
 function ENT:Initialize()
 	self:SetModel("models/player.mdl")
 	self.health = 100
+	self.angleSnap = false
 	self.angleLock = false
 	self.lockedAngle = Angle(0,0,0)
 end 

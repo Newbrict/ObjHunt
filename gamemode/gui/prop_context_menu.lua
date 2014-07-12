@@ -31,6 +31,17 @@ local worldAngleBtn = vgui.Create( "DButton", propContextPanel)
 
 	end 
 
+local snapAngleBtn = vgui.Create( "DButton", propContextPanel)
+	snapAngleBtn:SetText( "Toggle Angle Snapping" )
+	snapAngleBtn:SetPos( pContextPadding, pContextPadding*3 + pButtonHeight*2)
+	snapAngleBtn:SetSize( pContextWidth - 2*pContextPadding, pButtonHeight)
+	snapAngleBtn.DoClick = function()
+		net.Start( "Prop Angle Snap" )
+			net.WriteBit( !LocalPlayer().chosenProp.angleSnap )
+			net.WriteAngle( LocalPlayer().chosenProp:GetAngles() )
+		net.SendToServer()
+	end 
+
 hook.Add( "OnContextMenuOpen", "Display the prop context menu", function()
 	if( LocalPlayer():Team() != TEAM_PROPS ) then return end
 

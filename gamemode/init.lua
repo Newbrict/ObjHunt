@@ -63,6 +63,8 @@ hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Selected Prop" )
 	util.AddNetworkString( "Prop Angle Lock" )
 	util.AddNetworkString( "Prop Angle Lock BROADCAST" )
+	util.AddNetworkString( "Prop Angle Snap" )
+	util.AddNetworkString( "Prop Angle Snap BROADCAST" )
 end )
 
 --[[ Map Time ]]--
@@ -191,6 +193,7 @@ end )
 --[[ When a player wants to lock world angles on their prop ]]--
 net.Receive( "Prop Angle Lock", function( len, ply )
 	local lockStatus = net.ReadBit()
+	local propAngle = net.ReadAngle()
 	-- this is literally retarded
 	if( lockStatus == 1 ) then
 		lockStatus = true 
@@ -201,6 +204,23 @@ net.Receive( "Prop Angle Lock", function( len, ply )
 	net.Start( "Prop Angle Lock BROADCAST" )
 		net.WriteEntity( ply.chosenProp )
 		net.WriteBit( lockStatus ) 
+		net.WriteAngle( propAngle ) 
+	net.Broadcast()
+end )
+
+--[[ When a player wants toggle world angle snapping on their prop ]]--
+net.Receive( "Prop Angle Snap", function( len, ply )
+	local snapStatus = net.ReadBit()
+	-- this is literally retarded
+	if( snapStatus == 1 ) then
+		snapStatus = true 
+	else
+		snapStatus = false
+	end
+
+	net.Start( "Prop Angle Snap BROADCAST" )
+		net.WriteEntity( ply.chosenProp )
+		net.WriteBit( snapStatus ) 
 	net.Broadcast()
 end )
 
