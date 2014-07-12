@@ -31,3 +31,5 @@ net.Receive( "Reset Prop", function( length, client )
 	LocalPlayer():ResetHull()
 	LocalPlayer().propHeight = 70
 end )
+
+

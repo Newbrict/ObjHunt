@@ -60,6 +60,7 @@ hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Prop Update" )
 	util.AddNetworkString( "Reset Prop" )
 	util.AddNetworkString( "round Time" )
+	util.AddNetworkString( "Selected Prop" )
 end )
 
 --[[ Map Time ]]--
@@ -154,16 +155,19 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 
 end
 
+
+
+
 --[[ When a player presses +use on a prop ]]--
-hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
+--hook.Add( "PlayerUse", "Players pressed use on ent", function( ply, ent )
+net.Receive( "Selected Prop", function( len, ply )
+	local ent = net.ReadEntity()
+	
 	local tHitboxMin, tHitboxMax = ply.chosenProp:GetHitBoxBounds( 0, 0 )
 	if( !playerCanBeEnt( ply, ent) ) then return end
-
-	print( ply:EyeAngles() )
 	local oldHP = ply.chosenProp.health
-	SetPlayerProp( ply, ent, 1 )
+	SetPlayerProp( ply, ent, PROP_CHOSEN_SCALE )
 	ply.chosenProp.health = oldHP
-
 end )
 
 --[[ When a player on team_props spawns ]]--
@@ -179,9 +183,7 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 	ply.chosenProp:Spawn()
 	ply.chosenProp:SetOwner( ply )
 	-- custom initial hb
-	local chbMin = Vector( -10,-10,0 )
-	local chbMax = Vector( 10,10,35 )
-	SetPlayerProp( ply, ply.chosenProp, 0.5, chbMin, chbMax )
+	SetPlayerProp( ply, ply.chosenProp, PROP_DEFAULT_SCALE, PROP_DEFAULT_HB_MIN, PROP_DEFAULT_HB_MAX )
 
 	-- default prop should be able to step wherever
 	ply:SetStepSize( 20 )

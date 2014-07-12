@@ -73,7 +73,22 @@ end
 hook.Add( "PreDrawHalos", "Selectable Prop Halos", function()
 	if( LocalPlayer():Team() != TEAM_PROPS ) then return end
 	local prop = getViewEnt( LocalPlayer() )
-	sColor = stencilColor( LocalPlayer(), prop ) 
+	local sColor = stencilColor( LocalPlayer(), prop ) 
 	if( !sColor ) then return end
 	halo.Add( {prop}, sColor, 3, 3, 1 )
+end )
+
+--[[ when the player tries to select a prop ]]--
+hook.Add( "PlayerTick", "New Player Use", function( ply )
+	if( ply:Team() != TEAM_PROPS ) then return end
+	if( ply:KeyPressed( IN_USE ) ) then
+		if( !ply.lastPropChange || os.time() - ply.lastPropChange < PROP_CHOOSE_COOLDOWN ) then return end
+		local prop = getViewEnt( ply )
+		local sColor = stencilColor( LocalPlayer(), prop ) 
+		if( sColor == GOOD_HOVER_COLOR) then
+			net.Start( "Selected Prop" )
+				net.WriteEntity( prop )
+			net.SendToServer()
+		end
+	end
 end )
