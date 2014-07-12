@@ -11,6 +11,13 @@ surface.CreateFont( "ScoreboardObjHuntTitle",
 	size		= 32,
 	weight		= 800
 })
+surface.CreateFont( "SpectatorScoreboardObjHuntTitle",
+{
+	font		= "Helvetica",
+	size		= 20,
+	weight		= 800
+})
+
 --
 -- This defines a new panel type for the player row. The player row is given a player
 -- and then from that point on it pretty much looks after itself. It updates player info
@@ -29,7 +36,7 @@ local PLAYER_LINE =
 		self.Avatar:SetSize( 32, 32 )
 		self.Avatar:SetMouseInputEnabled( false )		
 
-		self.Name		= self:Add( "DLabel" )
+		self.Name = self:Add( "DLabel" )
 		self.Name:Dock( FILL )
 		self.Name:SetFont( "ScoreboardObjHunt" )
 		self.Name:DockMargin( 8, 0, 0, 0 )
@@ -143,11 +150,11 @@ local PLAYER_LINE =
 		-- We draw our background a different colour based on the status of the player
 		--
 		if ( self.Player:Team() == 1) then
-			draw.RoundedBox( 4, 0, 0, w, h, Color( 255, 0, 0, 127 ) )
+			draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 255, 127 ) )
 			return
 		end
 		if ( self.Player:Team() == 2) then
-			draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 255, 127 ) )
+			draw.RoundedBox( 4, 0, 0, w, h, Color( 255, 0, 0, 127 ) )
 			return
 		end
 
@@ -193,19 +200,20 @@ local HUNTERS_BOARD =
 
 	PerformLayout = function( self )
 		
-		self:SetSize(ScrW()/4, ScrH() - 200 )
+		//self:SetSize(ScrW()/4, ScrH() - 200 )
+		self:SetSize(ScrW()/4, ScrH()/2 )
 		self:Dock(LEFT)
-		self:DockMargin(ScrW()/4-100,ScrH()/7,0,0)
+		self:DockMargin(ScrW()/4,ScrH()/7,0,0)
 		
 	end,
 
 	/*Paint = function( self, w, h )
-
+		h=ScrH()/2
 		draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 0, 200 ) )
 
 	end,*/
 
-	Think = function( self, w, h )
+	Think = function( self )
 
 		self.Name:SetText("Hunters")
 
@@ -272,14 +280,14 @@ local PROPS_BOARD =
 
 	PerformLayout = function( self )
 
-		self:SetSize(ScrW()/4, ScrH() - 200 )
+		self:SetSize(ScrW()/4, ScrH()/2)
 		self:Dock(RIGHT)
-		self:DockMargin(0,ScrH()/7,ScrW()/4-100,0)
+		self:DockMargin(0,ScrH()/7,ScrW()/4,0)//-100
 		
 	end,
 
 	/*Paint = function( self, w, h )
-
+		h=ScrH()/2
 		draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 0, 200 ) )
 
 	end,*/
@@ -323,46 +331,50 @@ PROPS_BOARD = vgui.RegisterTable( PROPS_BOARD, "EditablePanel" )
 local SPECS_BOARD =
 {
 	Init = function( self )
-	
-		self.Header=self:Add("Panel")
-		self.Header:Dock(BOTTOM)
-		self.Header:SetHeight(100)
+		
+		self.Header = self:Add("Panel")
+		self.Header:SetHeight(40)
 		self.Header:SetWidth(200)
 		
-		self.Name=self.Header:Add("DLabel")
+		self.Name = self.Header:Add("DLabel")
 		self.Name:SetFont("ScoreboardObjHuntTitle")
 		self.Name:SetTextColor( Color( 255, 255, 255, 255 ) )
-		self.Name:Dock( TOP )
 		self.Name:SetHeight( 40 )
-		self.Name:SetContentAlignment( 5 )
+		self.Name:SetWidth(200)
+		self.Name:SetContentAlignment( 8 )
 		self.Name:SetExpensiveShadow( 2, Color( 0, 0, 0, 200 ) )
 		
-		
-		self.Spec_Players=self.Header:Add("DLabel")
-		self.Spec_Players:SetFont("ScoreboardObjHuntTitle")
+		self.Spec_Players = self:Add("DLabel")
+		self.Spec_Players:SetFont("SpectatorScoreboardObjHuntTitle")
 		self.Spec_Players:SetTextColor( Color( 255, 255, 255, 255 ) )
-		self.Spec_Players:Dock( BOTTOM)
-		self.Spec_Players:SetHeight( 40 )
+		self.Spec_Players:MoveBelow(self.Name)
+		self.Spec_Players:SetHeight( 20 )
+		self.Spec_Players:SetWidth( 800)
 		self.Spec_Players:SetContentAlignment( 5 )
 		self.Spec_Players:SetExpensiveShadow( 2, Color( 0, 0, 0, 200 ) )
-		self.Spec_Players:DockMargin(-ScrW()/5,0,0,0)
-	
+		//self.Spec_Players:DockMargin(-ScrW()/5,0,0,0)
+		
 	end,
 	
 	PerformLayout = function( self )
 
-		self:SetSize(ScrW()/3, ScrH()/2)
-		self:Dock(BOTTOM)
-		self:DockMargin(-ScrW()/8+15,0,0,ScrH()/3)
+		self:SetSize(ScrW()/3, ScrH()/3)
+		self:CenterHorizontal()
+		self:AlignBottom()
 		
 	end,
 	
-	Think = function(self , w, h)
+	/*Paint = function( self, w, h )
+		
+		draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 0, 200 ) )
+
+	end,*/
 	
-	self.Name:SetText("Spectators:")
+	Think = function( self )
+	
+	self.Name:SetText("Spectators")
+	
 	Spectators=""
-	
-	
 	
 	local plyrs=player.GetAll()
 	
@@ -393,6 +405,8 @@ local SPECS_BOARD =
 	self.Spec_Players:SetText(Spectators)
 	end,
 }
+
+
 SPECS_BOARD = vgui.RegisterTable( SPECS_BOARD, "EditablePanel" )	
 	
 --[[---------------------------------------------------------
@@ -402,9 +416,11 @@ SPECS_BOARD = vgui.RegisterTable( SPECS_BOARD, "EditablePanel" )
 function GM:ScoreboardShow()
 
 	if ( !IsValid( h_Scoreboard )&& !IsValid(p_Scoreboard)&&!IsValid(s_Scoreboard)) then
+		
 		h_Scoreboard = vgui.CreateFromTable( HUNTERS_BOARD )
 		p_Scoreboard = vgui.CreateFromTable( PROPS_BOARD )
 		s_Scoreboard = vgui.CreateFromTable( SPECS_BOARD )
+	
 	end
 
 	if ( IsValid( h_Scoreboard ) && IsValid(p_Scoreboard)) then
@@ -419,7 +435,7 @@ function GM:ScoreboardShow()
 		s_Scoreboard:Show()
 		s_Scoreboard:MakePopup()
 		s_Scoreboard:SetKeyboardInputEnabled( false )
-		s_Scoreboard:DrawOutlinedRect()
+		
 	end
 
 end
@@ -431,9 +447,11 @@ end
 function GM:ScoreboardHide()
 
 	if ( IsValid( h_Scoreboard ) && IsValid(p_Scoreboard)) then
+		
 		h_Scoreboard:Hide()
 		p_Scoreboard:Hide()
 		s_Scoreboard:Hide()
+	
 	end
 
 end
