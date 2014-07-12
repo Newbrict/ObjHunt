@@ -62,11 +62,19 @@ hook.Add( "Initialize", "Precache all network strings", function()
 end )
 
 --[[ Map Time ]]--
-hook.Add( "Initialize", "Set Map Time", function() mapStartTime = os.time() end )
+hook.Add( "Initialize", "Set Map Time", function() 
+	mapStartTime = os.time() 
+	roundWaitTime = 60
+	roundsPlayed = 0
+	--roundGoing = -1
+end )
 hook.Add( "PlayerInitialSpawn", "Send Map Time To New Player", function( ply )
 	net.Start( "Map Time" )
 	local toSend = ( mapStartTime || os.time() )
 	net.WriteUInt( toSend, 32 )
+	net.WriteUInt( roundWaitTime, 32)
+	net.WriteUInt( roundsPlayed, 32)
+	net.WriteUInt( roundGoing, 32)
 	net.Send( ply )
 end )
 
