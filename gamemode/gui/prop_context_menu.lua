@@ -1,29 +1,39 @@
-local pContextPadding = 10
-local pContextOpenTime = 0.2
-local pContextWidth = 200
-local pContextHeight = 300
-local pContextX = ScrW() - pContextWidth - pContextPadding
-local pContextYOpen = ScrH() - pContextHeight - pContextPadding
-local pContextYClose = ScrH() + pContextHeight
+local padding = 10
+local deltaTime = 0.2
+local width = 200
+local height = 300
+local posX = ScrW() - width - padding
+local posYOpen = ScrH() - height - padding
+local posYClose = ScrH() + height
+local enableColor = Color( 0, 255, 0, 50 )
+local disableColor = Color( 255, 0, 0, 100 )
+surface.CreateFont( "Toggle Buttons",
+{
+	font = "Helvetica",
+	size = 16,
+	weight = 30,
+	antialias = false,
+	outline = true,
+})
 
-local pButtonHeight = 20
+local pButtonHeight = 40
 
-local propContextPanel = vgui.Create( "DPanel" )
-	propContextPanel:SetPos( ScrW()-pContextWidth, ScrH() + pContextHeight )
-	propContextPanel:SetSize( pContextWidth, pContextHeight )
+local mainPanel = vgui.Create( "DPanel" )
+	mainPanel:SetPos( ScrW()-width, ScrH() + height )
+	mainPanel:SetSize( width, height )
 
-local thirdPersonBtn = vgui.Create( "DButton", propContextPanel)
-	thirdPersonBtn:SetText( "Toggle Thirdperson" )
-	thirdPersonBtn:SetPos( pContextPadding, pContextPadding )
-	thirdPersonBtn:SetSize( pContextWidth - 2*pContextPadding, pButtonHeight)
+local thirdPersonBtn = vgui.Create( "DButton", mainPanel)
+	thirdPersonBtn:SetText( "" )
+	thirdPersonBtn:SetPos( padding, padding )
+	thirdPersonBtn:SetSize( width - 2*padding, pButtonHeight)
 	thirdPersonBtn.DoClick = function()
 		LocalPlayer().wantThirdPerson = !LocalPlayer().wantThirdPerson
 	end 
 
-local worldAngleBtn = vgui.Create( "DButton", propContextPanel)
-	worldAngleBtn:SetText( "Toggle Angle Lock" )
-	worldAngleBtn:SetPos( pContextPadding, pContextPadding*2 + pButtonHeight)
-	worldAngleBtn:SetSize( pContextWidth - 2*pContextPadding, pButtonHeight)
+local worldAngleBtn = vgui.Create( "DButton", mainPanel)
+	worldAngleBtn:SetText( "" )
+	worldAngleBtn:SetPos( padding, padding*2 + pButtonHeight)
+	worldAngleBtn:SetSize( width - 2*padding, pButtonHeight)
 	worldAngleBtn.DoClick = function()
 		net.Start( "Prop Angle Lock" )
 			net.WriteBit( !LocalPlayer().chosenProp.angleLock )
@@ -31,10 +41,10 @@ local worldAngleBtn = vgui.Create( "DButton", propContextPanel)
 
 	end 
 
-local snapAngleBtn = vgui.Create( "DButton", propContextPanel)
-	snapAngleBtn:SetText( "Toggle Angle Snapping" )
-	snapAngleBtn:SetPos( pContextPadding, pContextPadding*3 + pButtonHeight*2)
-	snapAngleBtn:SetSize( pContextWidth - 2*pContextPadding, pButtonHeight)
+local snapAngleBtn = vgui.Create( "DButton", mainPanel)
+	snapAngleBtn:SetText( "" )
+	snapAngleBtn:SetPos( padding, padding*3 + pButtonHeight*2)
+	snapAngleBtn:SetSize( width - 2*padding, pButtonHeight)
 	snapAngleBtn.DoClick = function()
 		net.Start( "Prop Angle Snap" )
 			net.WriteBit( !LocalPlayer().chosenProp.angleSnap )
@@ -42,21 +52,100 @@ local snapAngleBtn = vgui.Create( "DButton", propContextPanel)
 		net.SendToServer()
 	end 
 
+-- Painting
+mainPanel.Paint = function(self,w,h)
+	surface.SetDrawColor( 255,255,255,10 )
+	surface.DrawRect( 0, 0, w, h)
+	surface.SetDrawColor( 200,200,200,255 )
+	surface.DrawOutlinedRect( 0, 0, w, h)
+end
+worldAngleBtn.Paint = function(self,w,h)
+	local btnColor
+	if( LocalPlayer().chosenProp.angleLock ) then
+		btnColor = table.Copy(enableColor)
+	else
+		btnColor = table.Copy(disableColor)
+	end
+
+	if( worldAngleBtn:IsHovered() ) then
+		btnColor.a = btnColor.a + 20	
+	end
+
+	surface.SetFont( "Toggle Buttons" )
+	surface.SetTextColor( Color( 255,255,255,255 ) )
+	local text = "Angle Lock"
+	local tw, th = surface.GetTextSize( text )
+	surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
+	surface.DrawText( text )
+	surface.SetDrawColor( btnColor )
+	surface.DrawRect( 0, 0, w, h)
+	surface.SetDrawColor( 200,200,200,255 )
+	surface.DrawOutlinedRect( 0, 0, w, h)
+end
+
+snapAngleBtn.Paint = function(self,w,h)
+	local btnColor
+	if( LocalPlayer().chosenProp.angleSnap ) then
+		btnColor = table.Copy(enableColor)
+	else
+		btnColor = table.Copy(disableColor)
+	end
+
+	if( snapAngleBtn:IsHovered() ) then
+		btnColor.a = btnColor.a + 20	
+	end
+
+	surface.SetFont( "Toggle Buttons" )
+	surface.SetTextColor( Color( 255,255,255,255 ) )
+	local text = "Angle Snaping"
+	local tw, th = surface.GetTextSize( text )
+	surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
+	surface.DrawText( text )
+	surface.SetDrawColor( btnColor )
+	surface.DrawRect( 0, 0, w, h)
+	surface.SetDrawColor( 200,200,200,255 )
+	surface.DrawOutlinedRect( 0, 0, w, h)
+end
+
+thirdPersonBtn.Paint = function(self,w,h)
+	local btnColor
+	if( LocalPlayer().wantThirdPerson ) then
+		btnColor = table.Copy(enableColor)
+	else
+		btnColor = table.Copy(disableColor)
+	end
+
+	if( thirdPersonBtn:IsHovered() ) then
+		btnColor.a = btnColor.a + 20	
+	end
+
+	surface.SetFont( "Toggle Buttons" )
+	surface.SetTextColor( Color( 255,255,255,255 ) )
+	local text = "Third Person"
+	local tw, th = surface.GetTextSize( text )
+	surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
+	surface.DrawText( text )
+	surface.SetDrawColor( btnColor )
+	surface.DrawRect( 0, 0, w, h)
+	surface.SetDrawColor( 200,200,200,255 )
+	surface.DrawOutlinedRect( 0, 0, w, h)
+end
+
 hook.Add( "OnContextMenuOpen", "Display the prop context menu", function()
 	if( LocalPlayer():Team() != TEAM_PROPS ) then return end
 
 	timer.Destroy( "hide prop context menu" )
-	propContextPanel:MoveTo(pContextX,pContextYOpen,pContextOpenTime,0,1)
-	propContextPanel:SetVisible( true )
-	propContextPanel:MakePopup()
-	propContextPanel:SetKeyboardInputEnabled( false )
+	mainPanel:MoveTo(posX,posYOpen,deltaTime,0,1)
+	mainPanel:SetVisible( true )
+	mainPanel:MakePopup()
+	mainPanel:SetKeyboardInputEnabled( false )
 end )
 
 hook.Add( "OnContextMenuClose", "Close the prop context menu", function()
 	if( LocalPlayer():Team() != TEAM_PROPS ) then return end
 
-	propContextPanel:MoveTo(pContextX,pContextYClose,pContextOpenTime,0,1)
-	timer.Create("hide prop context menu",pContextOpenTime, 1, function ()
-		propContextPanel:SetVisible( false )
+	mainPanel:MoveTo(posX,posYClose,deltaTime,0,1)
+	timer.Create("hide prop context menu",deltaTime, 1, function ()
+		mainPanel:SetVisible( false )
 	end )
 end )
