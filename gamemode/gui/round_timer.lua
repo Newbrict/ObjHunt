@@ -9,9 +9,6 @@ surface.CreateFont( "InfoFont",
 })
 
 
-
-
-
 --draw round timer in top left corner
 local function roundTimerHUD()
 
@@ -27,12 +24,12 @@ local function roundTimerHUD()
 	local width = surface.GetTextSize( textToDraw )
 	local height = 16 
 	local padding = 5
-	local startX = 20
+	local startX = 2*padding 
 	local startY = 2*padding 
 
 	surface.SetDrawColor( 127, 127, 127, 200 )
 	surface.DrawRect(
-		startX + padding,
+		startX - padding,
 		startY - padding,
 		width + 2*padding,
 		height + 2*padding

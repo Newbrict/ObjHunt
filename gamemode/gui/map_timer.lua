@@ -20,7 +20,7 @@ local function mapTimerHUD()
 	local height = 16 
 	local padding = 5
 	local startX = ScrW() - (width + 2*padding)
-	local startY = 1*padding 
+	local startY = 2*padding 
 
 	surface.SetDrawColor( 127, 127, 127, 200 )
 	surface.DrawRect(
