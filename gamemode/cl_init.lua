@@ -56,3 +56,11 @@ net.Receive( "Prop Angle Snap BROADCAST", function( length )
 		prop.angleSnap = false
 	end
 end )
+
+-- disable default hud elements here
+function GM:HUDShouldDraw( name )
+    if ( name == "CHudHealth" or name == "CHudBattery" ) then
+        return false
+    end
+    return true
+end

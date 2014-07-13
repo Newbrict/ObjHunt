@@ -65,9 +65,9 @@ local function class_selection()
 		surface.SetTextPos(0, 0)
 		surface.DrawText( textToDraw )
 	
-		surface.SetDrawColor( 255,255,255,10 )
+		surface.SetDrawColor( PANEL_FILL )
 		surface.DrawRect( 0, th,  4*padding + 3*btnWidth, 2*padding + btnHeight )
-		surface.SetDrawColor( 200,200,200,255 )
+		surface.SetDrawColor( PANEL_BORDER )
 		surface.DrawOutlinedRect( 0, th, 4*padding + 3*btnWidth, 2*padding + btnHeight)
 
 		local ebw = exitBtn:GetSize()/2

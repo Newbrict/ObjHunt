@@ -5,8 +5,6 @@ local height = 300
 local posX = ScrW() - width - padding
 local posYOpen = ScrH() - height - padding
 local posYClose = ScrH() + height
-local enableColor = Color( 0, 255, 0, 50 )
-local disableColor = Color( 255, 0, 0, 100 )
 surface.CreateFont( "Toggle Buttons",
 {
 	font = "Helvetica",
@@ -54,17 +52,17 @@ local snapAngleBtn = vgui.Create( "DButton", mainPanel)
 
 -- Painting
 mainPanel.Paint = function(self,w,h)
-	surface.SetDrawColor( 255,255,255,10 )
+	surface.SetDrawColor( PANEL_FILL )
 	surface.DrawRect( 0, 0, w, h)
-	surface.SetDrawColor( 200,200,200,255 )
+	surface.SetDrawColor( PANEL_BORDER )
 	surface.DrawOutlinedRect( 0, 0, w, h)
 end
 worldAngleBtn.Paint = function(self,w,h)
 	local btnColor
 	if( LocalPlayer().chosenProp.angleLock ) then
-		btnColor = table.Copy(enableColor)
+		btnColor = table.Copy(ON_COLOR)
 	else
-		btnColor = table.Copy(disableColor)
+		btnColor = table.Copy(OFF_COLOR)
 	end
 
 	if( worldAngleBtn:IsHovered() ) then
@@ -79,16 +77,16 @@ worldAngleBtn.Paint = function(self,w,h)
 	surface.DrawText( text )
 	surface.SetDrawColor( btnColor )
 	surface.DrawRect( 0, 0, w, h)
-	surface.SetDrawColor( 200,200,200,255 )
+	surface.SetDrawColor( PANEL_BORDER )
 	surface.DrawOutlinedRect( 0, 0, w, h)
 end
 
 snapAngleBtn.Paint = function(self,w,h)
 	local btnColor
 	if( LocalPlayer().chosenProp.angleSnap ) then
-		btnColor = table.Copy(enableColor)
+		btnColor = table.Copy(ON_COLOR)
 	else
-		btnColor = table.Copy(disableColor)
+		btnColor = table.Copy(OFF_COLOR)
 	end
 
 	if( snapAngleBtn:IsHovered() ) then
@@ -103,16 +101,16 @@ snapAngleBtn.Paint = function(self,w,h)
 	surface.DrawText( text )
 	surface.SetDrawColor( btnColor )
 	surface.DrawRect( 0, 0, w, h)
-	surface.SetDrawColor( 200,200,200,255 )
+	surface.SetDrawColor( PANEL_BORDER )
 	surface.DrawOutlinedRect( 0, 0, w, h)
 end
 
 thirdPersonBtn.Paint = function(self,w,h)
 	local btnColor
 	if( LocalPlayer().wantThirdPerson ) then
-		btnColor = table.Copy(enableColor)
+		btnColor = table.Copy(ON_COLOR)
 	else
-		btnColor = table.Copy(disableColor)
+		btnColor = table.Copy(OFF_COLOR)
 	end
 
 	if( thirdPersonBtn:IsHovered() ) then
@@ -127,7 +125,7 @@ thirdPersonBtn.Paint = function(self,w,h)
 	surface.DrawText( text )
 	surface.SetDrawColor( btnColor )
 	surface.DrawRect( 0, 0, w, h)
-	surface.SetDrawColor( 200,200,200,255 )
+	surface.SetDrawColor( PANEL_BORDER )
 	surface.DrawOutlinedRect( 0, 0, w, h)
 end
 
