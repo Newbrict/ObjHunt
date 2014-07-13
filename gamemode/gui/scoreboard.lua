@@ -1,28 +1,33 @@
+surface.CreateFont( "SpectatorScoreboardObjHunt",
+{
+	font = "Helvetica",
+	size = 20,
+	weight = 30,
+	antialias = false,
+	outline = true,
+})
 surface.CreateFont( "ScoreboardObjHunt",
 {
-	font		= "Helvetica",
-	size		= 22,
-	weight		= 800
+	font = "Helvetica",
+	size = 35,
+	weight = 30,
+	antialias = false,
+	outline = true,
 })
-
-surface.CreateFont( "ScoreboardObjHuntTitle",
+surface.CreateFont( "PlayerObjHunt",
 {
-	font		= "Helvetica",
-	size		= 32,
-	weight		= 800
+	font = "Helvetica",
+	size = 25,
+	weight = 20,
+	antialias = true,
+	outline = false,
 })
-surface.CreateFont( "SpectatorScoreboardObjHuntTitle",
-{
-	font		= "Helvetica",
-	size		= 20,
-	weight		= 800
-})
-
 --
--- This defines a new panel type for the player row. The player row is given a player
+-- This defines a ScoreboardObjHunt panel type for the player row. The player row is given a player
 -- and then from that point on it pretty much looks after itself. It updates player info
 -- in the think function, and removes itself when the player leaves the server.
 --
+local PADDING = 3
 local PLAYER_LINE = 
 {
 	Init = function( self )
@@ -38,7 +43,7 @@ local PLAYER_LINE =
 
 		self.Name = self:Add( "DLabel" )
 		self.Name:Dock( FILL )
-		self.Name:SetFont( "ScoreboardObjHunt" )
+		self.Name:SetFont( "PlayerObjHunt" )
 		self.Name:DockMargin( 8, 0, 0, 0 )
 
 		self.Mute		= self:Add( "DImageButton" )
@@ -48,23 +53,23 @@ local PLAYER_LINE =
 		self.Ping		= self:Add( "DLabel" )
 		self.Ping:Dock( RIGHT )
 		self.Ping:SetWidth( 50 )
-		self.Ping:SetFont( "ScoreboardObjHunt" )
+		self.Ping:SetFont( "PlayerObjHunt" )
 		self.Ping:SetContentAlignment( 5 )
 
 		self.Deaths		= self:Add( "DLabel" )
 		self.Deaths:Dock( RIGHT )
 		self.Deaths:SetWidth( 50 )
-		self.Deaths:SetFont( "ScoreboardObjHunt" )
+		self.Deaths:SetFont( "PlayerObjHunt" )
 		self.Deaths:SetContentAlignment( 5 )
 
 		self.Kills		= self:Add( "DLabel" )
 		self.Kills:Dock( RIGHT )
 		self.Kills:SetWidth( 50 )
-		self.Kills:SetFont( "ScoreboardObjHunt" )
+		self.Kills:SetFont( "PlayerObjHunt" )
 		self.Kills:SetContentAlignment( 5 )
 
 		self:Dock( TOP )
-		self:DockPadding( 3, 3, 3, 3 )
+		self:DockPadding( PADDING, PADDING, PADDING, PADDING )
 		self:SetHeight( 32 + 3*2 )
 		self:DockMargin( 2, 0, 2, 2)
 		
@@ -110,9 +115,9 @@ local PLAYER_LINE =
 
 			self.Muted = self.Player:IsMuted()
 			if ( self.Muted ) then
-				self.Mute:SetImage( "icon32/muted.png" )
+				self.Mute:SetImage( "icon32/sound_mute.png" )
 			else
-				self.Mute:SetImage( "icon32/unmuted.png" )
+				self.Mute:SetImage( "icon32/sound.png" )
 			end
 
 			self.Mute.DoClick = function() self.Player:SetMuted( !self.Muted ) end
@@ -150,11 +155,17 @@ local PLAYER_LINE =
 		-- We draw our background a different colour based on the status of the player
 		--
 		if ( self.Player:Team() == TEAM_PROPS) then
-			draw.RoundedBox( 4, 0, 0, w, h, TEAM_PROPS_COLOR )
+			surface.SetDrawColor( OFF_COLOR )
+			surface.DrawRect( 0, 0, w, h)
+			surface.SetDrawColor(PANEL_BORDER)
+			surface.DrawOutlinedRect( 0, 0, w, h)
 			return
 		end
 		if ( self.Player:Team() == TEAM_HUNTERS) then
-			draw.RoundedBox( 4, 0, 0, w, h, TEAM_HUNTERS_COLOR )
+			surface.SetDrawColor( TEAM_HUNTERS_COLOR )
+			surface.DrawRect( 0, 0, w, h)
+			surface.SetDrawColor(PANEL_BORDER)
+			surface.DrawOutlinedRect( 0, 0, w, h)
 			return
 		end
 
@@ -173,18 +184,33 @@ PLAYER_LINE = vgui.RegisterTable( PLAYER_LINE, "DPanel" )
 local HUNTERS_BOARD = 
 {
 	Init = function( self )
-
+		
+		self:SetSize(ScrW()/4, ScrH()/2 )
+		
 		self.Header = self:Add( "Panel" )
 		self.Header:Dock( TOP )
-		self.Header:SetHeight( 50 )
+		self.Header:SetHeight( 40 )
 		
 		self.Name = self.Header:Add( "DLabel" )
-		self.Name:SetFont( "ScoreboardObjHuntTitle" )
-		self.Name:SetTextColor( Color( 255, 255, 255, 255 ) )
 		self.Name:Dock( TOP )
 		self.Name:SetHeight( 40 )
-		self.Name:SetContentAlignment( 5 )
-		self.Name:SetExpensiveShadow( 2, Color( 0, 0, 0, 200 ) )
+		self.Name:SetText("")
+		
+		self.Name.Paint = function(self,w,h)
+		
+		surface.SetFont( "ScoreboardObjHunt" )
+		surface.SetTextColor( Color( 255,255,255,255 ) )
+		
+		local text = "Hunters"
+		local tw, th = surface.GetTextSize( text )
+		
+		surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
+		surface.DrawText( text )
+		
+		surface.SetDrawColor( PANEL_BORDER )
+		surface.DrawOutlinedRect( 0, 0, w, h)
+		
+		end
 		
 		--self.NumPlayers = self.Header:Add( "DLabel" )
 		--self.NumPlayers:SetFont( "ScoreboardObjHunt" )
@@ -197,26 +223,27 @@ local HUNTERS_BOARD =
 		self.Scores:Dock( FILL)//fill
 
 	end,
-
+	
 	PerformLayout = function( self )
 		
-		//self:SetSize(ScrW()/4, ScrH() - 200 )
-		self:SetSize(ScrW()/4, ScrH()/2 )
 		self:Dock(LEFT)
 		self:DockMargin(ScrW()/4,ScrH()/7,0,0)
 		
 	end,
 
-	/*Paint = function( self, w, h )
-		h=ScrH()/2
-		draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 0, 200 ) )
-
-	end,*/
+	Paint = function( self, w, h )
+		w = ScrW()/4
+		h = ScrH()/2
+		
+		surface.SetDrawColor( PANEL_FILL )
+		surface.DrawRect( 0, 0, w, h)
+		surface.SetDrawColor(PANEL_BORDER)
+		surface.DrawOutlinedRect( 0, 0, w, h)
+	
+	end,
 
 	Think = function( self )
-
-		self.Name:SetText("Hunters")
-
+		
 		--
 		-- Loop through each player, and if one doesn't have a score entry - create it.
 		--
@@ -244,8 +271,6 @@ local HUNTERS_BOARD =
 		end
 		end
 	end,
-
-
 }
 
 HUNTERS_BOARD = vgui.RegisterTable( HUNTERS_BOARD, "EditablePanel" )
@@ -253,18 +278,33 @@ HUNTERS_BOARD = vgui.RegisterTable( HUNTERS_BOARD, "EditablePanel" )
 local PROPS_BOARD = 
 {
 	Init = function( self )
-
+		
+		self:SetSize(ScrW()/4, ScrH()/2 )
+		
 		self.Header = self:Add( "Panel" )
 		self.Header:Dock( TOP )
-		self.Header:SetHeight( 50 )
-
+		self.Header:SetHeight( 40 )
+		
 		self.Name = self.Header:Add( "DLabel" )
-		self.Name:SetFont( "ScoreboardObjHuntTitle" )
-		self.Name:SetTextColor( Color( 255, 255, 255, 255 ) )
 		self.Name:Dock( TOP )
 		self.Name:SetHeight( 40 )
-		self.Name:SetContentAlignment( 5 )
-		self.Name:SetExpensiveShadow( 2, Color( 0, 0, 0, 200 ) )
+		self.Name:SetText("")
+		
+		self.Name.Paint = function(self,w,h)
+		
+		surface.SetFont( "ScoreboardObjHunt" )
+		surface.SetTextColor( Color( 255,255,255,255 ) )
+		
+		local text = "Props"
+		local tw, th = surface.GetTextSize( text )
+		
+		surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
+		surface.DrawText( text )
+		
+		surface.SetDrawColor( PANEL_BORDER )
+		surface.DrawOutlinedRect( 0, 0, w, h)
+		
+		end
 		
 		--self.NumPlayers = self.Header:Add( "DLabel" )
 		--self.NumPlayers:SetFont( "ScoreboardObjHunt" )
@@ -280,25 +320,29 @@ local PROPS_BOARD =
 
 	PerformLayout = function( self )
 
-		self:SetSize(ScrW()/4, ScrH()/2)
+		
 		self:Dock(RIGHT)
 		self:DockMargin(0,ScrH()/7,ScrW()/4,0)//-100
 		
 	end,
 
-	/*Paint = function( self, w, h )
-		h=ScrH()/2
-		draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 0, 200 ) )
+	Paint = function( self, w, h )
+		w = ScrW()/4
+		h = ScrH()/2
+		
+		surface.SetDrawColor( PANEL_FILL )
+		surface.DrawRect( 0, 0, w, h)
+		surface.SetDrawColor(PANEL_BORDER)
+		surface.DrawOutlinedRect( 0, 0, w, h)
 
-	end,*/
+	end,
 
 	Think = function( self, w, h )
 
-		self.Name:SetText("Props")
-		
 		--
 		-- Loop through each player, and if one doesn't have a score entry - create it.
 		--
+		
 		local plyrs = player.GetAll()
 		
 		for id, pl in pairs( plyrs ) do
@@ -332,60 +376,65 @@ local SPECS_BOARD =
 {
 	Init = function( self )
 		
+		self:SetSize(ScrW()/3, ScrH()/6)
+		
 		self.Header = self:Add("Panel")
-		self.Header:SetHeight(40)
-		self.Header:SetWidth(200)
+		self.Header:SetSize(self:GetWide(),50)
 		
 		self.Name = self.Header:Add("DLabel")
-		self.Name:SetFont("ScoreboardObjHuntTitle")
+		self.Name:SetFont("ScoreboardObjHunt")
 		self.Name:SetTextColor( Color( 255, 255, 255, 255 ) )
-		self.Name:SetHeight( 40 )
-		self.Name:SetWidth(200)
-		self.Name:SetContentAlignment( 8 )
-		self.Name:SetExpensiveShadow( 2, Color( 0, 0, 0, 200 ) )
+		self.Name:SetSize(142,40)
+		self.Name:Center()
+		self.Name:SetText("Spectators")
 		
 		self.Spec_Players = self:Add("DLabel")
-		self.Spec_Players:SetFont("SpectatorScoreboardObjHuntTitle")
+		self.Spec_Players:SetFont("SpectatorScoreboardObjHunt")
 		self.Spec_Players:SetTextColor( Color( 255, 255, 255, 255 ) )
-		self.Spec_Players:MoveBelow(self.Name)
-		self.Spec_Players:SetHeight( 20 )
-		self.Spec_Players:SetWidth( 800)
-		self.Spec_Players:SetContentAlignment( 5 )
-		self.Spec_Players:SetExpensiveShadow( 2, Color( 0, 0, 0, 200 ) )
-		//self.Spec_Players:DockMargin(-ScrW()/5,0,0,0)
+		self.Spec_Players:SetMultiline(true)
+		self.Spec_Players:MoveBelow(self.Header)
 		
 	end,
 	
 	PerformLayout = function( self )
 
-		self:SetSize(ScrW()/3, ScrH()/3)
-		self:CenterHorizontal()
-		self:AlignBottom()
+		self:Center()
+		self:AlignBottom(math.floor(ScrH()/5.2))
 		
 	end,
 	
 	/*Paint = function( self, w, h )
-		
-		draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 0, 200 ) )
+		w=ScrW()/3
+		h=ScrH()/6
+		surface.SetDrawColor( PANEL_FILL )
+		surface.DrawRect( 0, 0, w, h)
+		surface.SetDrawColor(PANEL_BORDER)
+		surface.DrawOutlinedRect( 0, 0, w, h)
 
 	end,*/
 	
 	Think = function( self )
-	
-	self.Name:SetText("Spectators")
-	
 	Spectators=""
+	
+	
 	
 	local plyrs=player.GetAll()
 	
 	for id, pl in pairs ( plyrs ) do
 		
+		
 		if(pl:Team()==0||pl:Team()==1002) then
 			
 			if(Spectators:find(pl:Nick())==nil) then
-		
-			Spectators=Spectators..pl:Nick()..","
 			
+			Spectators=Spectators..pl:Nick()..","
+			self.Spec_Players:SetText(Spectators)
+			self.Spec_Players:SizeToContents()
+			if(self.Spec_Players:GetWide()+30>=self:GetWide()) then
+			self.Spec_Players:SetWidth(self:GetWide())
+			Spectators=Spectators.."\n"
+			self.Spec_Players:SetWidth(self:GetWide())
+			end
 			else
 			
 			continue
@@ -398,14 +447,16 @@ local SPECS_BOARD =
 		
 		end
 	
+	
+	
 	end
-	
-	
 	end
 	self.Spec_Players:SetText(Spectators)
+	self.Spec_Players:SizeToContents()
+	
+	
 	end,
 }
-
 
 SPECS_BOARD = vgui.RegisterTable( SPECS_BOARD, "EditablePanel" )	
 	
