@@ -7,6 +7,8 @@ TEAM_HUNTERS_COLOR = Color( 0, 0, 255, 100 )
 TEAM_PROPS_DEFAULT_MODEL = "models/player.mdl"
 TEAM_HUNTERS_DEFAULT_MODEL = "models/player/Combine_Super_Soldier.mdl"
 
+VIEW_MIN_Z = 5
+
 PROP_DEFAULT_HB_MIN = Vector( -10,-10,0 )
 PROP_DEFAULT_HB_MAX = Vector( 10,10,35 )
 PROP_DEFAULT_SCALE = 0.5

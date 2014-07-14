@@ -20,7 +20,7 @@ net.Receive( "Prop update", function( length )
     	        LocalPlayer().chosenProp = ent
     	        LocalPlayer().lastPropChange = 0
     	        LocalPlayer().wantAngleLock = false
-    	        hook.Remove( "OnEntityCreated", "Get Player Prop" ) -- no longer needed, so remove it
+    	        hook.Remove( "OnEntityCreated", "Initial Prop Creation" ) -- no longer needed, so remove it
     	    end
     	end )
 	end

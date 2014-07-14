@@ -5,6 +5,7 @@ local height = 300
 local posX = ScrW() - width - padding
 local posYOpen = ScrH() - height - padding
 local posYClose = ScrH() + height
+
 surface.CreateFont( "Toggle Buttons",
 {
 	font = "Helvetica",
