@@ -50,10 +50,7 @@ local function ObjHUD()
 		surface.DrawTexturedRect( iconX, startY, 16 , 16)
 
 		-- bar
-		local cdFrac = 1
-		if( ply.lastPropChange ) then
-			cdFrac = math.Clamp( os.time() - ply.lastPropChange , 0, PROP_CHOOSE_COOLDOWN)/PROP_CHOOSE_COOLDOWN
-		end
+		local cdFrac = math.Clamp( os.time() - ply.lastPropChange , 0, PROP_CHOOSE_COOLDOWN)/PROP_CHOOSE_COOLDOWN
 		local cdColor = LerpColor( cdFrac, DEPLETED_COLOR, FULL_COLOR )
 
 		local widthOffset = width - (padding*3) - 16

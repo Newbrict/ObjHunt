@@ -15,7 +15,7 @@ net.Receive( "Prop update", function( length )
 
 	-- INITIALIZATION STUFF GOES HERE, this only gets run once the player becomes a prop!
 	if( !LocalPlayer().chosenProp ) then
-		hook.Add( "OnEntityCreated", "Inital Prop Creation", function( ent )
+		hook.Add( "OnEntityCreated", "Initial Prop Creation", function( ent )
     	    if ( LocalPlayer().chosenPropIndex and LocalPlayer().chosenPropIndex == ent:EntIndex() ) then
     	        LocalPlayer().chosenProp = ent
     	        LocalPlayer().lastPropChange = 0

@@ -24,7 +24,7 @@ local function class_selection()
 		cSPanel:MakePopup()
 
 	local hunterBtn = vgui.Create( "DButton", cSPanel )
-		hunterBtn:SetText( "Hunter" )
+		hunterBtn:SetText( "" )
 		hunterBtn:SetSize( btnWidth, btnHeight )
 		hunterBtn.DoClick = function()
 			RunConsoleCommand( "chooseTeam", "player_hunter" )
@@ -32,7 +32,7 @@ local function class_selection()
 		end
 
 	local propBtn = vgui.Create( "DButton", cSPanel )
-		propBtn:SetText( "Prop" )
+		propBtn:SetText( "" )
 		propBtn:SetSize( btnWidth, btnHeight )
 		propBtn.DoClick = function()
 			RunConsoleCommand( "chooseTeam", "player_prop" ) 
@@ -40,7 +40,7 @@ local function class_selection()
 		end
 
 	local specBtn = vgui.Create( "DButton", cSPanel )
-		specBtn:SetText( "Spectator" )
+		specBtn:SetText( "" )
 		specBtn:SetSize( btnWidth, btnHeight )
 		specBtn.DoClick = function()
 			RunConsoleCommand( "chooseTeam", "player_spectator" ) 
@@ -76,6 +76,63 @@ local function class_selection()
 		propBtn:SetPos( padding*2 + btnWidth, th + padding )
 		specBtn:SetPos( padding*3 + btnWidth*2, th + padding )
 
+	end
+
+	hunterBtn.Paint = function(self,w,h)
+		local btnColor = table.Copy(TEAM_HUNTERS_COLOR)
+
+		if( hunterBtn:IsHovered() ) then
+			btnColor.a = btnColor.a + 50
+		end
+
+		surface.SetFont( "Toggle Buttons" )
+		surface.SetTextColor( Color( 255,255,255,255 ) )
+		local text = "Hunter"
+		local tw, th = surface.GetTextSize( text )
+		surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
+		surface.DrawText( text )
+		surface.SetDrawColor( btnColor )
+		surface.DrawRect( 0, 0, w, h)
+		surface.SetDrawColor( PANEL_BORDER )
+		surface.DrawOutlinedRect( 0, 0, w, h)
+	end
+
+	propBtn.Paint = function(self,w,h)
+		local btnColor = table.Copy(TEAM_PROPS_COLOR)
+
+		if( propBtn:IsHovered() ) then
+			btnColor.a = btnColor.a + 50
+		end
+
+		surface.SetFont( "Toggle Buttons" )
+		surface.SetTextColor( Color( 255,255,255,255 ) )
+		local text = "Prop"
+		local tw, th = surface.GetTextSize( text )
+		surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
+		surface.DrawText( text )
+		surface.SetDrawColor( btnColor )
+		surface.DrawRect( 0, 0, w, h)
+		surface.SetDrawColor( PANEL_BORDER )
+		surface.DrawOutlinedRect( 0, 0, w, h)
+	end
+
+	specBtn.Paint = function(self,w,h)
+		local btnColor = table.Copy( PANEL_FILL )
+
+		if( specBtn:IsHovered() ) then
+			btnColor.a = btnColor.a + 50
+		end
+
+		surface.SetFont( "Toggle Buttons" )
+		surface.SetTextColor( Color( 255,255,255,255 ) )
+		local text = "Spectator"
+		local tw, th = surface.GetTextSize( text )
+		surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
+		surface.DrawText( text )
+		surface.SetDrawColor( btnColor )
+		surface.DrawRect( 0, 0, w, h)
+		surface.SetDrawColor( PANEL_BORDER )
+		surface.DrawOutlinedRect( 0, 0, w, h)
 	end
 
 end
