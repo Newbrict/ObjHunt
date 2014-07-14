@@ -28,8 +28,14 @@ function GM:PlayerSetModel( ply )
 	class = player_manager.GetPlayerClass( ply )
 	if( class == "player_hunter" ) then
 		ply:SetModel( TEAM_HUNTERS_DEFAULT_MODEL )
+
+		-- default
+		ply:SetViewOffset( Vector(0,0,64) )
 	elseif( class == "player_prop" ) then
 		ply:SetModel( TEAM_PROPS_DEFAULT_MODEL )
+
+		-- this fixes ent culling when head in ceiling
+		ply:SetViewOffset( Vector(0,0,1) )
 	else
 		return
 	end
@@ -74,12 +80,12 @@ hook.Add( "Initialize", "Set Map Time", function()
 	roundsPlayed = 0
 	--roundGoing = -1
 end )
+
 hook.Add( "PlayerInitialSpawn", "Send Map Time To New Player", function( ply )
 	net.Start( "Map Time" )
 	local toSend = ( mapStartTime || os.time() )
 	net.Send( ply )
 end )
-
 
 --[[ round time ]]--
 hook.Add( "Initialize", "Set round Time", function() 
@@ -88,6 +94,7 @@ hook.Add( "Initialize", "Set round Time", function()
 	roundsPlayed = 0
 	--roundGoing = -1
 end )
+
 hook.Add( "PlayerInitialSpawn", "Send round Time To New Player", function( ply )
 	net.Start( "round Time" )
 	local toSend = ( mapStartTimeForRound || os.time() )
@@ -173,6 +180,7 @@ end )
 --[[ When a player on team_props spawns ]]--
 hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 	if( ply:Team() != TEAM_PROPS ) then return end
+
 
 	-- make the player invisible
 	ply:SetRenderMode( RENDERMODE_TRANSALPHA )
