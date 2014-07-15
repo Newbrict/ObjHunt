@@ -3,15 +3,16 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
 resource.AddFile("sound/taunts/jihad.wav") 
-for k, v in pairs(ents.FindByClass("prop_physics*")) do
-	if IsValid(v:GetPhysicsObject()) then
-	v:GetPhysicsObject():Wake()
-	end
-end
-
 
 function GM:PlayerInitialSpawn( ply )
+	print( "Start PlayerInitialSpawnHook, player's team:" )
+	print( ply:Team() )
+	ply:SetTeam( TEAM_SPECTATOR )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
+	print( "End PlayerInitialSpawnHook, player's team:" )
+	print( ply:Team() )
+	return true
+
 end
 
 function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
@@ -44,8 +45,10 @@ end
 function GM:CreateTeams( )
 	team.SetUp( TEAM_PROPS , "Props" , Color( 255, 0, 0 ), true )
 	team.SetUp( TEAM_HUNTERS , "Hunters" , Color( 0, 255, 0 ), true  )
+	team.SetUp( TEAM_SPECTATOR , "Spectators" , Color( 127, 127, 127 ), true  )
 	team.SetClass( TEAM_PROPS, {"player_prop"})
 	team.SetClass( TEAM_HUNTERS, {"player_hunter"})
+	team.SetClass( TEAM_SPECTATOR, {"player_spectator"})
 	team.SetSpawnPoint( TEAM_PROPS, {"info_player_terrorist", "info_player_rebel", "info_player_deathmatch", "info_player_allies"} )
 	team.SetSpawnPoint( TEAM_HUNTERS, {"info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
 	team.SetSpawnPoint( TEAM_SPECTATOR, {"info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
@@ -180,7 +183,6 @@ end )
 --[[ When a player on team_props spawns ]]--
 hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 	if( ply:Team() != TEAM_PROPS ) then return end
-
 
 	-- make the player invisible
 	ply:SetRenderMode( RENDERMODE_TRANSALPHA )

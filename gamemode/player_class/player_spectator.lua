@@ -15,10 +15,9 @@ PLAYER.AvoidPlayers     = false
 function PLAYER:Spawn()
 	self.Player:Spectate( OBS_MODE_ROAMING )
 end
+
 function PLAYER:Loadout()
-
 	self.Player:RemoveAllAmmo()
-
 end
 
 player_manager.RegisterClass( "player_spectator", PLAYER, "player_default" )

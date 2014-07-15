@@ -7,7 +7,7 @@ concommand.Add( "chooseTeam", function( ply, _, class )
 	elseif( class[1] == "player_prop" ) then
 		ply:SetTeam( TEAM_PROPS )
 	else
-		ply:SetTeam( TEAM_SPECTATOR )
+		ply:SetTeam( TEAM_SPECTATORS )
 	end
 	ply:Spawn()
 	hook.Call("PlayerChangeTeam", ObjHunt, ply, class[1])
