@@ -164,7 +164,6 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 		net.WriteVector( tHitboxMax )
 		net.WriteVector( tHitboxMin )
 		net.WriteUInt( ply.chosenProp:EntIndex(), 8 )
-		net.WriteUInt( ply.lastPropChange, 32 )
 	net.Send( ply )
 
 end

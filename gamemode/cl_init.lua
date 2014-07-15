@@ -8,7 +8,7 @@ net.Receive( "Prop update", function( length )
 	LocalPlayer():SetHullDuck( tHitboxMin, tHitboxMax )
 
 	LocalPlayer().chosenPropIndex = net.ReadUInt(8)
-	LocalPlayer().lastPropChange = net.ReadUInt(32)
+	LocalPlayer().lastPropChange = os.time()
 
 	local propHeight = tHitboxMax.z - tHitboxMin.z
 	LocalPlayer().propHeight = propHeight
