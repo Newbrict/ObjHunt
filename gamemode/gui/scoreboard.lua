@@ -3,21 +3,21 @@ surface.CreateFont( "SpectatorScoreboardObjHunt",
 	font = "Helvetica",
 	size = 20,
 	weight = 30,
-	antialias = false,
-	outline = true,
+	antialias = true,
+	outline = false,
 })
 surface.CreateFont( "ScoreboardObjHunt",
 {
 	font = "Helvetica",
 	size = 35,
 	weight = 30,
-	antialias = false,
-	outline = true,
+	antialias = true,
+	outline = false,
 })
 surface.CreateFont( "PlayerObjHunt",
 {
 	font = "Helvetica",
-	size = 25,
+	size = 15,
 	weight = 20,
 	antialias = true,
 	outline = false,
@@ -34,11 +34,11 @@ local PLAYER_LINE =
 
 		self.AvatarButton = self:Add( "DButton" )
 		self.AvatarButton:Dock( LEFT )
-		self.AvatarButton:SetSize( 32, 32 )
+		self.AvatarButton:SetSize( 16, 16 )
 		self.AvatarButton.DoClick = function() self.Player:ShowProfile() end
 
 		self.Avatar = vgui.Create( "AvatarImage", self.AvatarButton )
-		self.Avatar:SetSize( 32, 32 )
+		self.Avatar:SetSize( 16, 16 )
 		self.Avatar:SetMouseInputEnabled( false )		
 
 		self.Name = self:Add( "DLabel" )
@@ -47,31 +47,30 @@ local PLAYER_LINE =
 		self.Name:DockMargin( 8, 0, 0, 0 )
 
 		self.Mute		= self:Add( "DImageButton" )
-		self.Mute:SetSize( 32, 32 )
+		self.Mute:SetSize( 16, 16 )
 		self.Mute:Dock( RIGHT )
 
 		self.Ping		= self:Add( "DLabel" )
 		self.Ping:Dock( RIGHT )
-		self.Ping:SetWidth( 50 )
+		self.Ping:SetWidth( ScrW()/40 )
 		self.Ping:SetFont( "PlayerObjHunt" )
 		self.Ping:SetContentAlignment( 5 )
 
 		self.Deaths		= self:Add( "DLabel" )
 		self.Deaths:Dock( RIGHT )
-		self.Deaths:SetWidth( 50 )
+		self.Deaths:SetWidth( ScrW()/40 )
 		self.Deaths:SetFont( "PlayerObjHunt" )
 		self.Deaths:SetContentAlignment( 5 )
 
 		self.Kills		= self:Add( "DLabel" )
 		self.Kills:Dock( RIGHT )
-		self.Kills:SetWidth( 50 )
+		self.Kills:SetWidth( ScrW()/40 )
 		self.Kills:SetFont( "PlayerObjHunt" )
 		self.Kills:SetContentAlignment( 5 )
 
 		self:Dock( TOP )
 		self:DockPadding( PADDING, PADDING, PADDING, PADDING )
-		self:SetHeight( 32 + 3*2 )
-		self:DockMargin( 2, 0, 2, 2)
+		self:SetHeight( 16 + 3*2 )
 		
 	end,
 	
@@ -115,9 +114,9 @@ local PLAYER_LINE =
 
 			self.Muted = self.Player:IsMuted()
 			if ( self.Muted ) then
-				self.Mute:SetImage( "icon32/sound_mute.png" )
+				self.Mute:SetImage( "icon16/sound_mute.png" )
 			else
-				self.Mute:SetImage( "icon32/sound.png" )
+				self.Mute:SetImage( "icon16/sound.png" )
 			end
 
 			self.Mute.DoClick = function() self.Player:SetMuted( !self.Muted ) end
@@ -139,7 +138,7 @@ local PLAYER_LINE =
 		--
 		self:SetZPos( -(self.Player:Team()*100) +
 		(
-			self.NumKills * -50) +
+			self.NumKills * -ScrW()/40) +
 			self.NumDeaths +
 			math.min(string.byte(self.Player:Nick(), -1)/2, 99)
 		)
@@ -162,7 +161,7 @@ local PLAYER_LINE =
 			return
 		end
 		if ( self.Player:Team() == TEAM_HUNTERS) then
-			surface.SetDrawColor( TEAM_HUNTERS_COLOR )
+			surface.SetDrawColor( Color(85,85,85) )
 			surface.DrawRect( 0, 0, w, h)
 			surface.SetDrawColor(PANEL_BORDER)
 			surface.DrawOutlinedRect( 0, 0, w, h)
@@ -185,11 +184,16 @@ local HUNTERS_BOARD =
 {
 	Init = function( self )
 		
-		self:SetSize(ScrW()/4, ScrH()/2 )
+		self:SetSize(ScrW()/6, ScrH()/2 )//4
 		
 		self.Header = self:Add( "Panel" )
 		self.Header:Dock( TOP )
 		self.Header:SetHeight( 40 )
+		
+		self.Header.Paint = function(self,w,h)
+		surface.SetDrawColor( TEAM_HUNTERS_COLOR )
+		surface.DrawRect(0,0,w,h)
+		end
 		
 		self.Name = self.Header:Add( "DLabel" )
 		self.Name:Dock( TOP )
@@ -207,7 +211,8 @@ local HUNTERS_BOARD =
 		surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
 		surface.DrawText( text )
 		
-		surface.SetDrawColor( PANEL_BORDER )
+		
+		surface.SetDrawColor(PANEL_BORDER)
 		surface.DrawOutlinedRect( 0, 0, w, h)
 		
 		end
@@ -227,12 +232,12 @@ local HUNTERS_BOARD =
 	PerformLayout = function( self )
 		
 		self:Dock(LEFT)
-		self:DockMargin(ScrW()/4,ScrH()/7,0,0)
+		self:DockMargin(638,ScrH()/7,0,0)
 		
 	end,
 
 	Paint = function( self, w, h )
-		w = ScrW()/4
+		w = ScrW()/6
 		h = ScrH()/2
 		
 		surface.SetDrawColor( PANEL_FILL )
@@ -279,11 +284,16 @@ local PROPS_BOARD =
 {
 	Init = function( self )
 		
-		self:SetSize(ScrW()/4, ScrH()/2 )
+		self:SetSize(ScrW()/6, ScrH()/2 )
 		
 		self.Header = self:Add( "Panel" )
 		self.Header:Dock( TOP )
 		self.Header:SetHeight( 40 )
+		
+		self.Header.Paint = function(self,w,h)
+		surface.SetDrawColor( TEAM_PROPS_COLOR )
+		surface.DrawRect(0,0,w,h)
+		end
 		
 		self.Name = self.Header:Add( "DLabel" )
 		self.Name:Dock( TOP )
@@ -322,12 +332,12 @@ local PROPS_BOARD =
 
 		
 		self:Dock(RIGHT)
-		self:DockMargin(0,ScrH()/7,ScrW()/4,0)//-100
+		self:DockMargin(0,ScrH()/7,638,0)//-100
 		
 	end,
 
 	Paint = function( self, w, h )
-		w = ScrW()/4
+		w = ScrW()/6
 		h = ScrH()/2
 		
 		surface.SetDrawColor( PANEL_FILL )
@@ -379,7 +389,7 @@ local SPECS_BOARD =
 		self:SetSize(ScrW()/3, ScrH()/6)
 		
 		self.Header = self:Add("Panel")
-		self.Header:SetSize(self:GetWide(),50)
+		self.Header:SetSize(self:GetWide(),ScrW()/40)
 		
 		self.Name = self.Header:Add("DLabel")
 		self.Name:SetFont("ScoreboardObjHunt")
@@ -414,9 +424,8 @@ local SPECS_BOARD =
 	end,*/
 	
 	Think = function( self )
+	
 	Spectators=""
-	
-	
 	
 	local plyrs=player.GetAll()
 	
@@ -446,9 +455,6 @@ local SPECS_BOARD =
 		Spectators:gsub(pl:Nick(),"")
 		
 		end
-	
-	
-	
 	end
 	end
 	self.Spec_Players:SetText(Spectators)

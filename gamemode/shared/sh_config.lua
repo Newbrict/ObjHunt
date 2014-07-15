@@ -2,8 +2,8 @@ TEAM_PROPS      = 1
 TEAM_HUNTERS    = 2
 TEAM_SPECTATORS = 3 
 
-TEAM_PROPS_COLOR = Color( 255, 0, 0, 100 )
-TEAM_HUNTERS_COLOR = Color( 0, 0, 255, 100 )
+TEAM_PROPS_COLOR = Color( 255, 0, 0, 200 )
+TEAM_HUNTERS_COLOR = Color( 0, 0, 255, 200 )
 
 TEAM_PROPS_DEFAULT_MODEL = "models/player.mdl"
 TEAM_HUNTERS_DEFAULT_MODEL = "models/player/Combine_Super_Soldier.mdl"
