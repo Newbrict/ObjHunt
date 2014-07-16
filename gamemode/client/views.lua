@@ -39,9 +39,11 @@ local function getViewEnt(ply)
 end
 
 hook.Add( "PreDrawHalos", "Selectable Prop Halos", function()
+	if ( !IsValid( LocalPlayer( ) ) ) then return; end
 	if( LocalPlayer():Team() != TEAM_PROPS ) then return end
 	local prop = getViewEnt( LocalPlayer() )
 	local sColor = stencilColor( LocalPlayer(), prop ) 
 	if( !sColor ) then return end
 	halo.Add( {prop}, sColor, 3, 3, 1 )
 end )
+
