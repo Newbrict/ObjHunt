@@ -7,7 +7,7 @@ GM.Website = "N/A"
 local resources = {}
 resources["server"] = { "server" }
 resources["shared"] = { "shared","player_class","utils" }
-resources["client"] = { "client", "gui" }
+resources["client"] = { "client","gui" }
 
 local function resourceLoader(dirs, includeFunc)
 	for _, addDir in pairs(dirs) do
@@ -31,3 +31,15 @@ else
 	resourceLoader( resources["client"], include )
 end
 
+function GM:CreateTeams( )
+	team.SetUp( TEAM_PROPS , "Props" , Color( 255, 0, 0 ), true )
+	team.SetUp( TEAM_HUNTERS , "Hunters" , Color( 0, 255, 0 ), true  )
+	team.SetUp( TEAM_SPECTATOR , "Spectators" , Color( 127, 127, 127 ), true  )
+	team.SetClass( TEAM_PROPS, {"player_prop"})
+	team.SetClass( TEAM_HUNTERS, {"player_hunter"})
+	team.SetClass( TEAM_SPECTATOR, {"player_spectator"})
+	team.SetSpawnPoint( TEAM_PROPS, {"info_player_terrorist", "info_player_rebel", "info_player_deathmatch", "info_player_allies"} )
+	team.SetSpawnPoint( TEAM_HUNTERS, {"info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
+	team.SetSpawnPoint( TEAM_SPECTATOR, {"info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
+
+end
