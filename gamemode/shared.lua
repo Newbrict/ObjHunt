@@ -3,32 +3,27 @@ GM.Author  = "Newbrict, Pepsi, Maxwellstorm"
 GM.Email   = "N/A"
 GM.Website = "N/A"
 
---[[ Add all the files on server/client ]]--
-local resources = {}
-resources["server"] = { "server" }
-resources["shared"] = { "shared","player_class","utils" }
-resources["client"] = { "client","gui" }
-
-local function resourceLoader(dirs, includeFunc)
-	for _, addDir in pairs(dirs) do
-		print( "-- " .. addDir )
-		local csFiles, _ = file.Find( "ObjHunt/gamemode/"..addDir.."/*", "LUA" )
-		for _, csFile in ipairs(csFiles) do
-		   	includeFunc( addDir.."/"..csFile )
-			print( " + " .. csFile )
-		end
-	end
-end
-
 if SERVER then
-	print( "Adding Server Side Lua Files..." )
-	resourceLoader( resources["server"], include )
-	resourceLoader( resources["shared"], function(x) include(x) AddCSLuaFile(x) end )
-	resourceLoader( resources["client"], AddCSLuaFile )
+	include("shared/sh_config.lua")
+	AddCSLuaFile("shared/sh_config.lua")
+
+	include("player_class/player_hunter.lua")
+	include("player_class/player_prop.lua")
+	include("player_class/player_spectator.lua")
+	AddCSLuaFile("player_class/player_hunter.lua")
+	AddCSLuaFile("player_class/player_prop.lua")
+	AddCSLuaFile("player_class/player_spectator.lua")
+
+	AddCSLuaFile("gui/class_selection.lua")
+	AddCSLuaFile("client/views.lua")
 else
-	print( "Adding Client Side Lua Files..." )
-	resourceLoader( resources["shared"], include )
-	resourceLoader( resources["client"], include )
+	include("player_class/player_hunter.lua")
+	include("player_class/player_prop.lua")
+	include("player_class/player_spectator.lua")
+	include("gui/class_selection.lua")
+	include("client/views.lua")
+	include("shared/sh_config.lua")
+
 end
 
 function GM:CreateTeams( )
