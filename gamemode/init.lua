@@ -24,3 +24,20 @@ function GM:CreateTeams( )
 	team.SetSpawnPoint( TEAM_SPECTATOR, {"info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
 
 end
+
+local playerMeta = FindMetaTable("Player")
+local oldSetTeam = playerMeta.SetTeam
+function playerMeta:SetTeam(...)
+	print( "was called" )
+    debug.Trace()
+    return oldSetTeam(self, ...)
+end
+
+hook.Add( "Tick", "whats goin on here", function()
+
+for k, v in pairs( player.GetAll() ) do
+	if( v:Team() != TEAM_SPECTATOR && v:Team() != 0) then
+		print(v:Team())
+	end
+end
+end )
