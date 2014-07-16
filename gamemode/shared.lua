@@ -14,13 +14,11 @@ if SERVER then
 	AddCSLuaFile("player_class/player_prop.lua")
 	AddCSLuaFile("player_class/player_spectator.lua")
 
-	AddCSLuaFile("gui/class_selection.lua")
 	AddCSLuaFile("client/views.lua")
 else
 	include("player_class/player_hunter.lua")
 	include("player_class/player_prop.lua")
 	include("player_class/player_spectator.lua")
-	include("gui/class_selection.lua")
 	include("client/views.lua")
 	include("shared/sh_config.lua")
 
