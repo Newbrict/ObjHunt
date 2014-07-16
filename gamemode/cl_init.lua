@@ -46,7 +46,7 @@ net.Receive( "Prop Angle Snap BROADCAST", function( length )
 	local prop = net.ReadEntity()
 	local snapStatus = net.ReadBit()
 
-	prop.angleSnap = snapStatus
+	prop.angleSnap = tobool(snapStatus)
 end )
 
 -- disable default hud elements here
