@@ -38,7 +38,7 @@ net.Receive( "Prop Angle Lock BROADCAST", function( length )
 	local lockStatus = net.ReadBit()
 	local propAngle = net.ReadAngle()
 
-	prop.angleLock = lockStatus
+	prop.angleLock = tobool(lockStatus)
 	prop:SetAngles( propAngle )
 end )
 
