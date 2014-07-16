@@ -9,7 +9,7 @@ function isStuck( ply )
 
 	local trace = util.TraceHull( td )
 	
-	ent = trace.Entity
+	local ent = trace.Entity 
 	-- should never be stuck in world
 	--if ent && (ent:IsWorld() || ent:IsValid()) then
 
@@ -22,19 +22,22 @@ end
 
 function WouldBeStuck( ply, prop )
 	local pos = ply:GetPos()
+
 	local td = {}
 	td.start = pos
 	td.endpos = pos
 	td.filter = {ply, ply.chosenProp}
+
 	local hbMin, hbMax = prop:GetHitBoxBounds( 0, 0 )
 	if( !hbMin || !hbMax ) then return true end
+
 	local hbMin = Vector( math.Round(hbMin.x),math.Round(hbMin.y),math.Round(hbMin.z) )
 	local hbMax = Vector( math.Round(hbMax.x),math.Round(hbMax.y),math.Round(hbMax.z) )
 	td.mins = hbMin
 	td.maxs = hbMax
 	local trace = util.TraceHull( td )
 	
-	ent = trace.Entity
+	local ent = trace.Entity
 	if ent && (ent:IsWorld() || ent:IsValid()) then
 		return true
 	end

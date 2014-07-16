@@ -11,14 +11,12 @@ surface.CreateFont( "InfoFont",
 
 --draw round timer in top left corner
 local function roundTimerHUD()
-
-	local textToDraw 
-
+	
 	-- make sure we don't blow it if var is undefined
-	textToDraw = "Time left until next round: "
+	local textToDraw = "Time left until next round: "
 	--still trying to figure out way to specify if round has started or not but right now this timer restes ti self every 60 seconds
-	time = roundWaitTime - ( (os.time() - mapStartTime) % roundWaitTime )
-	textToDraw = textToDraw..time
+	local time = roundWaitTime - ( (os.time() - mapStartTime) % roundWaitTime )
+	local textToDraw = textToDraw..time
 	surface.SetFont( "InfoFont" )
 	-- Determine some useful coordinates
 	local width = surface.GetTextSize( textToDraw )

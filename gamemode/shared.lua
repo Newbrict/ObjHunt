@@ -53,7 +53,9 @@ function playerCanBeEnt( ply, ent )
 		end
 	end
 
-	if( WouldBeStuck( ply, ent ) ) then return false end 
+	local stuck = WouldBeStuck( ply, ent )
+
+	if( stuck ) then return false end 
 
 	return true
 end
