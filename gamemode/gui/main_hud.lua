@@ -41,6 +41,9 @@ local function ObjHUD()
 	surface.DrawOutlinedRect( barX, startY, widthOffset, 16)
 
 	if( ply:Team() == TEAM_PROPS ) then
+		-- this needs to be here otherwise some people get errors for some unknown reason
+		if( ply.viewOrigin == nil || ply.wantThirdPerson == nil ) then return end
+
 		-- COOLDOWN GUI
 		startY = startY - padding - 16
 

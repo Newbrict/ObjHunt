@@ -16,13 +16,14 @@ net.Receive( "Prop update", function( length )
 	-- INITIALIZATION STUFF GOES HERE, this only gets run once the player becomes a prop!
 	if( !LocalPlayer().chosenProp ) then
 		hook.Add( "OnEntityCreated", "Initial Prop Creation", function( ent )
-    	    if ( LocalPlayer().chosenPropIndex and LocalPlayer().chosenPropIndex == ent:EntIndex() ) then
-    	        LocalPlayer().chosenProp = ent
-    	        LocalPlayer().lastPropChange = 0
-    	        LocalPlayer().wantAngleLock = false
-    	        hook.Remove( "OnEntityCreated", "Initial Prop Creation" ) -- no longer needed, so remove it
-    	    end
-    	end )
+		if ( LocalPlayer().chosenPropIndex and LocalPlayer().chosenPropIndex == ent:EntIndex() ) then
+			LocalPlayer().chosenProp = ent
+			LocalPlayer().lastPropChange = 0
+			LocalPlayer().wantAngleLock = false
+			LocalPlayer().wantThirdPerson = true
+			hook.Remove( "OnEntityCreated", "Initial Prop Creation" ) -- no longer needed, so remove it
+			end
+		end )
 	end
 
 end )
@@ -59,8 +60,8 @@ end )
 
 -- disable default hud elements here
 function GM:HUDShouldDraw( name )
-    if ( name == "CHudHealth" or name == "CHudBattery" ) then
-        return false
-    end
-    return true
+	if ( name == "CHudHealth" or name == "CHudBattery" ) then
+		return false
+	end
+	return true
 end

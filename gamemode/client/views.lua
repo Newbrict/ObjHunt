@@ -1,5 +1,8 @@
 --[[ Do thirdperson, view heights, etc ]]--
 hook.Add("CalcView", "ObjHunt CalcView", function( ply, pos, angles, fov )
+	-- this needs to be here otherwise some people get errors for some unknown reason
+	if( ply.wantThirdPerson == nil ) then return end
+
 	local view = {}
 	view.angles = angles
 	view.fov = fov
@@ -59,6 +62,9 @@ local function stencilColor( ply, ent )
 end
 
 local function getViewEnt(ply)
+	-- this needs to be here otherwise some people get errors for some unknown reason
+	if( ply.viewOrigin == nil || ply.wantThirdPerson == nil ) then return end
+
 	local trace = {}
 	trace.start = ply.viewOrigin
 	if( ply.wantThirdPerson ) then
