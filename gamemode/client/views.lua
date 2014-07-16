@@ -13,7 +13,7 @@ hook.Add("CalcView", "ObjHunt CalcView", function( ply, pos, angles, fov )
 		trace.start = ply:GetPos() + addToPlayer
 		trace.endpos = trace.start + view.angles:Forward() * -viewDist
 		trace.mask = MASK_SOLID_BRUSHONLY
-		tr = util.TraceLine(trace)
+		local tr = util.TraceLine(trace)
 		
 		-- efficient check when not hitting walls
 		if(tr.Fraction < 1) then
@@ -67,7 +67,7 @@ local function getViewEnt(ply)
 		trace.endpos = trace.start + ply:GetAngles():Forward() * (PROP_SELECT_DISTANCE)
 	end
 	trace.filter = {ply.chosenProp}
-	tr = util.TraceLine(trace)
+	local tr = util.TraceLine(trace)
 	return tr.Entity
 end
 

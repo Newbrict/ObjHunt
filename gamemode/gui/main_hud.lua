@@ -30,7 +30,7 @@ local function ObjHUD()
 	surface.DrawTexturedRect( iconX, startY, 16 , 16)
 
 	-- bar
-	hpFrac = math.Clamp( ply:Health(), 0, 100 )/100
+	local hpFrac = math.Clamp( ply:Health(), 0, 100 )/100
 
 	local widthOffset = width - (padding*3) - 16
 	surface.SetDrawColor( PANEL_FILL )
@@ -42,7 +42,7 @@ local function ObjHUD()
 
 	if( ply:Team() == TEAM_PROPS ) then
 		-- COOLDOWN GUI
-		startY = startY - padding - 16
+		local startY = startY - padding - 16
 
 		-- icon
 		local clockMat = Material("icon16/clock.png", "unlitgeneric")

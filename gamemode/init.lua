@@ -86,7 +86,7 @@ end )
 
 hook.Add( "PlayerInitialSpawn", "Send Map Time To New Player", function( ply )
 	net.Start( "Map Time" )
-	local toSend = ( mapStartTime || os.time() )
+	//local toSend = ( mapStartTime || os.time() ) --useless?
 	net.Send( ply )
 end )
 
@@ -201,14 +201,8 @@ end )
 
 --[[ When a player wants to lock world angles on their prop ]]--
 net.Receive( "Prop Angle Lock", function( len, ply )
-	local lockStatus = net.ReadBit()
+	local lockStatus = net.ReadBit() //equates to false if zero
 	local propAngle = net.ReadAngle()
-	-- this is literally retarded
-	if( lockStatus == 1 ) then
-		lockStatus = true 
-	else
-		lockStatus = false
-	end
 
 	net.Start( "Prop Angle Lock BROADCAST" )
 		net.WriteEntity( ply.chosenProp )
@@ -219,13 +213,7 @@ end )
 
 --[[ When a player wants toggle world angle snapping on their prop ]]--
 net.Receive( "Prop Angle Snap", function( len, ply )
-	local snapStatus = net.ReadBit()
-	-- this is literally retarded
-	if( snapStatus == 1 ) then
-		snapStatus = true 
-	else
-		snapStatus = false
-	end
+	local snapStatus = net.ReadBit() //equates to false if zero
 
 	net.Start( "Prop Angle Snap BROADCAST" )
 		net.WriteEntity( ply.chosenProp )
