@@ -49,6 +49,5 @@ local function class_selection()
 end
 
 net.Receive("team selection", function()
-	print( "test" )
 	class_selection()
 end )
