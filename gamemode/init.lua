@@ -39,7 +39,7 @@ function GM:PlayerSetModel( ply )
 end
 
 function GM:PlayerShouldTakeDamage( victim, attacker )
-	-- non prop falls
+	-- props cannot take fall damage
 	if( victim:Team() == TEAM_PROPS && attacker:GetClass() == "worldspawn" ) then
 		return false
 	end
@@ -48,6 +48,7 @@ end
 
 --[[ All network strings should be precached HERE ]]--
 hook.Add( "Initialize", "Precache all network strings", function()
+	util.AddNetworkString( "Team Selection" )
 	util.AddNetworkString( "Map Time" )
 	util.AddNetworkString( "Prop Update" )
 	util.AddNetworkString( "Reset Prop" )
@@ -62,32 +63,12 @@ end )
 --[[ Map Time ]]--
 hook.Add( "Initialize", "Set Map Time", function() 
 	mapStartTime = os.time() 
-	roundWaitTime = 60
-	roundsPlayed = 0
-	--roundGoing = -1
 end )
 
 hook.Add( "PlayerInitialSpawn", "Send Map Time To New Player", function( ply )
-	net.Start( "Map Time" )
 	local toSend = ( mapStartTime || os.time() )
-	net.Send( ply )
-end )
-
---[[ round time ]]--
-hook.Add( "Initialize", "Set round Time", function() 
-	mapStartTimeForRound = os.time() 
-	roundWaitTime = 60
-	roundsPlayed = 0
-	--roundGoing = -1
-end )
-
-hook.Add( "PlayerInitialSpawn", "Send round Time To New Player", function( ply )
-	net.Start( "round Time" )
-	local toSend = ( mapStartTimeForRound || os.time() )
-	net.WriteUInt( toSend, 32 )
-	net.WriteUInt( roundWaitTime, 32)
-	net.WriteUInt( roundsPlayed, 32)
-	--net.WriteUInt( roundGoing, 32)
+	net.Start( "Map Time" )
+		net.WriteUInt( toSend, 32 )
 	net.Send( ply )
 end )
 
