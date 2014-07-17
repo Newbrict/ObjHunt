@@ -40,10 +40,10 @@ end
 
 function GM:PlayerShouldTakeDamage( victim, attacker )
 	-- non prop falls
-	if( victim:Team() == TEAM_HUNTERS && attacker:GetClass() == "worldspawn" ) then
-		return true
+	if( victim:Team() == TEAM_PROPS && attacker:GetClass() == "worldspawn" ) then
+		return false
 	end
-	return false
+	return true
 end
 
 --[[ All network strings should be precached HERE ]]--
