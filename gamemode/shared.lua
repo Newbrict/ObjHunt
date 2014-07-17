@@ -88,3 +88,21 @@ function LerpColor(frac,from,to)
 		Lerp(frac,from.a,to.a)
 	)
 end
+
+function GM:EntityTakeDamage( target, dmginfo)
+	
+	attacker = dmginfo:GetAttacker()
+	
+	if( !target:IsPlayer() && table.HasValue( USABLE_PROP_ENTITIES, target:GetClass() ) ) then
+		
+		if(attacker:IsPlayer()) then
+			
+			attacker:TakeDamage(dmginfo:GetDamage(),attacker,target)
+			
+		end
+	end
+	
+end
+	
+	
+	
