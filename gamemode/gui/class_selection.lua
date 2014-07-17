@@ -9,7 +9,7 @@ surface.CreateFont( "Sharp HUD",
 })
 
 local function sendTeam( chosen )
-	net.Start("team selection")
+	net.Start("Class Selection")
 		net.WriteUInt( chosen, 32 )
 	net.SendToServer()
 end
