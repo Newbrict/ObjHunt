@@ -12,9 +12,26 @@ function GM:PlayerInitialSpawn( ply )
 end
 
 function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
-    umsg.Start( "class_selection", ply ) -- Sending a message to the client.
-    umsg.End()
+	net.Start( "Class Selection" )
+		-- Just used as a hook
+	net.Send( ply )
 end	
+
+net.Receive("Class Selection", function( len, ply )
+	local chosen = net.ReadUInt(32)
+	ply:SetTeam( chosen )
+	if( theTeam == TEAM_PROPS ) then
+		player_manager.SetPlayerClass( ply, "player_prop" )
+	elseif( theTeam == TEAM_HUNTERS ) then
+		player_manager.SetPlayerClass( ply, "player_hunter" )
+	else
+		player_manager.SetPlayerClass( ply, "player_spectator" )
+	end
+
+	ply:KillSilent()
+	ply:Spawn()
+end )
+
 
 function GM:ShowSpare1( ply ) -- This hook is called everytime F2 is pressed.
     umsg.Start( "taunt_selection", ply ) -- Sending a message to the client.
@@ -46,9 +63,21 @@ function GM:PlayerShouldTakeDamage( victim, attacker )
 	return true
 end
 
+function GM:EntityTakeDamage( target, dmginfo)
+	local attacker = dmginfo:GetAttacker()
+	
+	-- since player_prop_ent isn't in USABLE_PROP_ENTS this is sufficient logic to prevent
+	-- player owned props from getting hurt
+	if( !target:IsPlayer() && table.HasValue( USABLE_PROP_ENTITIES, target:GetClass() ) ) then
+		if(attacker:IsPlayer()) then
+			attacker:TakeDamage(dmginfo:GetDamage(),attacker,target)
+		end
+	end
+end
+
 --[[ All network strings should be precached HERE ]]--
 hook.Add( "Initialize", "Precache all network strings", function()
-	util.AddNetworkString( "Team Selection" )
+	util.AddNetworkString( "Class Selection" )
 	util.AddNetworkString( "Map Time" )
 	util.AddNetworkString( "Prop Update" )
 	util.AddNetworkString( "Reset Prop" )

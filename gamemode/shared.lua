@@ -88,16 +88,3 @@ function LerpColor(frac,from,to)
 		Lerp(frac,from.a,to.a)
 	)
 end
-
-function GM:EntityTakeDamage( target, dmginfo)
-	local attacker = dmginfo:GetAttacker()
-	
-	-- since player_prop_ent isn't in USABLE_PROP_ENTS this is sufficient logic to prevent
-	-- player owned props from getting hurt
-	if( !target:IsPlayer() && table.HasValue( USABLE_PROP_ENTITIES, target:GetClass() ) ) then
-		if(attacker:IsPlayer()) then
-			attacker:TakeDamage(dmginfo:GetDamage(),attacker,target)
-		end
-	end
-end
-	
