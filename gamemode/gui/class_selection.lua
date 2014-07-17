@@ -8,6 +8,12 @@ surface.CreateFont( "Sharp HUD",
 	shadow = true,
 })
 
+local function sendTeam( chosen )
+	net.Start("team selection")
+		net.WriteUInt( chosen, 32 )
+	net.SendToServer()
+end
+
 local function class_selection()
 	local width   = 300
 	local height  = 100
@@ -27,24 +33,24 @@ local function class_selection()
 		hunterBtn:SetText( "" )
 		hunterBtn:SetSize( btnWidth, btnHeight )
 		hunterBtn.DoClick = function()
-			RunConsoleCommand( "chooseTeam", "player_hunter" )
-			cSPanel:SetVisible( false )
+			sendTeam( TEAM_HUNTERS )
+			cSPanel:Remove()
 		end
 
 	local propBtn = vgui.Create( "DButton", cSPanel )
 		propBtn:SetText( "" )
 		propBtn:SetSize( btnWidth, btnHeight )
 		propBtn.DoClick = function()
-			RunConsoleCommand( "chooseTeam", "player_prop" ) 
-			cSPanel:SetVisible( false )
+			sendTeam( TEAM_PROPS )
+			cSPanel:Remove()
 		end
 
 	local specBtn = vgui.Create( "DButton", cSPanel )
 		specBtn:SetText( "" )
 		specBtn:SetSize( btnWidth, btnHeight )
 		specBtn.DoClick = function()
-			RunConsoleCommand( "chooseTeam", "player_spectator" ) 
-			cSPanel:SetVisible( false )
+			sendTeam( TEAM_SPECTATOR )
+			cSPanel:Remove()
 		end
 
 	local exitBtn = vgui.Create( "DImageButton", cSPanel )
@@ -136,4 +142,5 @@ local function class_selection()
 	end
 
 end
-usermessage.Hook("class_selection", class_selection)
+
+net.Receive("Class Selection", class_selection )
