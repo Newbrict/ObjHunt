@@ -12,6 +12,7 @@ end
 
 function ENT:OnTakeDamage(dmg)
 	local ply = self:GetOwner()
+	self.health = math.min( ply:Health(), self.health )
 	local attacker = dmg:GetAttacker()
 	local inflictor = dmg:GetInflictor()
 	

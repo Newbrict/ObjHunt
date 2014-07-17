@@ -8,7 +8,8 @@ surface.CreateFont( "InfoFont",
 	outline = true
 })
 
-
+-- localize the variable first
+local mapStartTime = 0
 
 local function mapTimerHUD()
 	local textToDraw = "Time On Map: "
@@ -35,13 +36,9 @@ local function mapTimerHUD()
 
 end
 
-
-
-
 -- get the net message for map time, then load the hud element
 net.Receive( "Map Time", function( len )
 	mapStartTime = net.ReadUInt(32)
-
 	hook.Add( "HUDPaint", "Map Timer HUD element", mapTimerHUD )
 end )
 
