@@ -18,6 +18,7 @@ function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
 end	
 
 net.Receive("Class Selection", function( len, ply )
+	RemovePlayerProp( ply )
 	local chosen = net.ReadUInt(32)
 	ply:SetTeam( chosen )
 	if( chosen == TEAM_PROPS ) then
