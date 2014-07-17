@@ -20,9 +20,9 @@ end
 net.Receive("Class Selection", function( len, ply )
 	local chosen = net.ReadUInt(32)
 	ply:SetTeam( chosen )
-	if( theTeam == TEAM_PROPS ) then
+	if( chosen == TEAM_PROPS ) then
 		player_manager.SetPlayerClass( ply, "player_prop" )
-	elseif( theTeam == TEAM_HUNTERS ) then
+	elseif( chosen == TEAM_HUNTERS ) then
 		player_manager.SetPlayerClass( ply, "player_hunter" )
 	else
 		player_manager.SetPlayerClass( ply, "player_spectator" )
