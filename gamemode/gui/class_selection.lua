@@ -8,7 +8,7 @@ surface.CreateFont( "Sharp HUD",
 	shadow = true,
 })
 
-local function sendTeam( chosen )
+local function SendTeam( chosen )
 	net.Start("Class Selection")
 		net.WriteUInt( chosen, 32 )
 	net.SendToServer()
@@ -33,7 +33,7 @@ local function class_selection()
 		hunterBtn:SetText( "" )
 		hunterBtn:SetSize( btnWidth, btnHeight )
 		hunterBtn.DoClick = function()
-			sendTeam( TEAM_HUNTERS )
+			SendTeam( TEAM_HUNTERS )
 			cSPanel:Remove()
 		end
 
@@ -41,7 +41,7 @@ local function class_selection()
 		propBtn:SetText( "" )
 		propBtn:SetSize( btnWidth, btnHeight )
 		propBtn.DoClick = function()
-			sendTeam( TEAM_PROPS )
+			SendTeam( TEAM_PROPS )
 			cSPanel:Remove()
 		end
 
@@ -49,7 +49,7 @@ local function class_selection()
 		specBtn:SetText( "" )
 		specBtn:SetSize( btnWidth, btnHeight )
 		specBtn.DoClick = function()
-			sendTeam( TEAM_SPECTATOR )
+			SendTeam( TEAM_SPECTATOR )
 			cSPanel:Remove()
 		end
 
