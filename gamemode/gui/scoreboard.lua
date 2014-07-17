@@ -27,7 +27,9 @@ surface.CreateFont( "PlayerObjHunt",
 -- and then from that point on it pretty much looks after itself. It updates player info
 -- in the think function, and removes itself when the player leaves the server.
 --
+
 local PADDING = 3
+
 local PLAYER_LINE = 
 {
 	Init = function( self )
@@ -81,7 +83,7 @@ local PLAYER_LINE =
 		self.Avatar:SetPlayer( pl )
 		self.Name:SetText( pl:Nick() )
 
-		self:Think(self )
+		self:Think( self )
 
 	end,
 
@@ -126,11 +128,13 @@ local PLAYER_LINE =
 		--
 		-- Connecting players go at the very bottom
 		--
-		/*
+		
 		if ( self.Player:Team() == TEAM_CONNECTING ) then
+			
 			self:SetZPos( 2000 )
+		
 		end
-		*/
+		
 		--
 		-- This is what sorts the list. The panels are docked in the z order, 
 		-- so if we set the z order according to kills they'll be ordered that way!
@@ -140,6 +144,7 @@ local PLAYER_LINE =
 		(
 			self.NumKills * -ScrW()/40) +
 			self.NumDeaths +
+			
 			math.min(string.byte(self.Player:Nick(), -1)/2, 99)
 		)
 	end,
@@ -154,22 +159,20 @@ local PLAYER_LINE =
 		-- We draw our background a different colour based on the status of the player
 		--
 		if ( self.Player:Team() == TEAM_PROPS) then
-			surface.SetDrawColor( OFF_COLOR )
+			surface.SetDrawColor( PLAYER_LINE_COLOR )
 			surface.DrawRect( 0, 0, w, h)
 			surface.SetDrawColor(PANEL_BORDER)
 			surface.DrawOutlinedRect( 0, 0, w, h)
 			return
 		end
 		if ( self.Player:Team() == TEAM_HUNTERS) then
-			surface.SetDrawColor( Color(85,85,85) )
+			surface.SetDrawColor( PLAYER_LINE_COLOR )
 			surface.DrawRect( 0, 0, w, h)
 			surface.SetDrawColor(PANEL_BORDER)
 			surface.DrawOutlinedRect( 0, 0, w, h)
 			return
 		end
 
-		-- all other teams
-		draw.RoundedBox( 4, 0, 0, w, h, Color( 127, 127, 127, 127 ) )
 		return
 
 	end,
@@ -184,20 +187,20 @@ local HUNTERS_BOARD =
 {
 	Init = function( self )
 		
-		self:SetSize(ScrW()/6, ScrH()/2 )//4
+		self:SetSize( ScrW()/6, ScrH()/2 )
 		
 		self.Header = self:Add( "Panel" )
 		self.Header:Dock( TOP )
-		self.Header:SetHeight( 40 )
+		self.Header:SetHeight( ScrH()/27 )
 		
-		self.Header.Paint = function(self,w,h)
+		self.Header.Paint = function(self, w, h)
 		surface.SetDrawColor( TEAM_HUNTERS_COLOR )
-		surface.DrawRect(0,0,w,h)
+		surface.DrawRect(0, 0, w, h)
 		end
 		
 		self.Name = self.Header:Add( "DLabel" )
 		self.Name:Dock( TOP )
-		self.Name:SetHeight( 40 )
+		self.Name:SetHeight( ScrH()/27 )
 		self.Name:SetText("")
 		
 		self.Name.Paint = function(self,w,h)
@@ -231,8 +234,8 @@ local HUNTERS_BOARD =
 	
 	PerformLayout = function( self )
 		
-		self:Dock(LEFT)
-		self:DockMargin(638,ScrH()/7,0,0)
+		self:Dock( LEFT )
+		self:DockMargin( ScrW()/3-2, ScrH()/7, 0, 0 )
 		
 	end,
 
@@ -265,9 +268,9 @@ local HUNTERS_BOARD =
 			
 			self.Scores:AddItem( pl.ScoreEntry )
 		
-		else if(IsValid(pl.ScoreEntry)) then
+		else if( IsValid( pl.ScoreEntry ) ) then
 			
-			if(pl.ScoreEntry:HasParent(self.Scores)) then
+			if(pl.ScoreEntry:HasParent( self.Scores ) ) then
 			
 			pl.ScoreEntry:Remove()
 		
@@ -288,7 +291,7 @@ local PROPS_BOARD =
 		
 		self.Header = self:Add( "Panel" )
 		self.Header:Dock( TOP )
-		self.Header:SetHeight( 40 )
+		self.Header:SetHeight( ScrH()/27 )
 		
 		self.Header.Paint = function(self,w,h)
 		surface.SetDrawColor( TEAM_PROPS_COLOR )
@@ -297,10 +300,10 @@ local PROPS_BOARD =
 		
 		self.Name = self.Header:Add( "DLabel" )
 		self.Name:Dock( TOP )
-		self.Name:SetHeight( 40 )
+		self.Name:SetHeight( ScrH()/27 )
 		self.Name:SetText("")
 		
-		self.Name.Paint = function(self,w,h)
+		self.Name.Paint = function( self, w, h )
 		
 		surface.SetFont( "ScoreboardObjHunt" )
 		surface.SetTextColor( Color( 255,255,255,255 ) )
@@ -330,9 +333,8 @@ local PROPS_BOARD =
 
 	PerformLayout = function( self )
 
-		
 		self:Dock(RIGHT)
-		self:DockMargin(0,ScrH()/7,638,0)//-100
+		self:DockMargin(0, ScrH()/7, ScrW()/3-2 , 0)
 		
 	end,
 
@@ -386,7 +388,7 @@ local SPECS_BOARD =
 {
 	Init = function( self )
 		
-		self:SetSize(ScrW()/3, ScrH()/6)
+		self:SetSize( ScrW()/3, ScrH()/6 )
 		
 		self.Header = self:Add("Panel")
 		self.Header:SetSize(self:GetWide(),ScrW()/40)
@@ -409,7 +411,7 @@ local SPECS_BOARD =
 	PerformLayout = function( self )
 
 		self:Center()
-		self:AlignBottom(math.floor(ScrH()/5.2))
+		self:AlignBottom( math.floor( ScrH()/5.2 ) )
 		
 	end,
 	
@@ -457,9 +459,9 @@ local SPECS_BOARD =
 		end
 	end
 	end
+	
 	self.Spec_Players:SetText(Spectators)
 	self.Spec_Players:SizeToContents()
-	
 	
 	end,
 }

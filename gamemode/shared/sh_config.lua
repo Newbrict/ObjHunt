@@ -64,6 +64,7 @@ PANEL_FILL = Color(200,200,200,20)
 PANEL_BORDER = Color(200,200,200,255)
 
 -- team colors displayed on the scoreboard
+PLAYER_LINE_COLOR = Color( 85, 85, 85 )
 TEAM_PROPS_COLOR = Color( 255, 0, 0, 100 )
 TEAM_HUNTERS_COLOR = Color( 0, 0, 255, 100 )
 
