@@ -35,6 +35,8 @@ end )
 
 
 function GM:ShowSpare1( ply ) -- This hook is called everytime F2 is pressed.
+	local theTaunt = "taunts/jihad.wav"
+	ply:EmitSound(theTaunt, 100)
     umsg.Start( "taunt_selection", ply ) -- Sending a message to the client.
     umsg.End()
 end	
