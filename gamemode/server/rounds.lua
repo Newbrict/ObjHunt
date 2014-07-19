@@ -31,6 +31,31 @@ local function GetLivingPlayers( onTeam )
 	return livingPly
 end
 
+local function SwapTeams()
+	local hunters = team.GetPlayers(TEAM_HUNTERS)
+	local props = team.GetPlayers(TEAM_PROPS)
+
+	for _, v in pairs(hunters) do
+		if( IsValid(v) ) then
+			RemovePlayerProp( v )
+			v:SetTeam( TEAM_PROPS )
+			player_manager.SetPlayerClass( v, "player_prop" )
+			v:KillSilent()
+			v:Spawn()
+		end
+	end
+
+	for _, v in pairs(props) do
+		if( IsValid(v) ) then
+			RemovePlayerProp( v )
+			v:SetTeam( TEAM_HUNTERS )
+			player_manager.SetPlayerClass( v, "player_hunter" )
+			v:KillSilent()
+			v:Spawn()
+		end
+	end
+end
+
 local function WaitRound()
 	-- wait for everyone to connect and what not
 	local mapTime = os.time() - mapStartTime
@@ -81,8 +106,6 @@ end
 local function EndRound()
 	-- if we've played enough times on this map
 	if( curRound >= OBJHUNT_ROUNDS ) then
-		-- no longer need the round orchestrator
-		hook.Remove( "Tick", "Round orchestrator" )
 		hook.Call( "OBJHUNT_RoundLimit" )
 	end
 
@@ -94,6 +117,10 @@ local function EndRound()
 	-- start the round after we've waiting long enough
 	local waitTime = os.time() - roundEndTime
 	if( waitTime >= OBJHUNT_POST_ROUND_TIME ) then
+		-- reset the map
+		game.CleanUpMap()
+		-- swap teams, respawn everyone
+		SwapTeams()
 		roundState = ROUND_START
 	end
 
@@ -115,7 +142,7 @@ end )
 
 hook.Add( "OBJHUNT_RoundStart", "Round start stuff", function()
 	print( "Round "..curRound.." is Starting" )
-	-- respawn everyone and swap teams
+
 	-- send data to client here most likely
 end )
 
@@ -130,5 +157,8 @@ hook.Add( "OBJHUNT_RoundEnd_Hunters", "Handle hunters winning", function()
 end )
 
 hook.Add( "OBJHUNT_RoundLimit", "Start map voting", function()
+	-- no longer need the round orchestrator
+	hook.Remove( "Tick", "Round orchestrator" )
+
 	print( "Map voting should start now" )
 end )
