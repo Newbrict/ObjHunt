@@ -143,7 +143,14 @@ end )
 hook.Add( "OBJHUNT_RoundStart", "Round start stuff", function()
 	print( "Round "..curRound.." is Starting" )
 
-	-- send data to client here most likely
+	-- send data to clients
+	net.Start( "Round Update" )
+		net.WriteUInt(roundState, 8)
+		net.WriteUInt(curRound, 8)
+		net.WriteUInt(roundStartTime, 32)
+		net.WriteUInt(roundEndTime, 32)
+		net.WriteUInt(os.time(), 32)
+	net.Broadcast()
 end )
 
 hook.Add( "OBJHUNT_RoundEnd_Props", "Handle props winning", function()
@@ -162,3 +169,13 @@ hook.Add( "OBJHUNT_RoundLimit", "Start map voting", function()
 
 	print( "Map voting should start now" )
 end )
+
+hook.Add( "PlayerInitialSpawn", "Send Round data to client", function( ply )
+	net.Start( "Round Update" )
+		net.WriteUInt(roundState, 8)
+		net.WriteUInt(curRound, 8)
+		net.WriteUInt(roundStartTime, 32)
+		net.WriteUInt(roundEndTime, 32)
+		net.WriteUInt(os.time(), 32)
+	net.Send( ply )
+end)
