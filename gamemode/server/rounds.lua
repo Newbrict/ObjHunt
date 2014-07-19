@@ -20,6 +20,15 @@ local curRound = 0
 local roundStartTime = 0
 local roundEndTime = 0
 
+local function SendRoundUpdate( sendMethod )
+	net.Start( "Round Update" )
+		net.WriteUInt(roundState, 8)
+		net.WriteUInt(curRound, 8)
+		net.WriteUInt(roundStartTime, 32)
+		net.WriteUInt(CurTime(), 32)
+	sendMethod()
+end
+
 local function GetLivingPlayers( onTeam )
 	local allPly = team.GetPlayers( onTeam )
 	local livingPly = {}
@@ -144,22 +153,25 @@ hook.Add( "OBJHUNT_RoundStart", "Round start stuff", function()
 	print( "Round "..curRound.." is Starting" )
 
 	-- send data to clients
-	net.Start( "Round Update" )
-		net.WriteUInt(roundState, 8)
-		net.WriteUInt(curRound, 8)
-		net.WriteUInt(roundStartTime, 32)
-		net.WriteUInt(CurTime(), 32)
-	net.Broadcast()
+	SendRoundUpdate( function() return net.Broadcast() end )
 end )
 
 hook.Add( "OBJHUNT_RoundEnd_Props", "Handle props winning", function()
 	print( "Props win" )
 	-- tell all the props that they won, good job props
+	SendRoundUpdate( function() return net.Broadcast() end )
+	for _, v in pairs( player.GetAll() ) do
+		v:PrintMessage( HUD_PRINTCENTER, "Props Win!" )
+	end
 end )
 
 hook.Add( "OBJHUNT_RoundEnd_Hunters", "Handle hunters winning", function()
-	print( "Hunterss win" )
+	print( "Hunters win" )
 	-- tell all the hunters that they won, good job huners
+	SendRoundUpdate( function() return net.Broadcast() end )
+	for _, v in pairs( player.GetAll() ) do
+		v:PrintMessage( HUD_PRINTCENTER, "Hunters Win!" )
+	end
 end )
 
 hook.Add( "OBJHUNT_RoundLimit", "Start map voting", function()
@@ -170,10 +182,6 @@ hook.Add( "OBJHUNT_RoundLimit", "Start map voting", function()
 end )
 
 hook.Add( "PlayerInitialSpawn", "Send Round data to client", function( ply )
-	net.Start( "Round Update" )
-		net.WriteUInt(roundState, 8)
-		net.WriteUInt(curRound, 8)
-		net.WriteUInt(roundStartTime, 32)
-		net.WriteUInt(CurTime(), 32)
-	net.Send( ply )
+	-- sent to only the player, one time per join thing
+	SendRoundUpdate( function() return net.Send( ply ) end )
 end)
