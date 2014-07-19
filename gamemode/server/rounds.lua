@@ -1,5 +1,12 @@
 --[[ Rounds are handled here, obviously ]]--
 
+-----------------------------------
+-- THE HOOKS THAT THIS CALLS ARE --
+-- OBJHUNT_RoundStart            --
+-- OBJHUNT_RoundEnd_Props        --
+-- OBJHUNT_RoundEnd_Hunters      --
+-- OBJHUNT_RoundLimit            --
+-----------------------------------
 
 -- time to wait initially before starting in seconds
 local ROUND_WAIT  = 0
@@ -40,7 +47,7 @@ end
 local function StartRound()
 	curRound = curRound + 1
 	roundStartTime = os.time()
-	-- send round data to players
+	hook.Call( "OBJHUNT_RoundStart" )
 	roundState = ROUND_IN
 end
 
@@ -50,6 +57,7 @@ local function InRound()
 	if( roundTime >= OBJHUNT_ROUND_TIME ) then
 		roundState = ROUND_END
 		roundEndTime = os.time()
+		hook.Call( "OBJHUNT_RoundEnd_Props" )
 	end
 
 	-- make sure there is at least one living player left per team
@@ -59,11 +67,13 @@ local function InRound()
 	if( #hunters == 0 ) then
 		roundState = ROUND_END
 		roundEndTime = os.time()
+		hook.Call( "OBJHUNT_RoundEnd_Props" )
 	end
 
 	if( #props == 0 ) then
 		roundState = ROUND_END
 		roundEndTime = os.time()
+		hook.Call( "OBJHUNT_RoundEnd_Hunters" )
 	end
 
 end
@@ -73,7 +83,7 @@ local function EndRound()
 	if( curRound >= OBJHUNT_ROUNDS ) then
 		-- no longer need the round orchestrator
 		hook.Remove( "Tick", "Round orchestrator" )
-		-- start callvote stuff here
+		hook.Call( "OBJHUNT_RoundLimit" )
 	end
 
 	-- make sure we have at least one player on each team
@@ -85,20 +95,40 @@ local function EndRound()
 	local waitTime = os.time() - roundEndTime
 	if( waitTime >= OBJHUNT_POST_ROUND_TIME ) then
 		roundState = ROUND_START
-		-- respawn players here
 	end
 
 end
 
 local roundHandler = {}
-roundHandler[ROUND_WAIT]  = function() return WaitRound() end 
-roundHandler[ROUND_START] = function() return StartRound() end
-roundHandler[ROUND_IN] = function() return InRound() end
-roundHandler[ROUND_END] = function() return EndRound() end
+roundHandler[ROUND_WAIT]  = WaitRound
+roundHandler[ROUND_START] = StartRound
+roundHandler[ROUND_IN]    = InRound
+roundHandler[ROUND_END]   = EndRound
 
 
+-- start the round orchestrator when the game has initialized
 hook.Add( "Initialize", "Begin round functions", function()
 	hook.Add( "Tick", "Round orchestrator", function()
 		roundHandler[roundState]()
 	end )
+end )
+
+hook.Add( "OBJHUNT_RoundStart", "Round start stuff", function()
+	print( "Round "..curRound.." is Starting" )
+	-- respawn everyone and swap teams
+	-- send data to client here most likely
+end )
+
+hook.Add( "OBJHUNT_RoundEnd_Props", "Handle props winning", function()
+	print( "Props win" )
+	-- tell all the props that they won, good job props
+end )
+
+hook.Add( "OBJHUNT_RoundEnd_Hunters", "Handle hunters winning", function()
+	print( "Hunterss win" )
+	-- tell all the hunters that they won, good job huners
+end )
+
+hook.Add( "OBJHUNT_RoundLimit", "Start map voting", function()
+	print( "Map voting should start now" )
 end )
