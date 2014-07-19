@@ -116,7 +116,7 @@ local function RoundHUD()
 		-- Time left text
 		surface.SetFont( "ObjHUDFont" )
 		surface.SetTextColor( 255, 255, 255, 255 )
-		if( round.startTime == 0 ) then
+		if( round.startTime == 0 || round.state == 3 ) then
 			textToDraw = "00:00"
 		else
 			local secs = CurTime() - round.startTime + round.timePad
