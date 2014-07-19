@@ -71,17 +71,17 @@ end
 
 local function StartRound()
 	curRound = curRound + 1
-	roundStartTime = os.time()
+	roundStartTime = CurTime()
 	hook.Call( "OBJHUNT_RoundStart" )
 	roundState = ROUND_IN
 end
 
 local function InRound()
-	local roundTime = os.time() - roundStartTime
+	local roundTime = CurTime() - roundStartTime
 	-- make sure we have not gone over time
 	if( roundTime >= OBJHUNT_ROUND_TIME ) then
 		roundState = ROUND_END
-		roundEndTime = os.time()
+		roundEndTime = CurTime()
 		hook.Call( "OBJHUNT_RoundEnd_Props" )
 	end
 
@@ -91,13 +91,13 @@ local function InRound()
 
 	if( #hunters == 0 ) then
 		roundState = ROUND_END
-		roundEndTime = os.time()
+		roundEndTime = CurTime()
 		hook.Call( "OBJHUNT_RoundEnd_Props" )
 	end
 
 	if( #props == 0 ) then
 		roundState = ROUND_END
-		roundEndTime = os.time()
+		roundEndTime = CurTime()
 		hook.Call( "OBJHUNT_RoundEnd_Hunters" )
 	end
 
@@ -115,7 +115,7 @@ local function EndRound()
 	if( #props == 0 || #hunters == 0 ) then return end
 
 	-- start the round after we've waiting long enough
-	local waitTime = os.time() - roundEndTime
+	local waitTime = CurTime() - roundEndTime
 	if( waitTime >= OBJHUNT_POST_ROUND_TIME ) then
 		-- reset the map
 		game.CleanUpMap()
@@ -148,7 +148,7 @@ hook.Add( "OBJHUNT_RoundStart", "Round start stuff", function()
 		net.WriteUInt(roundState, 8)
 		net.WriteUInt(curRound, 8)
 		net.WriteUInt(roundStartTime, 32)
-		net.WriteUInt(os.time(), 32)
+		net.WriteUInt(CurTime(), 32)
 	net.Broadcast()
 end )
 
@@ -174,6 +174,6 @@ hook.Add( "PlayerInitialSpawn", "Send Round data to client", function( ply )
 		net.WriteUInt(roundState, 8)
 		net.WriteUInt(curRound, 8)
 		net.WriteUInt(roundStartTime, 32)
-		net.WriteUInt(os.time(), 32)
+		net.WriteUInt(CurTime(), 32)
 	net.Send( ply )
 end)
