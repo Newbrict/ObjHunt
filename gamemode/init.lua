@@ -2,7 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
-resource.AddFile("sound/taunts/jihad.wav") 
+resource.AddFile("sound/taunts/jihad.wav")
 
 function GM:PlayerInitialSpawn( ply )
 	ply:SetTeam( TEAM_SPECTATOR )
@@ -82,9 +82,9 @@ end
 hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Class Selection" )
 	util.AddNetworkString( "Map Time" )
+	util.AddNetworkString( "Round Update" )
 	util.AddNetworkString( "Prop Update" )
 	util.AddNetworkString( "Reset Prop" )
-	util.AddNetworkString( "round Time" )
 	util.AddNetworkString( "Selected Prop" )
 	util.AddNetworkString( "Prop Angle Lock" )
 	util.AddNetworkString( "Prop Angle Lock BROADCAST" )
@@ -93,8 +93,8 @@ hook.Add( "Initialize", "Precache all network strings", function()
 end )
 
 --[[ Map Time ]]--
-hook.Add( "Initialize", "Set Map Time", function() 
-	mapStartTime = os.time() 
+hook.Add( "Initialize", "Set Map Time", function()
+	mapStartTime = os.time()
 end )
 
 hook.Add( "PlayerInitialSpawn", "Send Map Time To New Player", function( ply )
@@ -106,7 +106,6 @@ end )
 
 --[[ sets the players prop, run PlayerCanBeEnt before using this ]]--
 function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
-	print( "running player prop code" )
 
 	local tHitboxMin, tHitboxMax
 	if( !hbMin || !hbMax ) then
@@ -202,15 +201,15 @@ net.Receive( "Prop Angle Lock", function( len, ply )
 	local propAngle = net.ReadAngle()
 	-- this is literally retarded
 	if( lockStatus == 1 ) then
-		lockStatus = true 
+		lockStatus = true
 	else
 		lockStatus = false
 	end
 
 	net.Start( "Prop Angle Lock BROADCAST" )
 		net.WriteEntity( ply.chosenProp )
-		net.WriteBit( lockStatus ) 
-		net.WriteAngle( propAngle ) 
+		net.WriteBit( lockStatus )
+		net.WriteAngle( propAngle )
 	net.Broadcast()
 end )
 
@@ -219,14 +218,14 @@ net.Receive( "Prop Angle Snap", function( len, ply )
 	local snapStatus = net.ReadBit()
 	-- this is literally retarded
 	if( snapStatus == 1 ) then
-		snapStatus = true 
+		snapStatus = true
 	else
 		snapStatus = false
 	end
 
 	net.Start( "Prop Angle Snap BROADCAST" )
 		net.WriteEntity( ply.chosenProp )
-		net.WriteBit( snapStatus ) 
+		net.WriteBit( snapStatus )
 	net.Broadcast()
 end )
 
