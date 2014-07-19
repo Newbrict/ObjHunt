@@ -65,8 +65,8 @@ net.Receive( "Round Update", function()
 	round.state     = net.ReadInt(8)
 	round.current   = net.ReadInt(8)
 	round.startTime = net.ReadInt(32)
-	-- pad the local users time if their clock differs
-	round.timePad   = net.ReadInt(32) - os.time()
+	-- pad the local clock so that the time is accurate
+	round.timePad   = net.ReadInt(32) - CurTime()
 
 end )
 

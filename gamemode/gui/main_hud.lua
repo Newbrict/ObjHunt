@@ -119,7 +119,7 @@ local function RoundHUD()
 		if( round.startTime == 0 ) then
 			textToDraw = "00:00"
 		else
-			local secs = os.time() - round.startTime + round.timePad
+			local secs = CurTime() - round.startTime + round.timePad
 			secs = OBJHUNT_ROUND_TIME - secs
 			secs = math.max( 0, secs )
 			textToDraw = string.FormattedTime( secs, "%02i:%02i" )
