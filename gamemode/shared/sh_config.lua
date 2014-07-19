@@ -10,11 +10,21 @@ TEAM_HUNTERS    = 2
 TEAM_PROPS_DEFAULT_MODEL = "models/player.mdl"
 TEAM_HUNTERS_DEFAULT_MODEL = "models/player/Combine_Super_Soldier.mdl"
 
+
 -- Number of rounds per map
 OBJHUNT_ROUNDS = 4
 
 -- Length of each round in seconds
-OBJHUNT_ROUND_TIME = 300
+--OBJHUNT_ROUND_TIME = 300
+OBJHUNT_ROUND_TIME = 5
+
+-- Initial waiting time before first round starts
+--OBJHUNT_PRE_ROUND_TIME = 30
+OBJHUNT_PRE_ROUND_TIME = 10
+
+-- Waiting time before new round starts after first round
+--OBJHUNT_POST_ROUND_TIME = 10
+OBJHUNT_POST_ROUND_TIME = 5
 
 -- How much time props have before hunters are released
 OBJHUNT_HIDE_TIME = 15
