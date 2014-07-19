@@ -62,11 +62,9 @@ end )
 
 round = {}
 net.Receive( "Round Update", function()
-	print( "hit" )
 	round.state     = net.ReadInt(8)
 	round.current   = net.ReadInt(8)
 	round.startTime = net.ReadInt(32)
-	round.endTime   = net.ReadInt(32)
 	-- pad the local users time if their clock differs
 	round.timePad   = net.ReadInt(32) - os.time()
 
