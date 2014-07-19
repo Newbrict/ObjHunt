@@ -29,9 +29,11 @@ net.Receive( "Prop update", function( length )
 end )
 
 net.Receive( "Reset Prop", function( length ) 
-	LocalPlayer().chosenProp = nil
 	LocalPlayer():ResetHull()
-	LocalPlayer().propHeight = 70
+	LocalPlayer().chosenProp      = nil
+	LocalPlayer().chosenPropIndex = nil
+	LocalPlayer().wantThirdPerson = false
+	LocalPlayer().wantAngleLock   = nil
 end )
 
 net.Receive( "Prop Angle Lock BROADCAST", function( length ) 

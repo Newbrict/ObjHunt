@@ -18,7 +18,6 @@ function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
 end	
 
 net.Receive("Class Selection", function( len, ply )
-	RemovePlayerProp( ply )
 	local chosen = net.ReadUInt(32)
 	ply:SetTeam( chosen )
 	if( chosen == TEAM_PROPS ) then
@@ -29,6 +28,7 @@ net.Receive("Class Selection", function( len, ply )
 		player_manager.SetPlayerClass( ply, "player_spectator" )
 	end
 
+	RemovePlayerProp( ply )
 	ply:KillSilent()
 	ply:Spawn()
 end )
@@ -106,6 +106,7 @@ end )
 
 --[[ sets the players prop, run PlayerCanBeEnt before using this ]]--
 function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
+	print( "running player prop code" )
 
 	local tHitboxMin, tHitboxMax
 	if( !hbMin || !hbMax ) then
@@ -239,14 +240,14 @@ end )
 
 --[[ remove the ent prop ]]--
 function RemovePlayerProp( ply )
-	if( ply.chosenProp ) then
+	if( IsValid( ply.chosenProp ) ) then
 		ply.chosenProp:Remove()
-		ply.chosenProp = nil
-		ply:ResetHull()
-		net.Start( "Reset Prop" )
-			-- empty, just used for the hook
-		net.Send( ply )
 	end
+	ply.chosenProp = nil
+	ply:ResetHull()
+	net.Start( "Reset Prop" )
+		-- empty, just used for the hook
+	net.Send( ply )
 end
 
 function GM:PlayerSelectSpawn( ply )

@@ -27,7 +27,7 @@ hook.Add("CalcView", "ObjHunt CalcView", function( ply, pos, angles, fov )
 		ply.viewOrigin = view.origin
 		return view
 	elseif( ply:Team() == TEAM_PROPS ) then
-		local height = math.max( ply.propHeight, VIEW_MIN_Z )
+		local height = math.max( ply.propHeight || 64, VIEW_MIN_Z )
 		view.origin = ply:GetPos() + Vector(0,0, height)
 		ply.viewOrigin = view.origin
 		return view
