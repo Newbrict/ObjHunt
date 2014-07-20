@@ -10,6 +10,8 @@ TEAM_HUNTERS    = 2
 TEAM_PROPS_DEFAULT_MODEL = "models/player.mdl"
 TEAM_HUNTERS_DEFAULT_MODEL = "models/player/Combine_Super_Soldier.mdl"
 
+-- the maximum difference between the number of players for each team
+MAX_TEAM_NUMBER_DIFFERENCE = 2
 
 -- Number of rounds per map
 OBJHUNT_ROUNDS = 4
