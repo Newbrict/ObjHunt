@@ -18,7 +18,6 @@ function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
 end
 
 net.Receive("Class Selection", function( len, ply )
-	RemovePlayerProp( ply )
 	local chosen = net.ReadUInt(32)
 
   if math.abs( team.NumPlayers( TEAM_PROPS ) - team.NumPlayers( TEAM_HUNTERS ) ) > MAX_TEAM_NUMBER_DIFFERENCE then
@@ -38,6 +37,7 @@ net.Receive("Class Selection", function( len, ply )
 		player_manager.SetPlayerClass( ply, "player_spectator" )
 	end
 
+	RemovePlayerProp( ply )
 	ply:KillSilent()
 	ply:Spawn()
 end )
@@ -91,9 +91,9 @@ end
 hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Class Selection" )
 	util.AddNetworkString( "Map Time" )
+	util.AddNetworkString( "Round Update" )
 	util.AddNetworkString( "Prop Update" )
 	util.AddNetworkString( "Reset Prop" )
-	util.AddNetworkString( "round Time" )
 	util.AddNetworkString( "Selected Prop" )
 	util.AddNetworkString( "Prop Angle Lock" )
 	util.AddNetworkString( "Prop Angle Lock BROADCAST" )
@@ -248,14 +248,14 @@ end )
 
 --[[ remove the ent prop ]]--
 function RemovePlayerProp( ply )
-	if( ply.chosenProp ) then
+	if( IsValid( ply.chosenProp ) ) then
 		ply.chosenProp:Remove()
-		ply.chosenProp = nil
-		ply:ResetHull()
-		net.Start( "Reset Prop" )
-			-- empty, just used for the hook
-		net.Send( ply )
 	end
+	ply.chosenProp = nil
+	ply:ResetHull()
+	net.Start( "Reset Prop" )
+		-- empty, just used for the hook
+	net.Send( ply )
 end
 
 function GM:PlayerSelectSpawn( ply )

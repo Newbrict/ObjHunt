@@ -17,8 +17,8 @@ MAX_TEAM_NUMBER_DIFFERENCE = 2
 OBJHUNT_ROUNDS = 4
 
 -- Length of each round in seconds
---OBJHUNT_ROUND_TIME = 300
-OBJHUNT_ROUND_TIME = 5
+OBJHUNT_ROUND_TIME = 300
+--OBJHUNT_ROUND_TIME = 5
 
 -- Initial waiting time before first round starts
 --OBJHUNT_PRE_ROUND_TIME = 30
@@ -88,4 +88,4 @@ OFF_COLOR = Color( 255, 0, 0, 100 )
 HP_COLOR = Color( 255, 0, 0, 150 )
 DEPLETED_COLOR = Color( 255, 0, 0, 150 )
 FULL_COLOR = Color( 0, 0, 255, 150 )
-
+ROUND_TIME_COLOR = Color( 85, 85, 85, 200 )

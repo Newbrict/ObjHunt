@@ -29,9 +29,11 @@ net.Receive( "Prop update", function( length )
 end )
 
 net.Receive( "Reset Prop", function( length ) 
-	LocalPlayer().chosenProp = nil
 	LocalPlayer():ResetHull()
-	LocalPlayer().propHeight = 70
+	LocalPlayer().chosenProp      = nil
+	LocalPlayer().chosenPropIndex = nil
+	LocalPlayer().wantThirdPerson = false
+	LocalPlayer().wantAngleLock   = nil
 end )
 
 net.Receive( "Prop Angle Lock BROADCAST", function( length ) 
@@ -56,6 +58,16 @@ net.Receive( "Prop Angle Snap BROADCAST", function( length )
 	else
 		prop.angleSnap = false
 	end
+end )
+
+round = {}
+net.Receive( "Round Update", function()
+	round.state     = net.ReadInt(8)
+	round.current   = net.ReadInt(8)
+	round.startTime = net.ReadInt(32)
+	-- pad the local clock so that the time is accurate
+	round.timePad   = net.ReadInt(32) - CurTime()
+
 end )
 
 -- disable default hud elements here

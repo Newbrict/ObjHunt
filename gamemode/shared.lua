@@ -24,8 +24,8 @@ end
 
 if SERVER then
 	print( "Adding Server Side Lua Files..." )
-	resourceLoader( resources["server"], include )
 	resourceLoader( resources["shared"], function(x) include(x) AddCSLuaFile(x) end )
+	resourceLoader( resources["server"], include )
 	resourceLoader( resources["client"], AddCSLuaFile )
 else
 	print( "Adding Client Side Lua Files..." )
