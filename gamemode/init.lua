@@ -15,10 +15,19 @@ function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
 	net.Start( "Class Selection" )
 		-- Just used as a hook
 	net.Send( ply )
-end	
+end
 
 net.Receive("Class Selection", function( len, ply )
 	local chosen = net.ReadUInt(32)
+
+  if math.abs( team.NumPlayers( TEAM_PROPS ) - team.NumPlayers( TEAM_HUNTERS ) ) > MAX_TEAM_NUMBER_DIFFERENCE then
+      if team.NumPlayers( TEAM_PROPS ) > team.NumPlayers( TEAM_HUNTERS ) then
+        chosen = TEAM_HUNTERS
+      else
+        chosen = TEAM_PROPS
+      end
+  end
+
 	ply:SetTeam( chosen )
 	if( chosen == TEAM_PROPS ) then
 		player_manager.SetPlayerClass( ply, "player_prop" )
@@ -39,7 +48,7 @@ function GM:ShowSpare1( ply ) -- This hook is called everytime F2 is pressed.
 	ply:EmitSound(theTaunt, 100)
     umsg.Start( "taunt_selection", ply ) -- Sending a message to the client.
     umsg.End()
-end	
+end
 
 function GM:PlayerSetModel( ply )
 	class = player_manager.GetPlayerClass( ply )
@@ -68,7 +77,7 @@ end
 
 function GM:EntityTakeDamage( target, dmginfo)
 	local attacker = dmginfo:GetAttacker()
-	
+
 	-- since player_prop_ent isn't in USABLE_PROP_ENTS this is sufficient logic to prevent
 	-- player owned props from getting hurt
 	if( !target:IsPlayer() && table.HasValue( USABLE_PROP_ENTITIES, target:GetClass() ) ) then
@@ -167,7 +176,7 @@ end
 --[[ When a player presses +use on a prop ]]--
 net.Receive( "Selected Prop", function( len, ply )
 	local ent = net.ReadEntity()
-	
+
 	local tHitboxMin, tHitboxMax = ply.chosenProp:GetHitBoxBounds( 0, 0 )
 	if( !playerCanBeEnt( ply, ent) ) then return end
 	local oldHP = ply.chosenProp.health
@@ -183,7 +192,7 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 	ply:SetRenderMode( RENDERMODE_TRANSALPHA )
 	ply:SetColor( Color(0,0,0,0) )
 	ply:SetBloodColor( DONT_BLEED )
-	
+
 	ply.chosenProp = ents.Create("player_prop_ent")
 	ply.chosenProp:Spawn()
 	ply.chosenProp:SetOwner( ply )
