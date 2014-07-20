@@ -1,5 +1,5 @@
 GM.Name    = "ObjHunt"
-GM.Author  = "Newbrict, Pepsi, Maxwellstorm"
+GM.Author  = "Newbrict, Pepsi, Maxwellstorm, Zombie"
 GM.Email   = "N/A"
 GM.Website = "N/A"
 
@@ -53,7 +53,7 @@ function playerCanBeEnt( ply, ent )
 		end
 	end
 
-	if( WouldBeStuck( ply, ent ) ) then return false end 
+	if( WouldBeStuck( ply, ent ) ) then return false end
 
 	return true
 end
@@ -72,11 +72,11 @@ function GM:CreateTeams( )
 end
 
 --[[ some share hooks, disable footsteps and taget id's ]]--
-function GM:HUDDrawTargetID() 
+function GM:HUDDrawTargetID()
 	return true
 end
 
-function GM:PlayerFootstep( ply, pos, foot, sound, volume, rf ) 
+function GM:PlayerFootstep( ply, pos, foot, sound, volume, rf )
 	if( ply:Team() != TEAM_HUNTERS ) then return true end
 end
 
