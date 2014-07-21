@@ -19,8 +19,18 @@ end
 
 net.Receive("Class Selection", function( len, ply )
 	local chosen = net.ReadUInt(32)
+  local maxTeamNumDiff
 
-  if math.abs( team.NumPlayers( TEAM_PROPS ) - team.NumPlayers( TEAM_HUNTERS ) ) > MAX_TEAM_NUMBER_DIFFERENCE then
+  if ply:Team() == TEAM_SPECTATOR then
+      maxTeamNumDiff = MAX_TEAM_NUMBER_DIFFERENCE - 1
+  else
+      maxTeamNumDiff = MAX_TEAM_NUMBER_DIFFERENCE
+  end
+
+  if math.abs( team.NumPlayers( TEAM_PROPS ) - team.NumPlayers( TEAM_HUNTERS ) ) > maxTeamNumDiff then
+      if ply:Team() == TEAM_SPECTATOR then
+        ply:ChatPrint( "Sorry, that team is currently full." )
+        return end
       if team.NumPlayers( TEAM_PROPS ) > team.NumPlayers( TEAM_HUNTERS ) then
         chosen = TEAM_HUNTERS
       else
