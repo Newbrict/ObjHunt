@@ -19,22 +19,31 @@ end
 
 net.Receive("Class Selection", function( len, ply )
 	local chosen = net.ReadUInt(32)
+	local playerTable = {}
 
-  if math.abs( team.NumPlayers( TEAM_PROPS ) - team.NumPlayers( TEAM_HUNTERS ) ) > MAX_TEAM_NUMBER_DIFFERENCE then
-      if team.NumPlayers( TEAM_PROPS ) > team.NumPlayers( TEAM_HUNTERS ) then
-        chosen = TEAM_HUNTERS
-      else
-        chosen = TEAM_PROPS
-      end
-  end
+	if chosen == ply:Team() then
+		ply:ChatPrint( "You are already on that team." )
+		return end
+	if chosen == TEAM_SPECTATOR then
+		player_manager.SetPlayerClass( ply, "player_spectator" )
+	end
+
+	playerTable[ TEAM_PROPS ] = team.NumPlayers( TEAM_PROPS )
+	playerTable[ TEAM_HUNTERS ] = team.NumPlayers( TEAM_HUNTERS )
+	playerTable[ TEAM_SPECTATOR ] = team.NumPlayers( TEAM_SPECTATOR )
+	playerTable[ ply:Team() ] = playerTable[ ply:Team() ] - 1
+
+	if math.abs( playerTable[ TEAM_PROPS ] - playerTable[ TEAM_HUNTERS ] ) >= MAX_TEAM_NUMBER_DIFFERENCE then
+		if playerTable[ chosen ] == math.max( playerTable[ TEAM_PROPS ], playerTable[ TEAM_HUNTERS ] ) then
+			ply:ChatPrint( "Sorry, that team is currently full." )
+			return end
+	end
 
 	ply:SetTeam( chosen )
 	if( chosen == TEAM_PROPS ) then
 		player_manager.SetPlayerClass( ply, "player_prop" )
 	elseif( chosen == TEAM_HUNTERS ) then
 		player_manager.SetPlayerClass( ply, "player_hunter" )
-	else
-		player_manager.SetPlayerClass( ply, "player_spectator" )
 	end
 
 	RemovePlayerProp( ply )
