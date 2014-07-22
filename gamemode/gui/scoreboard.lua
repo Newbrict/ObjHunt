@@ -126,16 +126,6 @@ local PLAYER_LINE =
 		end
 		
 		--
-		-- Connecting players go at the very bottom
-		--
-		
-		if ( self.Player:Team() == TEAM_CONNECTING ) then
-			
-			self:SetZPos( 2000 )
-		
-		end
-		
-		--
 		-- This is what sorts the list. The panels are docked in the z order, 
 		-- so if we set the z order according to kills they'll be ordered that way!
 		-- Careful though, it's a signed short internally, so needs to range between -32,768k and +32,767
@@ -214,21 +204,13 @@ local HUNTERS_BOARD =
 		surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
 		surface.DrawText( text )
 		
-		
 		surface.SetDrawColor(PANEL_BORDER)
 		surface.DrawOutlinedRect( 0, 0, w, h)
 		
 		end
 		
-		--self.NumPlayers = self.Header:Add( "DLabel" )
-		--self.NumPlayers:SetFont( "ScoreboardObjHunt" )
-		--self.NumPlayers:SetTextColor( Color( 255, 255, 255, 255 ) )
-		--self.NumPlayers:SetPos( 0, 100 - 30 )
-		--self.NumPlayers:SetSize( 300, 30 )
-		--self.NumPlayers:SetContentAlignment( 4 )
-
 		self.Scores = self:Add( "DScrollPanel" )
-		self.Scores:Dock( FILL)//fill
+		self.Scores:Dock( FILL )
 
 	end,
 	
@@ -268,14 +250,15 @@ local HUNTERS_BOARD =
 			
 			self.Scores:AddItem( pl.ScoreEntry )
 		
-		else if( IsValid( pl.ScoreEntry ) ) then
+		elseif( IsValid( pl.ScoreEntry ) ) then
 			
 			if(pl.ScoreEntry:HasParent( self.Scores ) ) then
 			
+			pl.ScoreEntry:SetZPos( 2000 )
 			pl.ScoreEntry:Remove()
-		
+			
 			end
-		end
+		
 		end
 		end
 	end,
@@ -319,13 +302,6 @@ local PROPS_BOARD =
 		
 		end
 		
-		--self.NumPlayers = self.Header:Add( "DLabel" )
-		--self.NumPlayers:SetFont( "ScoreboardObjHunt" )
-		--self.NumPlayers:SetTextColor( Color( 255, 255, 255, 255 ) )
-		--self.NumPlayers:SetPos( 0, 100 - 30 )
-		--self.NumPlayers:SetSize( 300, 30 )
-		--self.NumPlayers:SetContentAlignment( 4 )
-
 		self.Scores = self:Add( "DScrollPanel" )
 		self.Scores:Dock(FILL)//fill
 
@@ -368,14 +344,14 @@ local PROPS_BOARD =
 			
 			self.Scores:AddItem( pl.ScoreEntry )
 		
-		else if(IsValid(pl.ScoreEntry)) then
+		elseif(IsValid(pl.ScoreEntry)) then
 		
 			if(pl.ScoreEntry:HasParent(self.Scores)) then
-		
+			
+			pl.ScoreEntry:SetZPos( 2000 )
 			pl.ScoreEntry:Remove()
 		
 			end
-		end
 		end
 		end
 	end,
@@ -394,11 +370,21 @@ local SPECS_BOARD =
 		self.Header:SetSize(self:GetWide(),ScrW()/40)
 		
 		self.Name = self.Header:Add("DLabel")
-		self.Name:SetFont("ScoreboardObjHunt")
-		self.Name:SetTextColor( Color( 255, 255, 255, 255 ) )
 		self.Name:SetSize(142,40)
 		self.Name:Center()
-		self.Name:SetText("Spectators")
+		
+		self.Name.Paint = function( self, w, h )
+		
+		surface.SetFont( "ScoreboardObjHunt" )
+		surface.SetTextColor( Color( 255,255,255,255 ) )
+		
+		local text = "Spectators"
+		local tw, th = surface.GetTextSize( text )
+		
+		surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
+		surface.DrawText( text )
+		
+		end
 		
 		self.Spec_Players = self:Add("DLabel")
 		self.Spec_Players:SetFont("SpectatorScoreboardObjHunt")
