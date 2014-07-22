@@ -18,8 +18,6 @@ local function class_selection()
 	local width   = 300
 	local height  = 100
 	local padding = 10
-	local startX  = ScrW()/2 - (width/2)
-	local startY  = ScrH()/2 - (height/2) 
 	local btnHeight = 30
 	local btnWidth  = 80
 

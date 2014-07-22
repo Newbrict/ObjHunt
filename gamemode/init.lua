@@ -72,6 +72,12 @@ function GM:PlayerShouldTakeDamage( victim, attacker )
 	if( victim:Team() == TEAM_PROPS && attacker:GetClass() == "worldspawn" ) then
 		return false
 	end
+
+	-- no friendly fire
+	if( victim:Team() == attacker:Team() ) then
+		return false
+	end
+
 	return true
 end
 
