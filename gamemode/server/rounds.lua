@@ -116,6 +116,7 @@ local function EndRound()
 	-- if we've played enough times on this map
 	if( curRound >= OBJHUNT_ROUNDS ) then
 		hook.Call( "OBJHUNT_RoundLimit" )
+		return
 	end
 
 	-- make sure we have at least one player on each team
