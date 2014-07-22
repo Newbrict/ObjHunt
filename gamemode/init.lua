@@ -83,8 +83,10 @@ function GM:PlayerShouldTakeDamage( victim, attacker )
 	end
 
 	-- no friendly fire
-	if( victim:Team() == attacker:Team() ) then
-		return false
+	if( attacker:IsPlayer() ) then
+		if( victim:Team() == attacker:Team() ) then
+			return false
+		end
 	end
 
 	return true
@@ -201,21 +203,24 @@ end )
 
 --[[ When a player on team_props spawns ]]--
 hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
-	if( ply:Team() != TEAM_PROPS ) then return end
+	if( ply:Team() == TEAM_PROPS ) then
+		-- make the player invisible
+		ply:SetRenderMode( RENDERMODE_TRANSALPHA )
+		ply:SetColor( Color(0,0,0,0) )
+		ply:SetBloodColor( DONT_BLEED )
 
-	-- make the player invisible
-	ply:SetRenderMode( RENDERMODE_TRANSALPHA )
-	ply:SetColor( Color(0,0,0,0) )
-	ply:SetBloodColor( DONT_BLEED )
+		ply.chosenProp = ents.Create("player_prop_ent")
+		ply.chosenProp:Spawn()
+		ply.chosenProp:SetOwner( ply )
+		-- custom initial hb
+		SetPlayerProp( ply, ply.chosenProp, PROP_DEFAULT_SCALE, PROP_DEFAULT_HB_MIN, PROP_DEFAULT_HB_MAX )
 
-	ply.chosenProp = ents.Create("player_prop_ent")
-	ply.chosenProp:Spawn()
-	ply.chosenProp:SetOwner( ply )
-	-- custom initial hb
-	SetPlayerProp( ply, ply.chosenProp, PROP_DEFAULT_SCALE, PROP_DEFAULT_HB_MIN, PROP_DEFAULT_HB_MAX )
-
-	-- default prop should be able to step wherever
-	ply:SetStepSize( 20 )
+		-- default prop should be able to step wherever
+		ply:SetStepSize( 20 )
+	elseif( ply:Team() == TEAM_HUNTERS ) then
+		ply:SetRenderMode( RENDERMODE_NORMAL )
+		ply:SetColor( Color(255,255,255,255) )
+	end
 
 end )
 

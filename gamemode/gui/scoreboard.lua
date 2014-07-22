@@ -372,6 +372,7 @@ local SPECS_BOARD =
 		self.Name = self.Header:Add("DLabel")
 		self.Name:SetSize(142,40)
 		self.Name:Center()
+		self.Name:SetText( "" )
 		
 		self.Name.Paint = function( self, w, h )
 		
