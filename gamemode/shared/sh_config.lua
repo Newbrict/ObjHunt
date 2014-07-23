@@ -7,7 +7,7 @@ TEAM_PROPS      = 1
 TEAM_HUNTERS    = 2
 
 -- the default player models
-TEAM_PROPS_DEFAULT_MODEL = "models/player.mdl"
+TEAM_PROPS_DEFAULT_MODEL = "models/player/Combine_Super_Soldier.mdl"
 TEAM_HUNTERS_DEFAULT_MODEL = "models/player/Combine_Super_Soldier.mdl"
 
 -- the maximum difference between the number of players for each team
