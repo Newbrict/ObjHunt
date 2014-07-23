@@ -75,6 +75,13 @@ local function WaitRound()
 	local props = team.GetPlayers(TEAM_PROPS)
 	if( #props == 0 || #hunters == 0 ) then return end
 
+	for _, v in pairs( hunters ) do
+		v:Spawn()
+	end
+	for _, v in pairs( props ) do
+		v:Spawn()
+	end
+
 	roundState = ROUND_START
 end
 

@@ -7,9 +7,9 @@ resource.AddFile("sound/taunts/jihad.wav")
 function GM:PlayerInitialSpawn( ply )
 	ply:SetTeam( TEAM_SPECTATOR )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
-	return true
-
 end
+
+
 
 function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
 	net.Start( "Class Selection" )
@@ -48,6 +48,7 @@ net.Receive("Class Selection", function( len, ply )
 
 	RemovePlayerProp( ply )
 	ply:KillSilent()
+	--StartSpectate( ply )
 	ply:Spawn()
 end )
 
@@ -264,6 +265,7 @@ end )
 
 hook.Add( "PlayerDeath", "Remove ent prop on death", function( ply )
 	RemovePlayerProp( ply )
+	StartSpectate( ply )
 end )
 
 --[[ remove the ent prop ]]--
