@@ -8,7 +8,6 @@
 -- OBJHUNT_RoundLimit            --
 -----------------------------------
 
--- time to wait initially before starting in seconds
 local ROUND_WAIT  = 0
 local ROUND_START = 1
 local ROUND_IN    = 2
@@ -75,21 +74,18 @@ local function WaitRound()
 	local props = team.GetPlayers(TEAM_PROPS)
 	if( #props == 0 || #hunters == 0 ) then return end
 
-	for _, v in pairs( hunters ) do
-		v:Spawn()
-	end
-	for _, v in pairs( props ) do
-		v:Spawn()
-	end
-
 	roundState = ROUND_START
 end
 
 local function StartRound()
 	curRound = curRound + 1
 	roundStartTime = CurTime()
-	hook.Call( "OBJHUNT_RoundStart" )
+	-- reset the map
+	game.CleanUpMap()
+	-- swap teams, respawn everyone
+	SwapTeams()
 	roundState = ROUND_IN
+	hook.Call( "OBJHUNT_RoundStart" )
 end
 
 local function InRound()
@@ -134,10 +130,6 @@ local function EndRound()
 	-- start the round after we've waiting long enough
 	local waitTime = CurTime() - roundEndTime
 	if( waitTime >= OBJHUNT_POST_ROUND_TIME ) then
-		-- reset the map
-		game.CleanUpMap()
-		-- swap teams, respawn everyone
-		SwapTeams()
 		roundState = ROUND_START
 	end
 

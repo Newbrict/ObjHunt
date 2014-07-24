@@ -48,7 +48,6 @@ net.Receive("Class Selection", function( len, ply )
 
 	RemovePlayerProp( ply )
 	ply:KillSilent()
-	--StartSpectate( ply )
 	ply:Spawn()
 end )
 
@@ -71,7 +70,8 @@ function GM:PlayerSetModel( ply )
 		ply:SetModel( TEAM_PROPS_DEFAULT_MODEL )
 
 		-- this fixes ent culling when head in ceiling
-		ply:SetViewOffset( Vector(0,0,1) )
+		-- should be based on default hit box!
+		ply:SetViewOffset( Vector(0,0,35) )
 	else
 		return
 	end
@@ -85,7 +85,7 @@ function GM:PlayerShouldTakeDamage( victim, attacker )
 
 	-- no friendly fire
 	if( attacker:IsPlayer() ) then
-		if( victim:Team() == attacker:Team() ) then
+		if( victim:Team() == attacker:Team() && victim != attacker ) then
 			return false
 		end
 	end
@@ -158,6 +158,9 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 	ply:SetHull( tHitboxMin, tHitboxMax )
 	ply:SetHullDuck( tHitboxMin, tHitboxMax )
 	local tHeight = tHitboxMax.z-tHitboxMin.z
+
+	-- match the view offset for calcviewing to the height
+	ply:SetViewOffset( Vector(0,0,tHeight) )
 
 	-- scale steps to prop size
 	ply:SetStepSize( math.Round( 4+(tHeight)/4 ) )
@@ -265,7 +268,6 @@ end )
 
 hook.Add( "PlayerDeath", "Remove ent prop on death", function( ply )
 	RemovePlayerProp( ply )
-	StartSpectate( ply )
 end )
 
 --[[ remove the ent prop ]]--
