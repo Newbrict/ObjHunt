@@ -79,6 +79,7 @@ PANEL_BORDER = Color(200,200,200,255)
 PLAYER_LINE_COLOR = Color( 85, 85, 85 )
 TEAM_PROPS_COLOR = Color( 255, 0, 0, 100 )
 TEAM_HUNTERS_COLOR = Color( 0, 0, 255, 100 )
+TEXT_COLOR = Color( 255, 255, 255, 255 )
 
 -- context menu elements
 ON_COLOR = Color( 0, 255, 0, 100 )
