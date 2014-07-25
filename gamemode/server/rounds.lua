@@ -81,7 +81,7 @@ local function StartRound()
 	curRound = curRound + 1
 	roundStartTime = CurTime()
 	-- reset the map
-	game.CleanUpMap()
+	game.CleanUpMap(false, {"player_prop_ent"})
 	-- swap teams, respawn everyone
 	SwapTeams()
 	roundState = ROUND_IN
