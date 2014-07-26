@@ -179,6 +179,7 @@ end )
 hook.Add( "OBJHUNT_RoundLimit", "Start map voting", function()
 	-- no longer need the round orchestrator
 	hook.Remove( "Tick", "Round orchestrator" )
+	MapVote.Start(30, false, 50, {"cs_", "pf_"})
 
 	print( "Map voting should start now" )
 end )
