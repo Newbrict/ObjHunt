@@ -41,6 +41,8 @@ net.Receive( "Prop Angle Lock BROADCAST", function( length )
 	local lockStatus = net.ReadBit()
 	local propAngle = net.ReadAngle()
 
+	if( !IsValid( prop ) ) then return end
+
 	if( lockStatus == 1 ) then
 		prop.angleLock = true
 	else
@@ -52,6 +54,8 @@ end )
 net.Receive( "Prop Angle Snap BROADCAST", function( length )
 	local prop = net.ReadEntity()
 	local snapStatus = net.ReadBit()
+
+	if( !IsValid( prop ) ) then return end
 
 	if( snapStatus == 1 ) then
 		prop.angleSnap = true

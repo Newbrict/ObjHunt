@@ -104,6 +104,10 @@ hook.Add( "EntityTakeDamage", "damage the correct ent", function( target, dmginf
 	end
 end )
 
+function GM:EntityFireBullets( ent, data )
+	data.Force = 0
+	return true
+end
 
 --[[ All network strings should be precached HERE ]]--
 hook.Add( "Initialize", "Precache all network strings", function()
@@ -211,6 +215,7 @@ end )
 
 --[[ When a player on team_props spawns ]]--
 hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
+	--ply:SetCollisionGroup( COLLISION_GROUP_IN_VEHICLE )
 	-- default prop should be able to step wherever
 	ply:SetStepSize( 20 )
 	ply:SetNotSolid( false )
@@ -244,6 +249,8 @@ net.Receive( "Prop Angle Lock", function( len, ply )
 		lockStatus = false
 	end
 
+	if( !IsValid( ply.chosenProp ) ) then return end
+
 	net.Start( "Prop Angle Lock BROADCAST" )
 		net.WriteEntity( ply.chosenProp )
 		net.WriteBit( lockStatus )
@@ -260,6 +267,8 @@ net.Receive( "Prop Angle Snap", function( len, ply )
 	else
 		snapStatus = false
 	end
+
+	if( !IsValid( ply.chosenProp ) ) then return end
 
 	net.Start( "Prop Angle Snap BROADCAST" )
 		net.WriteEntity( ply.chosenProp )
