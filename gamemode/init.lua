@@ -194,10 +194,11 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 		ply:GetPhysicsObject():SetMass(mass)
 	end
 
+	ply:SetDTEntity( 0, ply.chosenProp )
+
 	net.Start( "Prop Update" )
 		net.WriteVector( tHitboxMax )
 		net.WriteVector( tHitboxMin )
-		net.WriteUInt( ply.chosenProp:EntIndex(), 8 )
 	net.Send( ply )
 
 end

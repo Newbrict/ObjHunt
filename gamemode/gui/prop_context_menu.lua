@@ -78,7 +78,7 @@ local function DrawContextMenu()
 		-- painting
 		worldAngleBtn.Paint = function(self,w,h)
 			local btnColor
-			if( LocalPlayer().chosenProp.angleLock ) then
+			if( LocalPlayer().chosenProp && LocalPlayer().chosenProp.angleLock ) then
 				btnColor = table.Copy(ON_COLOR)
 			else
 				btnColor = table.Copy(OFF_COLOR)
@@ -118,7 +118,7 @@ local function DrawContextMenu()
 		-- painting
 		snapAngleBtn.Paint = function(self,w,h)
 			local btnColor
-			if( LocalPlayer().chosenProp.angleSnap ) then
+			if( LocalPlayer().chosenProp && LocalPlayer().chosenProp.angleSnap ) then
 				btnColor = table.Copy(ON_COLOR)
 			else
 				btnColor = table.Copy(OFF_COLOR)

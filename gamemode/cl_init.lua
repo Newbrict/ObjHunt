@@ -1,30 +1,24 @@
 include( "shared.lua" )
 
+hook.Add( "Initialize", "set defaults", function()
+	LocalPlayer().lastPropChange = 0
+	LocalPlayer().wantAngleLock = false
+	LocalPlayer().wantThirdPerson = true
+end )
+
 --[ Prop Updates ]--
 net.Receive( "Prop update", function( length )
+	if( !LocalPlayer().chosenProp ) then
+		print( "init" )
+	end
+	LocalPlayer().chosenProp = LocalPlayer():GetDTEntity(0)
 	local tHitboxMax = net.ReadVector()
 	local tHitboxMin = net.ReadVector()
 	LocalPlayer():SetHull( tHitboxMin, tHitboxMax )
 	LocalPlayer():SetHullDuck( tHitboxMin, tHitboxMax )
-
-	LocalPlayer().chosenPropIndex = net.ReadUInt(8)
 	LocalPlayer().lastPropChange = os.time()
-
 	local propHeight = tHitboxMax.z - tHitboxMin.z
 	LocalPlayer().propHeight = propHeight
-
-	-- INITIALIZATION STUFF GOES HERE, this only gets run once the player becomes a prop!
-	if( !LocalPlayer().chosenProp ) then
-		hook.Add( "OnEntityCreated", "Initial Prop Creation", function( ent )
-		if ( LocalPlayer().chosenPropIndex and LocalPlayer().chosenPropIndex == ent:EntIndex() ) then
-			LocalPlayer().chosenProp = ent
-			LocalPlayer().lastPropChange = 0
-			LocalPlayer().wantAngleLock = false
-			LocalPlayer().wantThirdPerson = true
-			hook.Remove( "OnEntityCreated", "Initial Prop Creation" ) -- no longer needed, so remove it
-			end
-		end )
-	end
 
 end )
 
