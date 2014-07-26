@@ -9,7 +9,8 @@ end )
 --[ Prop Updates ]--
 net.Receive( "Prop update", function( length )
 	if( !LocalPlayer().chosenProp ) then
-		print( "init" )
+		-- initialize stuff here
+		LocalPlayer().wantThirdPerson = true
 	end
 	LocalPlayer().chosenProp = LocalPlayer():GetDTEntity(0)
 	local tHitboxMax = net.ReadVector()
