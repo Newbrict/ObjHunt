@@ -1,7 +1,7 @@
 include( "shared.lua" )
 
 --[ Prop Updates ]--
-net.Receive( "Prop update", function( length ) 
+net.Receive( "Prop update", function( length )
 	local tHitboxMax = net.ReadVector()
 	local tHitboxMin = net.ReadVector()
 	LocalPlayer():SetHull( tHitboxMin, tHitboxMax )
@@ -28,7 +28,7 @@ net.Receive( "Prop update", function( length )
 
 end )
 
-net.Receive( "Reset Prop", function( length ) 
+net.Receive( "Reset Prop", function( length )
 	LocalPlayer():ResetHull()
 	LocalPlayer().chosenProp      = nil
 	LocalPlayer().chosenPropIndex = nil
@@ -36,7 +36,7 @@ net.Receive( "Reset Prop", function( length )
 	LocalPlayer().wantAngleLock   = nil
 end )
 
-net.Receive( "Prop Angle Lock BROADCAST", function( length ) 
+net.Receive( "Prop Angle Lock BROADCAST", function( length )
 	local prop = net.ReadEntity()
 	local lockStatus = net.ReadBit()
 	local propAngle = net.ReadAngle()
@@ -49,7 +49,7 @@ net.Receive( "Prop Angle Lock BROADCAST", function( length )
 	prop:SetAngles( propAngle )
 end )
 
-net.Receive( "Prop Angle Snap BROADCAST", function( length ) 
+net.Receive( "Prop Angle Snap BROADCAST", function( length )
 	local prop = net.ReadEntity()
 	local snapStatus = net.ReadBit()
 

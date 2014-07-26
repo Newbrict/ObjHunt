@@ -93,9 +93,8 @@ function GM:PlayerShouldTakeDamage( victim, attacker )
 	return true
 end
 
-function GM:EntityTakeDamage( target, dmginfo)
+hook.Add( "EntityTakeDamage", "damage the correct ent", function( target, dmginfo )
 	local attacker = dmginfo:GetAttacker()
-
 	-- since player_prop_ent isn't in USABLE_PROP_ENTS this is sufficient logic to prevent
 	-- player owned props from getting hurt
 	if( !target:IsPlayer() && table.HasValue( USABLE_PROP_ENTITIES, target:GetClass() ) ) then
@@ -103,7 +102,8 @@ function GM:EntityTakeDamage( target, dmginfo)
 			attacker:TakeDamage(dmginfo:GetDamage(),attacker,target)
 		end
 	end
-end
+end )
+
 
 --[[ All network strings should be precached HERE ]]--
 hook.Add( "Initialize", "Precache all network strings", function()
@@ -146,9 +146,10 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 	-- scaling
 	ply.chosenProp:SetModelScale( scale, 0)
 
+
 	ply.chosenProp:SetModel( ent:GetModel() )
 	ply.chosenProp:SetSkin( ent:GetSkin() )
-	ply.chosenProp:SetSolid( SOLID_BBOX )
+	ply.chosenProp:SetSolid( SOLID_VPHYSICS )
 	ply.chosenProp:SetAngles( ply:GetAngles() )
 
 	-- we round to reduce getting stuck
@@ -174,6 +175,9 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 	local phys = ent:GetPhysicsObject()
 	if IsValid(ent) and phys:IsValid() then
 		ply:GetPhysicsObject():SetMass(phys:GetMass())
+		-- vphysics
+		local vPhysMesh = ent:GetPhysicsObject():GetMeshConvexes()
+		ply.chosenProp:PhysicsInitMultiConvex( vPhysMesh )
 	else
 		-- Entity doesn't have a physics object so calculate mass
 		local density = PROP_DEFAULT_DENSITY
@@ -207,6 +211,9 @@ end )
 
 --[[ When a player on team_props spawns ]]--
 hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
+	-- default prop should be able to step wherever
+	ply:SetStepSize( 20 )
+	ply:SetNotSolid( false )
 	if( ply:Team() == TEAM_PROPS ) then
 		-- make the player invisible
 		ply:SetRenderMode( RENDERMODE_TRANSALPHA )
@@ -219,8 +226,6 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 		-- custom initial hb
 		SetPlayerProp( ply, ply.chosenProp, PROP_DEFAULT_SCALE, PROP_DEFAULT_HB_MIN, PROP_DEFAULT_HB_MAX )
 
-		-- default prop should be able to step wherever
-		ply:SetStepSize( 20 )
 	elseif( ply:Team() == TEAM_HUNTERS ) then
 		ply:SetRenderMode( RENDERMODE_NORMAL )
 		ply:SetColor( Color(255,255,255,255) )
