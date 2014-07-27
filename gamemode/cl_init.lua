@@ -1,25 +1,24 @@
 include( "shared.lua" )
 
-hook.Add( "Initialize", "set defaults", function()
-	LocalPlayer().lastPropChange = 0
-	LocalPlayer().wantAngleLock = false
-	LocalPlayer().wantThirdPerson = true
-end )
-
 --[ Prop Updates ]--
 net.Receive( "Prop update", function( length )
-	if( !LocalPlayer().chosenProp ) then
-		-- initialize stuff here
-		LocalPlayer().wantThirdPerson = true
-	end
-	LocalPlayer().chosenProp = LocalPlayer():GetDTEntity(0)
 	local tHitboxMax = net.ReadVector()
 	local tHitboxMin = net.ReadVector()
 	LocalPlayer():SetHull( tHitboxMin, tHitboxMax )
 	LocalPlayer():SetHullDuck( tHitboxMin, tHitboxMax )
+
 	LocalPlayer().lastPropChange = os.time()
 	local propHeight = tHitboxMax.z - tHitboxMin.z
 	LocalPlayer().propHeight = propHeight
+
+	-- initialize stuff here
+	if( !LocalPlayer().chosenProp ) then
+		LocalPlayer().wantThirdPerson = true
+		LocalPlayer().wantAngleLock = false
+		LocalPlayer().lastPropChange = 0
+	end
+
+	LocalPlayer().chosenProp = LocalPlayer():GetDTEntity(0)
 
 end )
 
