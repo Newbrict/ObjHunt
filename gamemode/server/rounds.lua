@@ -98,6 +98,7 @@ local function InRound()
 		round.endTime = CurTime()
 		round.winnder = "Props"
 		hook.Call( "OBJHUNT_RoundEnd" )
+		return
 	end
 
 	-- make sure there is at least one living player left per team
@@ -109,6 +110,7 @@ local function InRound()
 		round.endTime = CurTime()
 		round.winnder = "Props"
 		hook.Call( "OBJHUNT_RoundEnd" )
+		return
 	end
 
 	if( #props == 0 ) then
@@ -116,6 +118,14 @@ local function InRound()
 		round.endTime = CurTime()
 		round.winnder = "Hunters"
 		hook.Call( "OBJHUNT_RoundEnd" )
+		return
+	end
+
+	-- unfreeze the hunters after their time is up
+	if( roundTime > OBJHUNT_HIDE_TIME && hunters[1]:IsFrozen() ) then
+		for _, v in pairs(hunters) do
+			v:Freeze( false )
+		end
 	end
 
 end
@@ -161,7 +171,11 @@ hook.Add( "OBJHUNT_RoundStart", "Round start stuff", function()
 	SendRoundUpdate( function() return net.Broadcast() end )
 	for _, v in pairs( player.GetAll() ) do
 		-- remove god mode from everyone
-	    v:GodDisable()
+		v:GodDisable()
+		-- freeze all the hunters
+		if( v:Team() == TEAM_HUNTERS ) then
+			v:Freeze( true )
+		end
 	end
 end )
 
