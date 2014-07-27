@@ -11,7 +11,11 @@ hook.Add("CalcView", "ObjHunt CalcView", function( ply, pos, angles, fov )
 	view.fov = fov
 	view.drawviewer = ply.wantThirdPerson
 
-	if( ply.wantThirdPerson ) then
+	if ( ply:Team() == TEAM_HUNTERS ) && ( round.state == 2 ) && ( ( CurTime() - round.startTime ) < OBJHUNT_HIDE_TIME ) then
+		view.origin = Vector( 0, 34343, 0 )
+		return view
+
+	elseif( ply.wantThirdPerson ) then
 		local trace = {}
 		local addToPlayer = Vector(0, 0, ply.propHeight)
 		local viewDist = THIRDPERSON_DISTANCE
