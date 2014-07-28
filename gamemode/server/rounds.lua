@@ -96,7 +96,7 @@ local function InRound()
 	if( roundTime >= OBJHUNT_ROUND_TIME ) then
 		round.state = ROUND_END
 		round.endTime = CurTime()
-		round.winnder = "Props"
+		round.winner = "Props"
 		hook.Call( "OBJHUNT_RoundEnd" )
 		return
 	end
@@ -108,7 +108,7 @@ local function InRound()
 	if( #hunters == 0 ) then
 		round.state = ROUND_END
 		round.endTime = CurTime()
-		round.winnder = "Props"
+		round.winner = "Props"
 		hook.Call( "OBJHUNT_RoundEnd" )
 		return
 	end
@@ -116,7 +116,7 @@ local function InRound()
 	if( #props == 0 ) then
 		round.state = ROUND_END
 		round.endTime = CurTime()
-		round.winnder = "Hunters"
+		round.winner = "Hunters"
 		hook.Call( "OBJHUNT_RoundEnd" )
 		return
 	end
@@ -193,7 +193,7 @@ end )
 hook.Add( "OBJHUNT_RoundLimit", "Start map voting", function()
 	-- no longer need the round orchestrator
 	hook.Remove( "Tick", "Round orchestrator" )
-	MapVote.Start(30, false, 50, {"cs_", "pf_"})
+	MapVote.Start(30, false, 50, {"cs_", "ph_"})
 
 	print( "Map voting should start now" )
 end )

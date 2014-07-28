@@ -48,7 +48,7 @@ net.Receive("Class Selection", function( len, ply )
 
 	RemovePlayerProp( ply )
 	ply:KillSilent()
-	ply:Spawn()
+	--ply:Spawn()
 end )
 
 
@@ -224,7 +224,7 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 		ply:SetColor( Color(0,0,0,0) )
 		ply:SetBloodColor( DONT_BLEED )
 
-		ply:SetProp( ents.Create("player_prop_ent") )
+		ply:SetDTEntity( 0, ents.Create("player_prop_ent") )
 		ply:GetProp():Spawn()
 		ply:GetProp():SetOwner( ply )
 		-- custom initial hb

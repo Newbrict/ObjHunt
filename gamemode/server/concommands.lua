@@ -17,3 +17,7 @@ concommand.Add( "SetBotTeam", function( ply )
 	bot:SetTeam(ply:Team())
 	end
 end )
+
+concommand.Add( "mvote", function( ply )
+	MapVote.Start(30, false, 50, {"cs_", "ph_"})
+end )
