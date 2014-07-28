@@ -49,7 +49,7 @@ local function stencilColor( ply, ent )
 	-- make sure it's a valid object
 	if(	!IsValid(ent) ) then return false end
 
-	-- must not be a chosenProp
+	-- must not be a player's chosen Prop
 	if( ent:IsPlayer() ) then return false end
 	if( ent:GetOwner():IsPlayer() ) then return false end
 
@@ -60,7 +60,7 @@ local function stencilColor( ply, ent )
 	if(	!table.HasValue( USABLE_PROP_ENTITIES, ent:GetClass() ) ) then return BAD_HOVER_COLOR end
 
 	-- make sure ent is a valid prop type
-	if( WouldBeStuck( ply, ent, ply.chosenProp ) ) then return BAD_HOVER_COLOR end
+	if( WouldBeStuck( ply, ent ) ) then return BAD_HOVER_COLOR end
 
 	-- cooldown on switching props
 	if( ply.lastPropChange &&
@@ -80,7 +80,7 @@ local function getViewEnt(ply)
 	else
 		trace.endpos = trace.start + ply:GetAngles():Forward() * (PROP_SELECT_DISTANCE)
 	end
-	trace.filter = {ply.chosenProp}
+	trace.filter = { ply:GetProp() }
 	tr = util.TraceLine(trace)
 	return tr.Entity
 end

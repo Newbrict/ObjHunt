@@ -29,7 +29,8 @@ OBJHUNT_PRE_ROUND_TIME = 10
 OBJHUNT_POST_ROUND_TIME = 5
 
 -- How much time props have before hunters are released
-OBJHUNT_HIDE_TIME = 15
+--OBJHUNT_HIDE_TIME = 30
+OBJHUNT_HIDE_TIME = 0
 
 
 -- The minimum Z height that the props view will be set to

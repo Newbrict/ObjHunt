@@ -2,59 +2,55 @@ include( "shared.lua" )
 
 --[ Prop Updates ]--
 net.Receive( "Prop update", function( length )
+	-- set up the hitbox
 	local tHitboxMax = net.ReadVector()
 	local tHitboxMin = net.ReadVector()
 	LocalPlayer():SetHull( tHitboxMin, tHitboxMax )
 	LocalPlayer():SetHullDuck( tHitboxMin, tHitboxMax )
 
-	LocalPlayer().lastPropChange = os.time()
+	-- prop height for views, change time for cooldown
 	local propHeight = tHitboxMax.z - tHitboxMin.z
 	LocalPlayer().propHeight = propHeight
+	LocalPlayer().lastPropChange = os.time()
 
 	-- initialize stuff here
-	if( !LocalPlayer().chosenProp ) then
+	if( LocalPlayer().firstProp ) then
 		LocalPlayer().wantThirdPerson = true
 		LocalPlayer().wantAngleLock = false
+		LocalPlayer().wantAngleSnap = false
 		LocalPlayer().lastPropChange = 0
+		LocalPlayer().firstProp = false
 	end
-
-	LocalPlayer().chosenProp = LocalPlayer():GetDTEntity(0)
 
 end )
 
 net.Receive( "Reset Prop", function( length )
 	LocalPlayer():ResetHull()
-	LocalPlayer().chosenProp      = nil
-	LocalPlayer().chosenPropIndex = nil
+	LocalPlayer().firstProp       = true
 	LocalPlayer().wantThirdPerson = false
 	LocalPlayer().wantAngleLock   = nil
 end )
 
 net.Receive( "Prop Angle Lock BROADCAST", function( length )
-	local prop = net.ReadEntity()
+	local ply = net.ReadEntity()
 	local lockStatus = net.ReadBit()
-	local propAngle = net.ReadAngle()
-
-	if( !IsValid( prop ) ) then return end
+	ply.lockedAngle = net.ReadAngle()
 
 	if( lockStatus == 1 ) then
-		prop.angleLock = true
+		ply.wantAngleLock = true
 	else
-		prop.angleLock = false
+		ply.wantAngleLock = false
 	end
-	prop:SetAngles( propAngle )
 end )
 
 net.Receive( "Prop Angle Snap BROADCAST", function( length )
-	local prop = net.ReadEntity()
+	local ply = net.ReadEntity()
 	local snapStatus = net.ReadBit()
 
-	if( !IsValid( prop ) ) then return end
-
 	if( snapStatus == 1 ) then
-		prop.angleSnap = true
+		ply.wantAngleSnap = true
 	else
-		prop.angleSnap = false
+		ply.wantAngleSnap = false
 	end
 end )
 

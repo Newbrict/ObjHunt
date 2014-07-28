@@ -14,18 +14,18 @@ function ENT:Draw()
 
 
 		-- angle snapping stuff
-		if( self.angleSnap ) then
+		if( owner.wantAngleSnap ) then
 			propAngle:SnapTo("p",180):SnapTo("y",45)
 		else
 			propAngle:SnapTo("p",180)
 		end
 
 		-- angle locking stuff
-		if( !self.angleLock ) then
+		if( !owner.wantAngleLock ) then
 			self:SetAngles(propAngle)
 			self.lockedAngle = propAngle
 		else
-			self:SetAngles(self.lockedAngle)
+			self:SetAngles(owner.lockedAngle)
 		end
 
 	if( CLIENT ) then
