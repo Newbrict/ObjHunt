@@ -184,7 +184,7 @@ hook.Add( "OBJHUNT_RoundEnd", "Handle props winning", function()
 	-- tell all the props that they won, good job props
 	SendRoundUpdate( function() return net.Broadcast() end )
 	for _, v in pairs( player.GetAll() ) do
-		v:PrintMessage( HUD_PRINTCENTER, round.winnder.." Win!" )
+		v:PrintMessage( HUD_PRINTCENTER, round.winner.." Win!" )
 		-- give everyone god mode until round starts again
 	    v:GodEnable()
 	end
