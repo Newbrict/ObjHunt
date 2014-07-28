@@ -48,7 +48,6 @@ net.Receive("Class Selection", function( len, ply )
 
 	RemovePlayerProp( ply )
 	ply:KillSilent()
-	--StartSpectate( ply )
 	ply:Spawn()
 end )
 
@@ -71,7 +70,8 @@ function GM:PlayerSetModel( ply )
 		ply:SetModel( TEAM_PROPS_DEFAULT_MODEL )
 
 		-- this fixes ent culling when head in ceiling
-		ply:SetViewOffset( Vector(0,0,1) )
+		-- should be based on default hit box!
+		ply:SetViewOffset( Vector(0,0,35) )
 	else
 		return
 	end
@@ -85,7 +85,7 @@ function GM:PlayerShouldTakeDamage( victim, attacker )
 
 	-- no friendly fire
 	if( attacker:IsPlayer() ) then
-		if( victim:Team() == attacker:Team() ) then
+		if( victim:Team() == attacker:Team() && victim != attacker ) then
 			return false
 		end
 	end
@@ -93,9 +93,8 @@ function GM:PlayerShouldTakeDamage( victim, attacker )
 	return true
 end
 
-function GM:EntityTakeDamage( target, dmginfo)
+hook.Add( "EntityTakeDamage", "damage the correct ent", function( target, dmginfo )
 	local attacker = dmginfo:GetAttacker()
-
 	-- since player_prop_ent isn't in USABLE_PROP_ENTS this is sufficient logic to prevent
 	-- player owned props from getting hurt
 	if( !target:IsPlayer() && table.HasValue( USABLE_PROP_ENTITIES, target:GetClass() ) ) then
@@ -103,6 +102,11 @@ function GM:EntityTakeDamage( target, dmginfo)
 			attacker:TakeDamage(dmginfo:GetDamage(),attacker,target)
 		end
 	end
+end )
+
+function GM:EntityFireBullets( ent, data )
+	data.Force = 0
+	return true
 end
 
 --[[ All network strings should be precached HERE ]]--
@@ -146,9 +150,10 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 	-- scaling
 	ply.chosenProp:SetModelScale( scale, 0)
 
+
 	ply.chosenProp:SetModel( ent:GetModel() )
 	ply.chosenProp:SetSkin( ent:GetSkin() )
-	ply.chosenProp:SetSolid( SOLID_BBOX )
+	ply.chosenProp:SetSolid( SOLID_VPHYSICS )
 	ply.chosenProp:SetAngles( ply:GetAngles() )
 
 	-- we round to reduce getting stuck
@@ -158,6 +163,9 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 	ply:SetHull( tHitboxMin, tHitboxMax )
 	ply:SetHullDuck( tHitboxMin, tHitboxMax )
 	local tHeight = tHitboxMax.z-tHitboxMin.z
+
+	-- match the view offset for calcviewing to the height
+	ply:SetViewOffset( Vector(0,0,tHeight) )
 
 	-- scale steps to prop size
 	ply:SetStepSize( math.Round( 4+(tHeight)/4 ) )
@@ -171,6 +179,9 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 	local phys = ent:GetPhysicsObject()
 	if IsValid(ent) and phys:IsValid() then
 		ply:GetPhysicsObject():SetMass(phys:GetMass())
+		-- vphysics
+		local vPhysMesh = ent:GetPhysicsObject():GetMeshConvexes()
+		ply.chosenProp:PhysicsInitMultiConvex( vPhysMesh )
 	else
 		-- Entity doesn't have a physics object so calculate mass
 		local density = PROP_DEFAULT_DENSITY
@@ -183,10 +194,11 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 		ply:GetPhysicsObject():SetMass(mass)
 	end
 
+	ply:SetDTEntity( 0, ply.chosenProp )
+
 	net.Start( "Prop Update" )
 		net.WriteVector( tHitboxMax )
 		net.WriteVector( tHitboxMin )
-		net.WriteUInt( ply.chosenProp:EntIndex(), 8 )
 	net.Send( ply )
 
 end
@@ -204,6 +216,10 @@ end )
 
 --[[ When a player on team_props spawns ]]--
 hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
+	--ply:SetCollisionGroup( COLLISION_GROUP_IN_VEHICLE )
+	-- default prop should be able to step wherever
+	ply:SetStepSize( 20 )
+	ply:SetNotSolid( false )
 	if( ply:Team() == TEAM_PROPS ) then
 		-- make the player invisible
 		ply:SetRenderMode( RENDERMODE_TRANSALPHA )
@@ -216,8 +232,6 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 		-- custom initial hb
 		SetPlayerProp( ply, ply.chosenProp, PROP_DEFAULT_SCALE, PROP_DEFAULT_HB_MIN, PROP_DEFAULT_HB_MAX )
 
-		-- default prop should be able to step wherever
-		ply:SetStepSize( 20 )
 	elseif( ply:Team() == TEAM_HUNTERS ) then
 		ply:SetRenderMode( RENDERMODE_NORMAL )
 		ply:SetColor( Color(255,255,255,255) )
@@ -236,6 +250,8 @@ net.Receive( "Prop Angle Lock", function( len, ply )
 		lockStatus = false
 	end
 
+	if( !IsValid( ply.chosenProp ) ) then return end
+
 	net.Start( "Prop Angle Lock BROADCAST" )
 		net.WriteEntity( ply.chosenProp )
 		net.WriteBit( lockStatus )
@@ -253,6 +269,8 @@ net.Receive( "Prop Angle Snap", function( len, ply )
 		snapStatus = false
 	end
 
+	if( !IsValid( ply.chosenProp ) ) then return end
+
 	net.Start( "Prop Angle Snap BROADCAST" )
 		net.WriteEntity( ply.chosenProp )
 		net.WriteBit( snapStatus )
@@ -265,7 +283,6 @@ end )
 
 hook.Add( "PlayerDeath", "Remove ent prop on death", function( ply )
 	RemovePlayerProp( ply )
-	StartSpectate( ply )
 end )
 
 --[[ remove the ent prop ]]--

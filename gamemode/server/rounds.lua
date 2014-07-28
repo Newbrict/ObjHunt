@@ -1,4 +1,4 @@
---[[ Rounds are handled here, obviously ]]--
+	--[[ Rounds are handled here, obviously ]]--
 
 -----------------------------------
 -- THE HOOKS THAT THIS CALLS ARE --
@@ -8,23 +8,24 @@
 -- OBJHUNT_RoundLimit            --
 -----------------------------------
 
--- time to wait initially before starting in seconds
 local ROUND_WAIT  = 0
 local ROUND_START = 1
 local ROUND_IN    = 2
 local ROUND_END   = 3
-local roundState = ROUND_WAIT
 
-
-local curRound = 0
-local roundStartTime = 0
-local roundEndTime = 0
+-- this var is used outside of this file
+round = {}
+round.state     = ROUND_WAIT
+round.current   = 0
+round.startTime = 0
+round.endTime   = 0
+round.winner    = "Newbrict"
 
 local function SendRoundUpdate( sendMethod )
 	net.Start( "Round Update" )
-		net.WriteUInt(roundState, 8)
-		net.WriteUInt(curRound, 8)
-		net.WriteUInt(roundStartTime, 32)
+		net.WriteUInt(round.state, 8)
+		net.WriteUInt(round.current, 8)
+		net.WriteUInt(round.startTime, 32)
 		net.WriteUInt(CurTime(), 32)
 	sendMethod()
 end
@@ -75,30 +76,29 @@ local function WaitRound()
 	local props = team.GetPlayers(TEAM_PROPS)
 	if( #props == 0 || #hunters == 0 ) then return end
 
-	for _, v in pairs( hunters ) do
-		v:Spawn()
-	end
-	for _, v in pairs( props ) do
-		v:Spawn()
-	end
-
-	roundState = ROUND_START
+	round.state = ROUND_START
 end
 
 local function StartRound()
-	curRound = curRound + 1
-	roundStartTime = CurTime()
+	round.current = round.current + 1
+	round.startTime = CurTime()
+	-- reset the map
+	game.CleanUpMap(false, {"player_prop_ent"})
+	-- swap teams, respawn everyone
+	SwapTeams()
+	round.state = ROUND_IN
 	hook.Call( "OBJHUNT_RoundStart" )
-	roundState = ROUND_IN
 end
 
 local function InRound()
-	local roundTime = CurTime() - roundStartTime
+	local roundTime = CurTime() - round.startTime
 	-- make sure we have not gone over time
 	if( roundTime >= OBJHUNT_ROUND_TIME ) then
-		roundState = ROUND_END
-		roundEndTime = CurTime()
-		hook.Call( "OBJHUNT_RoundEnd_Props" )
+		round.state = ROUND_END
+		round.endTime = CurTime()
+		round.winnder = "Props"
+		hook.Call( "OBJHUNT_RoundEnd" )
+		return
 	end
 
 	-- make sure there is at least one living player left per team
@@ -106,22 +106,33 @@ local function InRound()
 	local props = GetLivingPlayers(TEAM_PROPS)
 
 	if( #hunters == 0 ) then
-		roundState = ROUND_END
-		roundEndTime = CurTime()
-		hook.Call( "OBJHUNT_RoundEnd_Props" )
+		round.state = ROUND_END
+		round.endTime = CurTime()
+		round.winnder = "Props"
+		hook.Call( "OBJHUNT_RoundEnd" )
+		return
 	end
 
 	if( #props == 0 ) then
-		roundState = ROUND_END
-		roundEndTime = CurTime()
-		hook.Call( "OBJHUNT_RoundEnd_Hunters" )
+		round.state = ROUND_END
+		round.endTime = CurTime()
+		round.winnder = "Hunters"
+		hook.Call( "OBJHUNT_RoundEnd" )
+		return
+	end
+
+	-- unfreeze the hunters after their time is up
+	if( roundTime > OBJHUNT_HIDE_TIME && hunters[1]:IsFrozen() ) then
+		for _, v in pairs(hunters) do
+			v:Freeze( false )
+		end
 	end
 
 end
 
 local function EndRound()
 	-- if we've played enough times on this map
-	if( curRound >= OBJHUNT_ROUNDS ) then
+	if( round.current >= OBJHUNT_ROUNDS ) then
 		hook.Call( "OBJHUNT_RoundLimit" )
 		return
 	end
@@ -132,13 +143,9 @@ local function EndRound()
 	if( #props == 0 || #hunters == 0 ) then return end
 
 	-- start the round after we've waiting long enough
-	local waitTime = CurTime() - roundEndTime
+	local waitTime = CurTime() - round.endTime
 	if( waitTime >= OBJHUNT_POST_ROUND_TIME ) then
-		-- reset the map
-		game.CleanUpMap()
-		-- swap teams, respawn everyone
-		SwapTeams()
-		roundState = ROUND_START
+		round.state = ROUND_START
 	end
 
 end
@@ -153,38 +160,40 @@ roundHandler[ROUND_END]   = EndRound
 -- start the round orchestrator when the game has initialized
 hook.Add( "Initialize", "Begin round functions", function()
 	hook.Add( "Tick", "Round orchestrator", function()
-		roundHandler[roundState]()
+		roundHandler[round.state]()
 	end )
 end )
 
 hook.Add( "OBJHUNT_RoundStart", "Round start stuff", function()
-	print( "Round "..curRound.." is Starting" )
+	print( "Round "..round.current.." is Starting" )
 
 	-- send data to clients
 	SendRoundUpdate( function() return net.Broadcast() end )
+	for _, v in pairs( player.GetAll() ) do
+		-- remove god mode from everyone
+		v:GodDisable()
+		-- freeze all the hunters
+		if( v:Team() == TEAM_HUNTERS ) then
+			v:Freeze( true )
+		end
+	end
 end )
 
-hook.Add( "OBJHUNT_RoundEnd_Props", "Handle props winning", function()
+hook.Add( "OBJHUNT_RoundEnd", "Handle props winning", function()
 	print( "Props win" )
 	-- tell all the props that they won, good job props
 	SendRoundUpdate( function() return net.Broadcast() end )
 	for _, v in pairs( player.GetAll() ) do
-		v:PrintMessage( HUD_PRINTCENTER, "Props Win!" )
-	end
-end )
-
-hook.Add( "OBJHUNT_RoundEnd_Hunters", "Handle hunters winning", function()
-	print( "Hunters win" )
-	-- tell all the hunters that they won, good job huners
-	SendRoundUpdate( function() return net.Broadcast() end )
-	for _, v in pairs( player.GetAll() ) do
-		v:PrintMessage( HUD_PRINTCENTER, "Hunters Win!" )
+		v:PrintMessage( HUD_PRINTCENTER, round.winnder.." Win!" )
+		-- give everyone god mode until round starts again
+	    v:GodEnable()
 	end
 end )
 
 hook.Add( "OBJHUNT_RoundLimit", "Start map voting", function()
 	-- no longer need the round orchestrator
 	hook.Remove( "Tick", "Round orchestrator" )
+	MapVote.Start(30, false, 50, {"cs_", "pf_"})
 
 	print( "Map voting should start now" )
 end )

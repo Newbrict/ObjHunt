@@ -1,19 +1,4 @@
-function StartSpectate( ply )
-	ply.spectateIndex = 1
-	ply.spectateMode = OBS_MODE_ROAMING
-	ply:Spectate( ply.spectateMode )
-end
-
-function GM:PlayerDeathThink( ply )
-	if( !ply.spectateIndex ) then
-		ply.spectateIndex = 1
-	end
-
-	if( !ply.spectateMode ) then
-		ply.spectateMode = OBS_MODE_ROAMING
-		ply:Spectate( ply.spectateMode )
-	end
-	
+local function GetSpecEnts( ply )
 	local t = ply:Team()
 	local players = {}
 
@@ -34,18 +19,44 @@ function GM:PlayerDeathThink( ply )
 			tempPlayers[#tempPlayers + 1] = v
 		end
 	end
-	players = tempPlayers
+	return tempPlayers
+end
 
+function GM:PlayerDeathThink( ply )
+	local players = GetSpecEnts( ply )
 
-	if ply:KeyPressed( IN_JUMP ) then
-		ply.spectateMode = (ply.spectateMode % 3) + 4
+	-- default settings
+	if( !ply.spectateIndex ) then
+		ply.spectateIndex = 1
+		if( #players > 0 ) then
+			ply.spectateMode = OBS_MODE_CHASE
+			ply:SpectateEntity( players[ ply.spectateIndex ] )
+		else
+			ply.spectateMode = OBS_MODE_ROAMING
+			ply:SpectateEntity( nil )
+		end
 		ply:Spectate( ply.spectateMode )
-	elseif ply:KeyPressed( IN_ATTACK ) then
-		ply.spectateIndex = (ply.spectateIndex % #players) + 1
-		ply:SpectateEntity( players[ ply.spectateIndex ] )
-	elseif ply:KeyPressed( IN_ATTACK2 ) then
-		ply.spectateIndex = #players - (#players - ply.spectateIndex % #players) + 1
-		ply:SpectateEntity( players[ ply.spectateIndex ] )
 	end
+
+
+	if( #players > 0 ) then
+		if ply:KeyPressed( IN_JUMP ) then
+			ply.spectateMode = (ply.spectateMode % 3) + 4
+			ply:Spectate( ply.spectateMode )
+		elseif ply:KeyPressed( IN_ATTACK ) then
+			ply.spectateIndex = (ply.spectateIndex % #players) + 1
+			ply:SpectateEntity( players[ ply.spectateIndex ] )
+		elseif ply:KeyPressed( IN_ATTACK2 ) then
+			ply.spectateIndex = #players - (#players - ply.spectateIndex % #players) + 1
+			ply:SpectateEntity( players[ ply.spectateIndex ] )
+		end
+	end
+
+	-- this prevents respawning
 	return false
 end
+
+hook.Add( "PlayerSpawn", "Clear Spectator State", function( ply )
+	ply.spectateIndex = nil
+	ply.spectateMode = nil
+end )

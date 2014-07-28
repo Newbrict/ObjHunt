@@ -1,5 +1,8 @@
 --[[ Do thirdperson, view heights, etc ]]--
 hook.Add("CalcView", "ObjHunt CalcView", function( ply, pos, angles, fov )
+	-- disable custom viewing if we're dead, this fixes spec bug
+	if( !ply:Alive() ) then return true end
+
 	-- this needs to be here otherwise some people get errors for some unknown reason
 	if( ply.wantThirdPerson == nil ) then return end
 
@@ -8,21 +11,26 @@ hook.Add("CalcView", "ObjHunt CalcView", function( ply, pos, angles, fov )
 	view.fov = fov
 	view.drawviewer = ply.wantThirdPerson
 
-	if( ply.wantThirdPerson ) then
+	-- blinding the player
+	if ( ply:Team() == TEAM_HUNTERS ) && ( round.state == 2 ) && ( ( CurTime() - round.startTime ) < OBJHUNT_HIDE_TIME ) then
+		view.origin = Vector( 0, 0, 34343 )
+		return view
+
+	elseif( ply.wantThirdPerson ) then
 		local trace = {}
 		local addToPlayer = Vector(0, 0, ply.propHeight)
 		local viewDist = THIRDPERSON_DISTANCE
-		
+
 		trace.start = ply:GetPos() + addToPlayer
 		trace.endpos = trace.start + view.angles:Forward() * -viewDist
 		trace.mask = MASK_SOLID_BRUSHONLY
 		tr = util.TraceLine(trace)
-		
+
 		-- efficient check when not hitting walls
 		if(tr.Fraction < 1) then
 			viewDist = viewDist * tr.Fraction
 		end
-		
+
 		view.origin = trace.start + view.angles:Forward() * -viewDist
 		ply.viewOrigin = view.origin
 		return view
@@ -80,7 +88,7 @@ end
 hook.Add( "PreDrawHalos", "Selectable Prop Halos", function()
 	if( LocalPlayer():Team() != TEAM_PROPS ) then return end
 	local prop = getViewEnt( LocalPlayer() )
-	local sColor = stencilColor( LocalPlayer(), prop ) 
+	local sColor = stencilColor( LocalPlayer(), prop )
 	if( !sColor ) then return end
 	halo.Add( {prop}, sColor, 3, 3, 1 )
 end )
@@ -91,7 +99,7 @@ hook.Add( "PlayerTick", "New Player Use", function( ply )
 	if( ply:KeyPressed( IN_USE ) ) then
 		if( !ply.lastPropChange || os.time() - ply.lastPropChange < PROP_CHOOSE_COOLDOWN ) then return end
 		local prop = getViewEnt( ply )
-		local sColor = stencilColor( LocalPlayer(), prop ) 
+		local sColor = stencilColor( LocalPlayer(), prop )
 		if( sColor == GOOD_HOVER_COLOR) then
 			net.Start( "Selected Prop" )
 				net.WriteEntity( prop )

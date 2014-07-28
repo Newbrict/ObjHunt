@@ -1,11 +1,11 @@
+local mainPanel
 local padding = 10
 local deltaTime = 0.2
 local width = 200
 local height = 300
-local posX = ScrW() - width - padding
-local posYOpen = ScrH() - height - padding
-local posYClose = ScrH() + height
-
+local posXOpen
+local posXClose
+local posY
 surface.CreateFont( "Toggle Buttons",
 {
 	font = "Helvetica",
@@ -15,136 +15,172 @@ surface.CreateFont( "Toggle Buttons",
 	outline = true,
 })
 
-local pButtonHeight = 40
+local btnHeight = 30
 
-local mainPanel = vgui.Create( "DPanel" )
+local function DrawContextMenu()
+
+	local totalBtns = 0
+
+	mainPanel = vgui.Create( "DPanel" )
 	mainPanel:SetPos( ScrW()-width, ScrH() + height )
-	mainPanel:SetSize( width, height )
 
-local thirdPersonBtn = vgui.Create( "DButton", mainPanel)
-	thirdPersonBtn:SetText( "" )
-	thirdPersonBtn:SetPos( padding, padding )
-	thirdPersonBtn:SetSize( width - 2*padding, pButtonHeight)
-	thirdPersonBtn.DoClick = function()
-		LocalPlayer().wantThirdPerson = !LocalPlayer().wantThirdPerson
-	end 
+	if( LocalPlayer():Team() == TEAM_PROPS ||
+		LocalPlayer():Team() == TEAM_HUNTERS ) then
+		totalBtns = totalBtns + 1
+		local thirdPersonBtn = vgui.Create( "DButton", mainPanel)
+		thirdPersonBtn:SetText( "" )
+		thirdPersonBtn:SetPos( padding, padding )
+		thirdPersonBtn:SetSize( width - 2*padding, btnHeight)
+		thirdPersonBtn.DoClick = function()
+			LocalPlayer().wantThirdPerson = !LocalPlayer().wantThirdPerson
+		end
 
-local worldAngleBtn = vgui.Create( "DButton", mainPanel)
-	worldAngleBtn:SetText( "" )
-	worldAngleBtn:SetPos( padding, padding*2 + pButtonHeight)
-	worldAngleBtn:SetSize( width - 2*padding, pButtonHeight)
-	worldAngleBtn.DoClick = function()
-		net.Start( "Prop Angle Lock" )
-			net.WriteBit( !LocalPlayer().chosenProp.angleLock )
-		net.SendToServer()
+		-- painting
+		thirdPersonBtn.Paint = function(self,w,h)
+			local btnColor
+			if( LocalPlayer().wantThirdPerson ) then
+				btnColor = table.Copy(ON_COLOR)
+			else
+				btnColor = table.Copy(OFF_COLOR)
+			end
 
-	end 
+			if( thirdPersonBtn:IsHovered() ) then
+				btnColor.a = btnColor.a + 20
+			end
 
-local snapAngleBtn = vgui.Create( "DButton", mainPanel)
-	snapAngleBtn:SetText( "" )
-	snapAngleBtn:SetPos( padding, padding*3 + pButtonHeight*2)
-	snapAngleBtn:SetSize( width - 2*padding, pButtonHeight)
-	snapAngleBtn.DoClick = function()
-		net.Start( "Prop Angle Snap" )
-			net.WriteBit( !LocalPlayer().chosenProp.angleSnap )
-			net.WriteAngle( LocalPlayer().chosenProp:GetAngles() )
-		net.SendToServer()
-	end 
+			surface.SetFont( "Toggle Buttons" )
+			surface.SetTextColor( Color( 255,255,255,255 ) )
+			local text = "Third Person"
+			local tw, th = surface.GetTextSize( text )
+			surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
+			surface.DrawText( text )
+			surface.SetDrawColor( btnColor )
+			surface.DrawRect( 0, 0, w, h)
+			surface.SetDrawColor( PANEL_BORDER )
+			surface.DrawOutlinedRect( 0, 0, w, h)
 
--- Painting
-mainPanel.Paint = function(self,w,h)
-	surface.SetDrawColor( PANEL_FILL )
-	surface.DrawRect( 0, 0, w, h)
-	surface.SetDrawColor( PANEL_BORDER )
-	surface.DrawOutlinedRect( 0, 0, w, h)
+		end
+	end
+
+	if( LocalPlayer():Team() == TEAM_PROPS ) then
+		totalBtns = totalBtns + 1
+		local worldAngleBtn = vgui.Create( "DButton", mainPanel)
+		worldAngleBtn:SetText( "" )
+		worldAngleBtn:SetPos( padding, padding*2 + btnHeight)
+		worldAngleBtn:SetSize( width - 2*padding, btnHeight)
+		worldAngleBtn.DoClick = function()
+			if( !IsValid( LocalPlayer().chosenProp ) ) then return end
+			net.Start( "Prop Angle Lock" )
+				net.WriteBit( !LocalPlayer().chosenProp.angleLock )
+			net.SendToServer()
+		end
+
+		-- painting
+		worldAngleBtn.Paint = function(self,w,h)
+			local btnColor
+			if( LocalPlayer().chosenProp && LocalPlayer().chosenProp.angleLock ) then
+				btnColor = table.Copy(ON_COLOR)
+			else
+				btnColor = table.Copy(OFF_COLOR)
+			end
+
+			if( worldAngleBtn:IsHovered() ) then
+				btnColor.a = btnColor.a + 20
+			end
+
+			surface.SetFont( "Toggle Buttons" )
+			surface.SetTextColor( Color( 255,255,255,255 ) )
+			local text = "Angle Lock"
+			local tw, th = surface.GetTextSize( text )
+			surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
+			surface.DrawText( text )
+			surface.SetDrawColor( btnColor )
+			surface.DrawRect( 0, 0, w, h)
+			surface.SetDrawColor( PANEL_BORDER )
+			surface.DrawOutlinedRect( 0, 0, w, h)
+		end
+	end
+
+	if( LocalPlayer():Team() == TEAM_PROPS ) then
+		totalBtns = totalBtns + 1
+		local snapAngleBtn = vgui.Create( "DButton", mainPanel)
+		snapAngleBtn:SetText( "" )
+		snapAngleBtn:SetPos( padding, padding*3 + btnHeight*2)
+		snapAngleBtn:SetSize( width - 2*padding, btnHeight)
+		snapAngleBtn.DoClick = function()
+			if( !IsValid( LocalPlayer().chosenProp ) ) then return end
+			net.Start( "Prop Angle Snap" )
+				net.WriteBit( !LocalPlayer().chosenProp.angleSnap )
+				net.WriteAngle( LocalPlayer().chosenProp:GetAngles() )
+			net.SendToServer()
+		end
+
+		-- painting
+		snapAngleBtn.Paint = function(self,w,h)
+			local btnColor
+			if( LocalPlayer().chosenProp && LocalPlayer().chosenProp.angleSnap ) then
+				btnColor = table.Copy(ON_COLOR)
+			else
+				btnColor = table.Copy(OFF_COLOR)
+			end
+
+			if( snapAngleBtn:IsHovered() ) then
+				btnColor.a = btnColor.a + 20
+			end
+
+			surface.SetFont( "Toggle Buttons" )
+			surface.SetTextColor( Color( 255,255,255,255 ) )
+			local text = "Angle Snaping"
+			local tw, th = surface.GetTextSize( text )
+			surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
+			surface.DrawText( text )
+			surface.SetDrawColor( btnColor )
+			surface.DrawRect( 0, 0, w, h)
+			surface.SetDrawColor( PANEL_BORDER )
+			surface.DrawOutlinedRect( 0, 0, w, h)
+		end
+	end
+
+	mainPanel.Paint = function(self,w,h)
+		surface.SetDrawColor( PANEL_FILL )
+		surface.DrawRect( 0, 0, w, h)
+		surface.SetDrawColor( PANEL_BORDER )
+		surface.DrawOutlinedRect( 0, 0, w, h)
+	end
+
+	-- after drawing all the buttons, size the panel
+	local nHeight = padding*(totalBtns+1) + btnHeight*totalBtns
+	mainPanel:SetSize( width, nHeight )
+	posXOpen = ScrW() - width - padding
+	posXClose = ScrW() + width
+	posY = ScrH()/2 - nHeight/2
 end
-worldAngleBtn.Paint = function(self,w,h)
-	local btnColor
-	if( LocalPlayer().chosenProp.angleLock ) then
-		btnColor = table.Copy(ON_COLOR)
-	else
-		btnColor = table.Copy(OFF_COLOR)
-	end
 
-	if( worldAngleBtn:IsHovered() ) then
-		btnColor.a = btnColor.a + 20	
-	end
 
-	surface.SetFont( "Toggle Buttons" )
-	surface.SetTextColor( Color( 255,255,255,255 ) )
-	local text = "Angle Lock"
-	local tw, th = surface.GetTextSize( text )
-	surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
-	surface.DrawText( text )
-	surface.SetDrawColor( btnColor )
-	surface.DrawRect( 0, 0, w, h)
-	surface.SetDrawColor( PANEL_BORDER )
-	surface.DrawOutlinedRect( 0, 0, w, h)
-end
 
-snapAngleBtn.Paint = function(self,w,h)
-	local btnColor
-	if( LocalPlayer().chosenProp.angleSnap ) then
-		btnColor = table.Copy(ON_COLOR)
-	else
-		btnColor = table.Copy(OFF_COLOR)
-	end
+hook.Add( "OnContextMenuOpen", "Display the context menu", function()
+	if( LocalPlayer():Team() != TEAM_PROPS &&
+		LocalPlayer():Team() != TEAM_HUNTERS ||
+		!LocalPlayer():Alive() ) then return end
+	DrawContextMenu()
 
-	if( snapAngleBtn:IsHovered() ) then
-		btnColor.a = btnColor.a + 20	
-	end
-
-	surface.SetFont( "Toggle Buttons" )
-	surface.SetTextColor( Color( 255,255,255,255 ) )
-	local text = "Angle Snaping"
-	local tw, th = surface.GetTextSize( text )
-	surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
-	surface.DrawText( text )
-	surface.SetDrawColor( btnColor )
-	surface.DrawRect( 0, 0, w, h)
-	surface.SetDrawColor( PANEL_BORDER )
-	surface.DrawOutlinedRect( 0, 0, w, h)
-end
-
-thirdPersonBtn.Paint = function(self,w,h)
-	local btnColor
-	if( LocalPlayer().wantThirdPerson ) then
-		btnColor = table.Copy(ON_COLOR)
-	else
-		btnColor = table.Copy(OFF_COLOR)
-	end
-
-	if( thirdPersonBtn:IsHovered() ) then
-		btnColor.a = btnColor.a + 20	
-	end
-
-	surface.SetFont( "Toggle Buttons" )
-	surface.SetTextColor( Color( 255,255,255,255 ) )
-	local text = "Third Person"
-	local tw, th = surface.GetTextSize( text )
-	surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
-	surface.DrawText( text )
-	surface.SetDrawColor( btnColor )
-	surface.DrawRect( 0, 0, w, h)
-	surface.SetDrawColor( PANEL_BORDER )
-	surface.DrawOutlinedRect( 0, 0, w, h)
-end
-
-hook.Add( "OnContextMenuOpen", "Display the prop context menu", function()
-	if( LocalPlayer():Team() != TEAM_PROPS ) then return end
-
-	timer.Destroy( "hide prop context menu" )
-	mainPanel:MoveTo(posX,posYOpen,deltaTime,0,1)
+	timer.Destroy( "hide context menu" )
+	mainPanel:MoveTo(posXOpen,posY,deltaTime,0,1)
 	mainPanel:SetVisible( true )
 	mainPanel:MakePopup()
 	mainPanel:SetKeyboardInputEnabled( false )
 end )
 
-hook.Add( "OnContextMenuClose", "Close the prop context menu", function()
-	if( LocalPlayer():Team() != TEAM_PROPS ) then return end
+hook.Add( "OnContextMenuClose", "Close the context menu", function()
+	if( LocalPlayer():Team() != TEAM_PROPS &&
+		LocalPlayer():Team() != TEAM_HUNTERS ||
+		!LocalPlayer():Alive() ) then return end
 
-	mainPanel:MoveTo(posX,posYClose,deltaTime,0,1)
-	timer.Create("hide prop context menu",deltaTime, 1, function ()
+	mainPanel:MoveTo(posXClose,posY,deltaTime,0,1)
+	mainPanel:SetKeyboardInputEnabled( true )
+	-- make sure it's not open before we kill it
+	timer.Destroy( "hide context menu" )
+	timer.Create("hide context menu",deltaTime, 1, function ()
 		mainPanel:SetVisible( false )
 	end )
 end )

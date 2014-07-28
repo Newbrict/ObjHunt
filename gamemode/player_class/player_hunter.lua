@@ -1,25 +1,32 @@
 DEFINE_BASECLASS( "player_default" )
 
-local PLAYER = {} 
+local PLAYER = {}
 
 --
 -- See gamemodes/base/player_class/player_default.lua for all overridable variables
 --
 
-PLAYER.DisplayName      = "Hunter"
-PLAYER.WalkSpeed        = 200
-PLAYER.RunSpeed         = 400
-PLAYER.CanUseFlashlight = false
-PLAYER.AvoidPlayers     = false
-PLAYER.MaxHealth        = 100
-PLAYER.DuckSpeed        = 0.1
-PLAYER.UnDuckSpeed      = 0.1
-	
+PLAYER.DisplayName       = "Hunter"
+PLAYER.WalkSpeed         = 222
+PLAYER.RunSpeed          = 222
+PLAYER.CanUseFlashlight  = false
+PLAYER.AvoidPlayers      = false
+PLAYER.TeammateNoCollide = true
+PLAYER.MaxHealth         = 100
+PLAYER.DuckSpeed         = 0.1
+PLAYER.UnDuckSpeed       = 0.1
+
 function PLAYER:Loadout()
 
 	self.Player:RemoveAllAmmo()
 	self.Player:GiveAmmo( 256,	"Pistol", true )
+	self.Player:GiveAmmo( 256, "SMG1" )
+	self.Player:GiveAmmo( 64, "Buckshot" )
+	self.Player:Give( "weapon_crowbar" )
 	self.Player:Give( "weapon_pistol" )
+	self.Player:Give( "weapon_smg1" )
+	self.Player:Give( "weapon_shotgun" )
+	self.Player:Give( "item_ar2_grenade" )
 
 end
 
