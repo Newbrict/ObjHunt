@@ -48,7 +48,7 @@ net.Receive("Class Selection", function( len, ply )
 
 	RemovePlayerProp( ply )
 	ply:KillSilent()
-	--ply:Spawn()
+	ply:Spawn()
 end )
 
 
@@ -277,6 +277,8 @@ end )
 
 hook.Add( "PlayerDeath", "Remove ent prop on death", function( ply )
 	RemovePlayerProp( ply )
+	local ragdoll = ply:GetRagdollEntity()
+	SafeRemoveEntityDelayed( ragdoll, 5 )
 end )
 
 --[[ remove the ent prop ]]--

@@ -60,8 +60,8 @@ end
 
 --[[ set up the teams ]]--
 function GM:CreateTeams( )
-	team.SetUp( TEAM_PROPS , "Props" , Color( 255, 0, 0 ), true )
-	team.SetUp( TEAM_HUNTERS , "Hunters" , Color( 0, 255, 0 ), true  )
+	team.SetUp( TEAM_PROPS , "Props" , TEAM_PROPS_COLOR, true )
+	team.SetUp( TEAM_HUNTERS , "Hunters" , TEAM_HUNTERS_COLOR, true  )
 	team.SetUp( TEAM_SPECTATOR , "Spectators" , Color( 127, 127, 127 ), true  )
 	team.SetClass( TEAM_PROPS, {"player_prop"})
 	team.SetClass( TEAM_HUNTERS, {"player_hunter"})

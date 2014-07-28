@@ -18,7 +18,6 @@ OBJHUNT_ROUNDS = 4
 
 -- Length of each round in seconds
 OBJHUNT_ROUND_TIME = 300
---OBJHUNT_ROUND_TIME = 5
 
 -- Initial waiting time before first round starts
 OBJHUNT_PRE_ROUND_TIME = 30
@@ -29,7 +28,6 @@ OBJHUNT_POST_ROUND_TIME = 5
 
 -- How much time props have before hunters are released
 OBJHUNT_HIDE_TIME = 30
-
 
 -- The minimum Z height that the props view will be set to
 VIEW_MIN_Z = 5
