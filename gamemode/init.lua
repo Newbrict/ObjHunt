@@ -148,13 +148,13 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 	end
 
 	-- scaling
-	ply.chosenProp:SetModelScale( scale, 0)
+	ply:GetProp():SetModelScale( scale, 0)
 
 
-	ply.chosenProp:SetModel( ent:GetModel() )
-	ply.chosenProp:SetSkin( ent:GetSkin() )
-	ply.chosenProp:SetSolid( SOLID_VPHYSICS )
-	ply.chosenProp:SetAngles( ply:GetAngles() )
+	ply:GetProp():SetModel( ent:GetModel() )
+	ply:GetProp():SetSkin( ent:GetSkin() )
+	ply:GetProp():SetSolid( SOLID_VPHYSICS )
+	ply:GetProp():SetAngles( ply:GetAngles() )
 
 	-- we round to reduce getting stuck
 	tHitboxMin = Vector( math.Round(tHitboxMin.x),math.Round(tHitboxMin.y),math.Round(tHitboxMin.z) )
@@ -181,7 +181,7 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 		ply:GetPhysicsObject():SetMass(phys:GetMass())
 		-- vphysics
 		local vPhysMesh = ent:GetPhysicsObject():GetMeshConvexes()
-		ply.chosenProp:PhysicsInitMultiConvex( vPhysMesh )
+		ply:GetProp():PhysicsInitMultiConvex( vPhysMesh )
 	else
 		-- Entity doesn't have a physics object so calculate mass
 		local density = PROP_DEFAULT_DENSITY
@@ -194,8 +194,6 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 		ply:GetPhysicsObject():SetMass(mass)
 	end
 
-	ply:SetDTEntity( 0, ply.chosenProp )
-
 	net.Start( "Prop Update" )
 		net.WriteVector( tHitboxMax )
 		net.WriteVector( tHitboxMin )
@@ -207,11 +205,11 @@ end
 net.Receive( "Selected Prop", function( len, ply )
 	local ent = net.ReadEntity()
 
-	local tHitboxMin, tHitboxMax = ply.chosenProp:GetHitBoxBounds( 0, 0 )
+	local tHitboxMin, tHitboxMax = ply:GetProp():GetHitBoxBounds( 0, 0 )
 	if( !playerCanBeEnt( ply, ent) ) then return end
-	local oldHP = ply.chosenProp.health
+	local oldHP = ply:GetProp().health
 	SetPlayerProp( ply, ent, PROP_CHOSEN_SCALE )
-	ply.chosenProp.health = oldHP
+	ply:GetProp().health = oldHP
 end )
 
 --[[ When a player on team_props spawns ]]--
@@ -226,11 +224,11 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 		ply:SetColor( Color(0,0,0,0) )
 		ply:SetBloodColor( DONT_BLEED )
 
-		ply.chosenProp = ents.Create("player_prop_ent")
-		ply.chosenProp:Spawn()
-		ply.chosenProp:SetOwner( ply )
+		ply:SetDTEntity( 0, ents.Create("player_prop_ent") )
+		ply:GetProp():Spawn()
+		ply:GetProp():SetOwner( ply )
 		-- custom initial hb
-		SetPlayerProp( ply, ply.chosenProp, PROP_DEFAULT_SCALE, PROP_DEFAULT_HB_MIN, PROP_DEFAULT_HB_MAX )
+		SetPlayerProp( ply, ply:GetProp(), PROP_DEFAULT_SCALE, PROP_DEFAULT_HB_MIN, PROP_DEFAULT_HB_MAX )
 
 	elseif( ply:Team() == TEAM_HUNTERS ) then
 		ply:SetRenderMode( RENDERMODE_NORMAL )
@@ -250,10 +248,8 @@ net.Receive( "Prop Angle Lock", function( len, ply )
 		lockStatus = false
 	end
 
-	if( !IsValid( ply.chosenProp ) ) then return end
-
 	net.Start( "Prop Angle Lock BROADCAST" )
-		net.WriteEntity( ply.chosenProp )
+		net.WriteEntity( ply )
 		net.WriteBit( lockStatus )
 		net.WriteAngle( propAngle )
 	net.Broadcast()
@@ -269,10 +265,8 @@ net.Receive( "Prop Angle Snap", function( len, ply )
 		snapStatus = false
 	end
 
-	if( !IsValid( ply.chosenProp ) ) then return end
-
 	net.Start( "Prop Angle Snap BROADCAST" )
-		net.WriteEntity( ply.chosenProp )
+		net.WriteEntity( ply )
 		net.WriteBit( snapStatus )
 	net.Broadcast()
 end )
@@ -283,14 +277,16 @@ end )
 
 hook.Add( "PlayerDeath", "Remove ent prop on death", function( ply )
 	RemovePlayerProp( ply )
+	local ragdoll = ply:GetRagdollEntity()
+	SafeRemoveEntityDelayed( ragdoll, 5 )
 end )
 
 --[[ remove the ent prop ]]--
 function RemovePlayerProp( ply )
-	if( IsValid( ply.chosenProp ) ) then
-		ply.chosenProp:Remove()
+	if( ply.GetProp && IsValid( ply:GetProp() ) ) then
+		ply:GetProp():Remove()
+		ply:SetProp( nil )
 	end
-	ply.chosenProp = nil
 	ply:ResetHull()
 	net.Start( "Reset Prop" )
 		-- empty, just used for the hook

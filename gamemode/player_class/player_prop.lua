@@ -7,8 +7,8 @@ local PLAYER = {}
 --
 
 PLAYER.DisplayName       = "Prop"
-PLAYER.WalkSpeed         = 200
-PLAYER.RunSpeed          = 400
+PLAYER.WalkSpeed         = 222
+PLAYER.RunSpeed          = 222
 PLAYER.CanUseFlashlight  = false
 PLAYER.UseVMHands        = false
 PLAYER.AvoidPlayers      = false

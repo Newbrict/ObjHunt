@@ -47,7 +47,7 @@ function playerCanBeEnt( ply, ent )
 	if(	!ent:GetClass() || !ent:GetModel() ) then return false end
 
 	-- cooldown on switching props
-	if( ply.chosenProp:GetModel() != "models/player.mdl" ) then
+	if( ply:GetProp():GetModel() != "models/player.mdl" ) then
 		if( ply.lastPropChange && os.time() - ply.lastPropChange < PROP_CHOOSE_COOLDOWN ) then
 			return false
 		end
@@ -60,8 +60,8 @@ end
 
 --[[ set up the teams ]]--
 function GM:CreateTeams( )
-	team.SetUp( TEAM_PROPS , "Props" , Color( 255, 0, 0 ), true )
-	team.SetUp( TEAM_HUNTERS , "Hunters" , Color( 0, 255, 0 ), true  )
+	team.SetUp( TEAM_PROPS , "Props" , TEAM_PROPS_COLOR, true )
+	team.SetUp( TEAM_HUNTERS , "Hunters" , TEAM_HUNTERS_COLOR, true  )
 	team.SetUp( TEAM_SPECTATOR , "Spectators" , Color( 127, 127, 127 ), true  )
 	team.SetClass( TEAM_PROPS, {"player_prop"})
 	team.SetClass( TEAM_HUNTERS, {"player_hunter"})

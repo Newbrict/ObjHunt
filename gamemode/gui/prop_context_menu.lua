@@ -69,16 +69,16 @@ local function DrawContextMenu()
 		worldAngleBtn:SetPos( padding, padding*2 + btnHeight)
 		worldAngleBtn:SetSize( width - 2*padding, btnHeight)
 		worldAngleBtn.DoClick = function()
-			if( !IsValid( LocalPlayer().chosenProp ) ) then return end
 			net.Start( "Prop Angle Lock" )
-				net.WriteBit( !LocalPlayer().chosenProp.angleLock )
+				net.WriteBit( !LocalPlayer().wantAngleLock )
+				net.WriteAngle( LocalPlayer():GetProp():GetAngles() )
 			net.SendToServer()
 		end
 
 		-- painting
 		worldAngleBtn.Paint = function(self,w,h)
 			local btnColor
-			if( LocalPlayer().chosenProp && LocalPlayer().chosenProp.angleLock ) then
+			if( LocalPlayer().wantAngleLock ) then
 				btnColor = table.Copy(ON_COLOR)
 			else
 				btnColor = table.Copy(OFF_COLOR)
@@ -108,17 +108,16 @@ local function DrawContextMenu()
 		snapAngleBtn:SetPos( padding, padding*3 + btnHeight*2)
 		snapAngleBtn:SetSize( width - 2*padding, btnHeight)
 		snapAngleBtn.DoClick = function()
-			if( !IsValid( LocalPlayer().chosenProp ) ) then return end
+			if( !IsValid( LocalPlayer():GetProp() ) ) then return end
 			net.Start( "Prop Angle Snap" )
-				net.WriteBit( !LocalPlayer().chosenProp.angleSnap )
-				net.WriteAngle( LocalPlayer().chosenProp:GetAngles() )
+				net.WriteBit( !LocalPlayer().wantAngleSnap )
 			net.SendToServer()
 		end
 
 		-- painting
 		snapAngleBtn.Paint = function(self,w,h)
 			local btnColor
-			if( LocalPlayer().chosenProp && LocalPlayer().chosenProp.angleSnap ) then
+			if( LocalPlayer().wantAngleSnap ) then
 				btnColor = table.Copy(ON_COLOR)
 			else
 				btnColor = table.Copy(OFF_COLOR)
@@ -162,6 +161,9 @@ hook.Add( "OnContextMenuOpen", "Display the context menu", function()
 	if( LocalPlayer():Team() != TEAM_PROPS &&
 		LocalPlayer():Team() != TEAM_HUNTERS ||
 		!LocalPlayer():Alive() ) then return end
+	if( mainPanel && mainPanel:IsVisible() ) then
+		mainPanel:SetVisible( false )
+	end
 	DrawContextMenu()
 
 	timer.Destroy( "hide context menu" )
