@@ -141,5 +141,42 @@ local function RoundHUD()
 	end
 end
 
+--[[=========================]]--
+--[[ This has spectater info ]]--
+--[[=========================]]--
+local function SpectateHUD()
+	local ply = LocalPlayer()
+
+	if( !ply:IsValid() ) then return end
+	local sTarget = ply:GetObserverTarget()
+	if( !sTarget ) then return end
+	local sNick = sTarget:Nick()
+
+	local padding = 10
+
+
+	local fColor
+	if( sTarget:Team() == TEAM_HUNTERS ) then
+		fColor = TEAM_HUNTERS_COLOR
+	else
+		fColor = TEAM_PROPS_COLOR
+	end
+
+	local dColor = LerpColor( .70, fColor, Color(255,255,255,255) )
+	surface.SetFont( "ObjHUDFont" )
+	surface.SetTextColor( dColor )
+	local textWidth, textHeight = surface.GetTextSize( sNick )
+	local textX = ScrW()/2 - textWidth/2
+	local textY = padding*2
+	local width = textWidth + 2*padding
+	local height = textHeight + 2*padding
+	local startY = textY - padding
+	local startX = textX - padding
+	surface.SetTextPos( textX, textY )
+	surface.DrawText( sNick )
+
+end
+
 hook.Add("HUDPaint", "Main ObjHunt HUD", ObjHUD )
 hook.Add("HUDPaint", "Round HUD", RoundHUD )
+hook.Add("HUDPaint", "Spec HUD", SpectateHUD )
