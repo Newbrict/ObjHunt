@@ -224,11 +224,13 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 		ply:SetColor( Color(0,0,0,0) )
 		ply:SetBloodColor( DONT_BLEED )
 
-		ply:SetDTEntity( 0, ents.Create("player_prop_ent") )
-		ply:GetProp():Spawn()
-		ply:GetProp():SetOwner( ply )
-		-- custom initial hb
-		SetPlayerProp( ply, ply:GetProp(), PROP_DEFAULT_SCALE, PROP_DEFAULT_HB_MIN, PROP_DEFAULT_HB_MAX )
+		timer.Simple( 1, function()
+			ply:SetProp( ents.Create("player_prop_ent") )
+			ply:GetProp():Spawn()
+			ply:GetProp():SetOwner( ply )
+			-- custom initial hb
+			SetPlayerProp( ply, ply:GetProp(), PROP_DEFAULT_SCALE, PROP_DEFAULT_HB_MIN, PROP_DEFAULT_HB_MAX )
+		end )
 
 	elseif( ply:Team() == TEAM_HUNTERS ) then
 		ply:SetRenderMode( RENDERMODE_NORMAL )
