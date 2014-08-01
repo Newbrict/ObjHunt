@@ -14,7 +14,7 @@ local function SendTeam( chosen )
 	net.SendToServer()
 end
 
-local function class_selection()
+local function classSelection()
 	local width   = 300
 	local height  = 100
 	local padding = 10
@@ -68,7 +68,7 @@ local function class_selection()
 		local tw, th = surface.GetTextSize( textToDraw )
 		surface.SetTextPos(0, 0)
 		surface.DrawText( textToDraw )
-	
+
 		surface.SetDrawColor( PANEL_FILL )
 		surface.DrawRect( 0, th,  4*padding + 3*btnWidth, 2*padding + btnHeight )
 		surface.SetDrawColor( PANEL_BORDER )
@@ -141,4 +141,4 @@ local function class_selection()
 
 end
 
-net.Receive("Class Selection", class_selection )
+net.Receive("Class Selection", classSelection )

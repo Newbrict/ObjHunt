@@ -2,17 +2,22 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
-resource.AddFile("sound/taunts/jihad.wav")
-
 function GM:PlayerInitialSpawn( ply )
 	ply:SetTeam( TEAM_SPECTATOR )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
 end
 
-
-
 function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
 	net.Start( "Class Selection" )
+		-- Just used as a hook
+	net.Send( ply )
+end
+
+function GM:ShowSpare1( ply )
+	-- random pitch sounds == lol
+	ply:EmitSound( TAUNTS["Jihad"],70,math.random()*255 )
+	--ply:EmitSound( TAUNTS["Jihad"] )
+	net.Start( "Taunt Selection" )
 		-- Just used as a hook
 	net.Send( ply )
 end
@@ -50,14 +55,6 @@ net.Receive("Class Selection", function( len, ply )
 	ply:KillSilent()
 	ply:Spawn()
 end )
-
-
-function GM:ShowSpare1( ply ) -- This hook is called everytime F2 is pressed.
-	local theTaunt = "taunts/jihad.wav"
-	ply:EmitSound(theTaunt, 100)
-    umsg.Start( "taunt_selection", ply ) -- Sending a message to the client.
-    umsg.End()
-end
 
 function GM:PlayerSetModel( ply )
 	class = player_manager.GetPlayerClass( ply )
@@ -104,14 +101,10 @@ hook.Add( "EntityTakeDamage", "damage the correct ent", function( target, dmginf
 	end
 end )
 
-function GM:EntityFireBullets( ent, data )
-	data.Force = 0
-	return true
-end
-
 --[[ All network strings should be precached HERE ]]--
 hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Class Selection" )
+	util.AddNetworkString( "Taunt Selection" )
 	util.AddNetworkString( "Map Time" )
 	util.AddNetworkString( "Round Update" )
 	util.AddNetworkString( "Prop Update" )

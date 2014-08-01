@@ -86,3 +86,14 @@ HP_COLOR = Color( 255, 0, 0, 150 )
 DEPLETED_COLOR = Color( 255, 0, 0, 150 )
 FULL_COLOR = Color( 0, 0, 255, 150 )
 ROUND_TIME_COLOR = Color( 85, 85, 85, 200 )
+
+--[[============]]--
+--[[TAUNT CONFIG]]--
+--[[============]]--
+
+TAUNTS = {}
+-- USAGE:
+-- TAUNTS["Display Name"] = "taunts/file_name.wav"
+TAUNTS["Jihad"]     = "taunts/jihad.wav"
+TAUNTS["Fire"]      = "taunts/cast_away_fire.wav"
+TAUNTS["Atatatat"]  = "taunts/atatatat.wav"

@@ -27,6 +27,10 @@ if SERVER then
 	resourceLoader( resources["shared"], function(x) include(x) AddCSLuaFile(x) end )
 	resourceLoader( resources["server"], include )
 	resourceLoader( resources["client"], AddCSLuaFile )
+	-- add the taunts in
+	for _, t in pairs(TAUNTS) do
+		resource.AddFile("sound/"..t)
+	end
 else
 	print( "Adding Client Side Lua Files..." )
 	resourceLoader( resources["shared"], include )
