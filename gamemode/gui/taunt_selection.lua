@@ -1,55 +1,85 @@
-local function taunt_selection()
-	local t_form = vgui.Create( "DFrame" ) -- works here not in play_hunter?????
-	t_form:SetPos( ScrW() / 2 - 200, ScrH() / 2 - 50 ) -- Position form on your monitor
-	t_form:SetTitle( "PLay a taunt!" )
-	t_form:SetSize( 320,395) 		  -- Size form
-	t_form:SetVisible( true ) 		  -- Form rendered ( true or false )
-	t_form:SetDraggable( false ) 	  -- Form draggable
-	t_form:ShowCloseButton( true )   -- Show buttons panel
-	t_form.btnMaxim:Hide()
-	t_form.btnMinim:Hide()
-	t_form:MakePopup()
+local function tauntSelection()
 
-	local PlayBtn = vgui.Create( "DButton" )
-	PlayBtn:SetParent( t_form )
-	PlayBtn:SetPos( 10, 35 )
-	PlayBtn:SetText( "PLay" )
-	PlayBtn:SetSize( 100, 30 )
+	local padding = 10
 
-	PlayBtn.DoClick = function()
-		sound.Play("vo/npc/female01/yeah02.wav", LocalPlayer():GetPos(), 75, 100, 1)
+	local width = 250
+	local height = 200
+
+	local btnWidth = width
+	local btnHeight = 50
+
+	local tauntPanel = vgui.Create( "DPanel" )
+		tauntPanel:SetSize( width + padding*4, height + padding*5 + btnHeight )
+		tauntPanel:Center()
+		tauntPanel:SetVisible( true )
+		tauntPanel:SetDrawBackground( false )
+		tauntPanel:MakePopup()
+
+	local prettyPanel = vgui.Create( "DPanel", tauntPanel )
+		prettyPanel:SetPos( padding, padding )
+		prettyPanel:SetSize( width + padding*2, height + padding*3 + btnHeight )
+
+	local exitBtn = vgui.Create( "DImageButton", tauntPanel )
+		exitBtn:SetImage( "icon16/cancel.png" )
+		exitBtn:SizeToContents()
+		local ebw = exitBtn:GetSize()/2
+		exitBtn:SetPos( width + padding*3-ebw, padding-ebw )
+		exitBtn.DoClick = function()
+			tauntPanel:Remove()
+		end
+
+	local tauntList = vgui.Create( "DListView", prettyPanel )
+		tauntList:SetMultiSelect( false )
+		tauntList:SetSize( width, height )
+		tauntList:SetPos( padding, padding )
+		tauntList:AddColumn( "Select A Taunt" )
+		for k, v in pairs( TAUNTS ) do
+			tauntList:AddLine( k, v )
+		end
+		tauntList.OnClickLine = function(parent, line, isSelected)
+			tauntPanel:SetVisible( false )
+			net.Start( "Taunt Selection" )
+				net.WriteString( line:GetValue(2) )
+			net.SendToServer()
+		end
+
+	local randomBtn = vgui.Create( "DButton", prettyPanel )
+		randomBtn:SetText( "" )
+		randomBtn:SetSize( btnWidth, btnHeight )
+		randomBtn:SetPos( padding, height + padding*2 )
+		randomBtn.DoClick = function()
+			tauntPanel:SetVisible( false )
+			net.Start( "Taunt Selection" )
+				net.WriteString( table.Random( TAUNTS ) )
+			net.SendToServer()
+		end
+
+	-- Painting
+	prettyPanel.Paint = function(self,w,h)
+		surface.SetDrawColor( PANEL_FILL )
+		surface.DrawRect( 0, 0, w, h )
+		surface.SetDrawColor( PANEL_BORDER )
+		surface.DrawOutlinedRect( 0, 0, w, h )
 	end
 
--------------------------------------------------------------------------------------------------------
+	randomBtn.Paint = function(self,w,h)
+		local btnColor = Color( 0, 0, 255, 100 )
 
-	local PlaySelectedBtn = vgui.Create( "DButton" )
-	PlaySelectedBtn:SetParent( t_form )
-	PlaySelectedBtn:SetPos( 120, 35 )
-	PlaySelectedBtn:SetText( "Play s" )
-	PlaySelectedBtn:SetSize( 100, 30 )
+		if( randomBtn:IsHovered() ) then
+			btnColor.a = btnColor.a + 50
+		end
 
-	PlaySelectedBtn.DoClick = function()
-		sound.Play("taunts/jihad.wav", LocalPlayer():GetPos(), 75, 100, 1)
-	end
-
-	local SoundList = vgui.Create("DListView")
-	SoundList:SetParent( t_form )
-	SoundList:SetMultiSelect(false)
-	SoundList:SetPos( 10, 70)
-	SoundList:SetSize( 300, 310 )
-	SoundList:AddColumn("Sounds")
-
-	--SoundList:AddLine( "love_runs_out" )
-	--SoundList:AddLine( "aliens_game_over" )
-	file.Find( "*", "GAME" )
-
-
-	local soundFiles, _ = file.Find( "gamemodes/ObjHunt/gamemode/player_class/*", "MOD" ) --"gamemodes/ObjHunt/content/sounds/*"
-	print(soundFiles[1])
-	for _, soundFile in ipairs(soundFiles) do
-		SoundList:AddLine( "soundFile" )
-		print(soundFiles[1])
+		surface.SetFont( "Toggle Buttons" )
+		surface.SetTextColor( Color( 255,255,255,255 ) )
+		local text = "Play A Random Taunt"
+		local tw, th = surface.GetTextSize( text )
+		surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
+		surface.DrawText( text )
+		surface.SetDrawColor( btnColor )
+		surface.DrawRect( 0, 0, w, h)
+		surface.SetDrawColor( PANEL_BORDER )
+		surface.DrawOutlinedRect( 0, 0, w, h)
 	end
 
 end
-usermessage.Hook("taunt_selection", taunt_selection)
+net.Receive("Taunt Selection", tauntSelection)

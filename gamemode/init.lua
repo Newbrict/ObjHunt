@@ -2,15 +2,12 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
-resource.AddFile("sound/taunts/jihad.wav")
-
 function GM:PlayerInitialSpawn( ply )
 	ply:SetTeam( TEAM_SPECTATOR )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
 end
 
-
-
+-- [[ Class Selection ]] --
 function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
 	net.Start( "Class Selection" )
 		-- Just used as a hook
@@ -51,13 +48,20 @@ net.Receive("Class Selection", function( len, ply )
 	ply:Spawn()
 end )
 
-
-function GM:ShowSpare1( ply ) -- This hook is called everytime F2 is pressed.
-	local theTaunt = "taunts/jihad.wav"
-	ply:EmitSound(theTaunt, 100)
-    umsg.Start( "taunt_selection", ply ) -- Sending a message to the client.
-    umsg.End()
+-- [[ Taunts ]] --
+function GM:ShowSpare1( ply )
+	net.Start( "Taunt Selection" )
+		-- Just used as a hook
+	net.Send( ply )
 end
+
+net.Receive( "Taunt Selection", function( len, ply )
+	local taunt = net.ReadString()
+	-- random pitch sounds == lol
+	-- ply:EmitSound( taunt, 70, math.random()*255 )
+	ply:EmitSound( taunt, 70 )
+end )
+
 
 function GM:PlayerSetModel( ply )
 	class = player_manager.GetPlayerClass( ply )
@@ -104,14 +108,10 @@ hook.Add( "EntityTakeDamage", "damage the correct ent", function( target, dmginf
 	end
 end )
 
-function GM:EntityFireBullets( ent, data )
-	data.Force = 0
-	return true
-end
-
 --[[ All network strings should be precached HERE ]]--
 hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Class Selection" )
+	util.AddNetworkString( "Taunt Selection" )
 	util.AddNetworkString( "Map Time" )
 	util.AddNetworkString( "Round Update" )
 	util.AddNetworkString( "Prop Update" )
@@ -224,11 +224,13 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 		ply:SetColor( Color(0,0,0,0) )
 		ply:SetBloodColor( DONT_BLEED )
 
-		ply:SetDTEntity( 0, ents.Create("player_prop_ent") )
-		ply:GetProp():Spawn()
-		ply:GetProp():SetOwner( ply )
-		-- custom initial hb
-		SetPlayerProp( ply, ply:GetProp(), PROP_DEFAULT_SCALE, PROP_DEFAULT_HB_MIN, PROP_DEFAULT_HB_MAX )
+		timer.Simple( 1, function()
+			ply:SetProp( ents.Create("player_prop_ent") )
+			ply:GetProp():Spawn()
+			ply:GetProp():SetOwner( ply )
+			-- custom initial hb
+			SetPlayerProp( ply, ply:GetProp(), PROP_DEFAULT_SCALE, PROP_DEFAULT_HB_MIN, PROP_DEFAULT_HB_MAX )
+		end )
 
 	elseif( ply:Team() == TEAM_HUNTERS ) then
 		ply:SetRenderMode( RENDERMODE_NORMAL )

@@ -1,3 +1,15 @@
+function GetLivingPlayers( onTeam )
+	local allPly = team.GetPlayers( onTeam )
+	local livingPly = {}
+	for _, v in pairs(allPly) do
+		if( IsValid(v) && v:Alive() ) then
+			livingPly[#livingPly + 1] = v
+		end
+	end
+	return livingPly
+end
+
+-- now realised there is a flag to ignore ws...
 function isStuck( ply )
 	local pos = ply:GetPos()
 	local ws = game.GetWorld()

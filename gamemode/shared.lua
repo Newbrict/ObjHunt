@@ -1,5 +1,5 @@
 GM.Name    = "ObjHunt"
-GM.Author  = "Newbrict, Pepsi, Maxwellstorm, Zombie"
+GM.Author  = "Newbrict, TheBerryBeast, Zombie"
 GM.Email   = "N/A"
 GM.Website = "N/A"
 
@@ -8,7 +8,7 @@ DeriveGamemode("PolyBase")
 --[[ Add all the files on server/client ]]--
 local resources = {}
 resources["server"] = { "server" }
-resources["shared"] = { "shared","player_class","utils" }
+resources["shared"] = { "shared","player_class" }
 resources["client"] = { "client", "gui" }
 
 local function resourceLoader(dirs, includeFunc)
@@ -27,6 +27,10 @@ if SERVER then
 	resourceLoader( resources["shared"], function(x) include(x) AddCSLuaFile(x) end )
 	resourceLoader( resources["server"], include )
 	resourceLoader( resources["client"], AddCSLuaFile )
+	-- add the taunts in
+	for _, t in pairs(TAUNTS) do
+		resource.AddFile("sound/"..t)
+	end
 else
 	print( "Adding Client Side Lua Files..." )
 	resourceLoader( resources["shared"], include )

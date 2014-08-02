@@ -87,3 +87,26 @@ HP_COLOR = Color( 255, 0, 0, 150 )
 DEPLETED_COLOR = Color( 255, 0, 0, 150 )
 FULL_COLOR = Color( 0, 0, 255, 150 )
 ROUND_TIME_COLOR = Color( 85, 85, 85, 200 )
+
+--[[============]]--
+--[[TAUNT CONFIG]]--
+--[[============]]--
+
+TAUNTS = {}
+-- USAGE:
+-- TAUNTS["Display Name"] = "taunts/file_name.wav"
+TAUNTS["Jihad"]                    = "taunts/jihad.wav"
+TAUNTS["Atatatat"]                 = "taunts/atatatat.wav"
+TAUNTS["Boom, Headshot!"]          = "taunts/boom_headshot.wav"
+TAUNTS["Doh!"]                     = "taunts/doh.wav"
+TAUNTS["I Guarantee it"]           = "taunts/guarantee_it.wav"
+TAUNTS["LEEROY... JENKINS!"]       = "taunts/leeroy_jenkins.wav"
+TAUNTS["Negative"]                 = "taunts/negative.wav"
+TAUNTS["Never Do Laundry Again"]   = "taunts/never_again.wav"
+TAUNTS["Over 9000"]                = "taunts/over_9000.wav"
+TAUNTS["Pingas"]                   = "taunts/pingas.wav"
+TAUNTS["Please Come Again"]        = "taunts/please_come_again.wav"
+TAUNTS["What do you like to play"] = "taunts/pokemon.wav"
+TAUNTS["Vince With Shamwow"]       = "taunts/shamwow.wav"
+TAUNTS["This Is SPARTA!"]          = "taunts/sparta.wav"
+TAUNTS["Woohoo!"]                  = "taunts/woohoo.wav"

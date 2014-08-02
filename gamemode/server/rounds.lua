@@ -30,17 +30,6 @@ local function SendRoundUpdate( sendMethod )
 	sendMethod()
 end
 
-local function GetLivingPlayers( onTeam )
-	local allPly = team.GetPlayers( onTeam )
-	local livingPly = {}
-	for _, v in pairs(allPly) do
-		if( IsValid(v) && v:Alive() ) then
-			livingPly[#livingPly + 1] = v
-		end
-	end
-	return livingPly
-end
-
 local function SwapTeams()
 	local hunters = team.GetPlayers(TEAM_HUNTERS)
 	local props = team.GetPlayers(TEAM_PROPS)
