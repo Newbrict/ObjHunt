@@ -1,5 +1,5 @@
 GM.Name    = "ObjHunt"
-GM.Author  = "Newbrict, Pepsi, Maxwellstorm, Zombie"
+GM.Author  = "Newbrict, TheBerryBeast, Zombie"
 GM.Email   = "N/A"
 GM.Website = "N/A"
 

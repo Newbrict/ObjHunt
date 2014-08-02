@@ -7,17 +7,9 @@ function GM:PlayerInitialSpawn( ply )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
 end
 
+-- [[ Class Selection ]] --
 function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
 	net.Start( "Class Selection" )
-		-- Just used as a hook
-	net.Send( ply )
-end
-
-function GM:ShowSpare1( ply )
-	-- random pitch sounds == lol
-	ply:EmitSound( TAUNTS["Jihad"],70,math.random()*255 )
-	--ply:EmitSound( TAUNTS["Jihad"] )
-	net.Start( "Taunt Selection" )
 		-- Just used as a hook
 	net.Send( ply )
 end
@@ -55,6 +47,21 @@ net.Receive("Class Selection", function( len, ply )
 	ply:KillSilent()
 	ply:Spawn()
 end )
+
+-- [[ Taunts ]] --
+function GM:ShowSpare1( ply )
+	net.Start( "Taunt Selection" )
+		-- Just used as a hook
+	net.Send( ply )
+end
+
+net.Receive( "Taunt Selection", function( len, ply )
+	local taunt = net.ReadString()
+	-- random pitch sounds == lol
+	-- ply:EmitSound( taunt, 70, math.random()*255 )
+	ply:EmitSound( taunt, 70 )
+end )
+
 
 function GM:PlayerSetModel( ply )
 	class = player_manager.GetPlayerClass( ply )
