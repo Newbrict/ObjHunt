@@ -48,23 +48,49 @@ local function ObjHUD()
 		if( ply.viewOrigin == nil || ply.wantThirdPerson == nil ) then return end
 		if( ply.lastPropChange == nil ) then return end
 
-		-- COOLDOWN GUI
+		-- PROP COOLDOWN GUI
 		startY = startY - padding - 16
 
 		-- icon
-		local clockMat = Material("icon16/clock.png", "unlitgeneric")
-		surface.SetMaterial( clockMat )
+		local propMat = Material("icon16/package.png", "unlitgeneric")
+		surface.SetMaterial( propMat )
 		surface.DrawTexturedRect( iconX, startY, 16 , 16)
 
 		-- bar
-		local cdFrac = math.Clamp( os.time() - ply.lastPropChange , 0, PROP_CHOOSE_COOLDOWN)/PROP_CHOOSE_COOLDOWN
-		local cdColor = LerpColor( cdFrac, DEPLETED_COLOR, FULL_COLOR )
+		local propFrac = math.Clamp( CurTime() - ply.lastPropChange , 0, PROP_CHOOSE_COOLDOWN)/PROP_CHOOSE_COOLDOWN
+		local propColor = LerpColor( propFrac, DEPLETED_COLOR, FULL_COLOR )
 
 		local widthOffset = width - (padding*3) - 16
 		surface.SetDrawColor( PANEL_FILL )
 		surface.DrawRect( barX, startY, widthOffset, 16)
-		surface.SetDrawColor( cdColor )
-		surface.DrawRect( barX, startY, widthOffset*cdFrac, 16)
+		surface.SetDrawColor( propColor )
+		surface.DrawRect( barX, startY, widthOffset*propFrac, 16)
+		surface.SetDrawColor( PANEL_BORDER )
+		surface.DrawOutlinedRect( barX, startY, widthOffset, 16)
+	end
+
+	if( ply:Team() == TEAM_PROPS ) then
+		-- this needs to be here otherwise some people get errors for some unknown reason
+		if( ply.viewOrigin == nil || ply.wantThirdPerson == nil ) then return end
+		if( ply.lastPropChange == nil ) then return end
+
+		-- TAUNT COOLDOWN GUI
+		startY = startY - padding - 16
+
+		-- icon
+		local tauntMat = Material("icon16/music.png", "unlitgeneric")
+		surface.SetMaterial( tauntMat )
+		surface.DrawTexturedRect( iconX, startY, 16 , 16)
+
+		-- bar
+		local tauntFrac = math.Clamp( CurTime() - ply.lastTaunt , 0, ply.lastTauntDuration)/ply.lastTauntDuration
+		local tauntColor = TAUNT_BAR_COLOR
+
+		local widthOffset = width - (padding*3) - 16
+		surface.SetDrawColor( PANEL_FILL )
+		surface.DrawRect( barX, startY, widthOffset, 16)
+		surface.SetDrawColor( tauntColor )
+		surface.DrawRect( barX, startY, widthOffset*tauntFrac, 16)
 		surface.SetDrawColor( PANEL_BORDER )
 		surface.DrawOutlinedRect( barX, startY, widthOffset, 16)
 	end

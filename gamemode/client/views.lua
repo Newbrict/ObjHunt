@@ -63,8 +63,12 @@ local function stencilColor( ply, ent )
 	if( WouldBeStuck( ply, ent ) ) then return BAD_HOVER_COLOR end
 
 	-- cooldown on switching props
-	if( ply.lastPropChange &&
-		os.time() - ply.lastPropChange < PROP_CHOOSE_COOLDOWN ) then return BAD_HOVER_COLOR end
+	if( ply.lastPropChange && CurTime() - ply.lastPropChange < PROP_CHOOSE_COOLDOWN ) then
+		local frac = math.Clamp( CurTime() - ply.lastPropChange , 0, PROP_CHOOSE_COOLDOWN)/PROP_CHOOSE_COOLDOWN
+		frac = frac/2
+
+		return LerpColor( frac, BAD_HOVER_COLOR, GOOD_HOVER_COLOR )
+	end
 
 	return GOOD_HOVER_COLOR
 end

@@ -1,4 +1,16 @@
+local function playTaunt( taunt )
+	-- only play if the last taunt has ended
+	if( CurTime() < LocalPlayer().lastTaunt + LocalPlayer().lastTauntDuration ) then return end
+
+	net.Start( "Taunt Selection" )
+		net.WriteString( taunt )
+	net.SendToServer()
+	LocalPlayer().lastTaunt = CurTime()
+	LocalPlayer().lastTauntDuration = SoundDuration( taunt )
+end
+
 local function tauntSelection()
+	if( LocalPlayer():Team() != TEAM_PROPS ) then return end
 
 	local padding = 10
 
@@ -38,9 +50,7 @@ local function tauntSelection()
 		end
 		tauntList.OnClickLine = function(parent, line, isSelected)
 			tauntPanel:SetVisible( false )
-			net.Start( "Taunt Selection" )
-				net.WriteString( line:GetValue(2) )
-			net.SendToServer()
+			playTaunt( line:GetValue(2) )
 		end
 
 	local randomBtn = vgui.Create( "DButton", prettyPanel )
@@ -49,9 +59,7 @@ local function tauntSelection()
 		randomBtn:SetPos( padding, height + padding*2 )
 		randomBtn.DoClick = function()
 			tauntPanel:SetVisible( false )
-			net.Start( "Taunt Selection" )
-				net.WriteString( table.Random( TAUNTS ) )
-			net.SendToServer()
+			playTaunt( table.Random( TAUNTS ) )
 		end
 
 	-- Painting

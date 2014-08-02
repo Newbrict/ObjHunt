@@ -224,7 +224,7 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 		ply:SetColor( Color(0,0,0,0) )
 		ply:SetBloodColor( DONT_BLEED )
 
-		timer.Simple( 1, function()
+		timer.Simple( 0.5, function()
 			ply:SetProp( ents.Create("player_prop_ent") )
 			ply:GetProp():Spawn()
 			ply:GetProp():SetOwner( ply )

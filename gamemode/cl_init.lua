@@ -11,7 +11,7 @@ net.Receive( "Prop update", function( length )
 	-- prop height for views, change time for cooldown
 	local propHeight = tHitboxMax.z - tHitboxMin.z
 	LocalPlayer().propHeight = propHeight
-	LocalPlayer().lastPropChange = os.time()
+	LocalPlayer().lastPropChange = CurTime()
 
 	-- initialize stuff here
 	if( LocalPlayer().firstProp ) then
@@ -19,6 +19,8 @@ net.Receive( "Prop update", function( length )
 		LocalPlayer().wantAngleLock = false
 		LocalPlayer().wantAngleSnap = false
 		LocalPlayer().lastPropChange = 0
+		LocalPlayer().lastTaunt = 0
+		LocalPlayer().lastTauntDuration = 1
 		LocalPlayer().firstProp = false
 	end
 
