@@ -15,71 +15,78 @@ local function SendTeam( chosen )
 end
 
 local function classSelection()
-	local width   = 300
-	local height  = 100
 	local padding = 10
 	local btnHeight = 30
 	local btnWidth  = 80
+	local width   = 3*btnWidth + 4*padding
+	local height  = btnHeight + 2*padding
 
-	local cSPanel = vgui.Create( "DPanel" )
-		cSPanel:SetSize( width, height )
-		cSPanel:Center()
-		cSPanel:SetVisible( true )
-		cSPanel:MakePopup()
+	local classPanel = vgui.Create( "DPanel" )
+		classPanel:SetSize( width+padding*2, ScrH() )
+		classPanel:Center()
+		classPanel:SetVisible( true )
+		classPanel:SetDrawBackground( false )
+		classPanel:MakePopup()
 
-	local hunterBtn = vgui.Create( "DButton", cSPanel )
+	local prettyPanel = vgui.Create( "DPanel", classPanel )
+		prettyPanel:SetPos( padding, padding )
+		prettyPanel:SetSize( width, height )
+		prettyPanel:Center()
+
+	local hunterBtn = vgui.Create( "DButton", prettyPanel )
 		hunterBtn:SetText( "" )
 		hunterBtn:SetSize( btnWidth, btnHeight )
+		hunterBtn:SetPos( padding, padding )
 		hunterBtn.DoClick = function()
 			SendTeam( TEAM_HUNTERS )
-			cSPanel:Remove()
+			classPanel:Remove()
 		end
 
-	local propBtn = vgui.Create( "DButton", cSPanel )
+	local propBtn = vgui.Create( "DButton", prettyPanel )
 		propBtn:SetText( "" )
 		propBtn:SetSize( btnWidth, btnHeight )
+		propBtn:SetPos( padding*2 + btnWidth, padding )
 		propBtn.DoClick = function()
 			SendTeam( TEAM_PROPS )
-			cSPanel:Remove()
+			classPanel:Remove()
 		end
 
-	local specBtn = vgui.Create( "DButton", cSPanel )
+	local specBtn = vgui.Create( "DButton", prettyPanel )
 		specBtn:SetText( "" )
 		specBtn:SetSize( btnWidth, btnHeight )
+		specBtn:SetPos( padding*3 + btnWidth*2, padding )
 		specBtn.DoClick = function()
 			SendTeam( TEAM_SPECTATOR )
-			cSPanel:Remove()
+			classPanel:Remove()
 		end
 
-	local exitBtn = vgui.Create( "DImageButton", cSPanel )
+	local exitBtn = vgui.Create( "DImageButton", classPanel )
 		exitBtn:SetImage( "icon16/cancel.png" )
 		exitBtn:SizeToContents()
+		local ebw = exitBtn:GetSize()/2
+		local px, py = prettyPanel:GetPos()
+		exitBtn:SetPos( width + padding - ebw, py - ebw )
 		exitBtn.DoClick = function()
-			cSPanel:Remove()
+			classPanel:Remove()
 		end
 
-	cSPanel.Paint = function(self,w,h)
+	classPanel.Paint = function( self, w, h )
 		Derma_DrawBackgroundBlur( self, CurTime() )
-
 
 		surface.SetFont( "Sharp HUD" )
 		surface.SetTextColor( 255, 255, 255, 255 )
 		local textToDraw = "Select Your Team"
 		local tw, th = surface.GetTextSize( textToDraw )
-		surface.SetTextPos(0, 0)
+		local px, py = prettyPanel:GetPos()
+		surface.SetTextPos(px, py-th)
 		surface.DrawText( textToDraw )
+	end
 
+	prettyPanel.Paint = function(self,w,h)
 		surface.SetDrawColor( PANEL_FILL )
-		surface.DrawRect( 0, th,  4*padding + 3*btnWidth, 2*padding + btnHeight )
+		surface.DrawRect( 0, 0, width, height )
 		surface.SetDrawColor( PANEL_BORDER )
-		surface.DrawOutlinedRect( 0, th, 4*padding + 3*btnWidth, 2*padding + btnHeight)
-
-		local ebw = exitBtn:GetSize()/2
-		exitBtn:SetPos(4*padding + 3*btnWidth - ebw,th-ebw)
-		hunterBtn:SetPos( padding, th + padding )
-		propBtn:SetPos( padding*2 + btnWidth, th + padding )
-		specBtn:SetPos( padding*3 + btnWidth*2, th + padding )
-
+		surface.DrawOutlinedRect( 0, 0, width, height )
 	end
 
 	hunterBtn.Paint = function(self,w,h)
@@ -138,6 +145,7 @@ local function classSelection()
 		surface.SetDrawColor( PANEL_BORDER )
 		surface.DrawOutlinedRect( 0, 0, w, h)
 	end
+
 
 end
 
