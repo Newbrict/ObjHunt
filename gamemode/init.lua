@@ -86,6 +86,28 @@ function GM:PlayerShouldTakeDamage( victim, attacker )
 	return false
 end
 
+-- how damage to props is handled
+local function HurtProp( ply, dmg, attacker )
+	if( attacker:Alive() ) then
+		local gain = math.min( ply:Health(), dmg )
+		gain = gain/2
+		attacker:SetHealth( attacker:Health() + gain )
+	end
+	ply:SetHealth( ply:Health() - dmg )
+	if( ply:Health() < 1 && ply:Alive() ) then
+		ply:KillSilent()
+		RemovePlayerProp( ply )
+		net.Start( "Death Notice" )
+			net.WriteString( attacker:Nick() )
+			net.WriteUInt( attacker:Team(), 16 )
+			net.WriteString( "found" )
+			net.WriteString( ply:Nick() )
+			net.WriteUInt( ply:Team(), 16 )
+		net.Broadcast()
+		attacker:AddFrags( 1 )
+	end
+end
+
 -- new damage system
 local function DamageHandler( target, dmgInfo )
 
@@ -104,44 +126,10 @@ local function DamageHandler( target, dmgInfo )
 				end
 			elseif( target:GetOwner():IsPlayer() ) then
 				local ply = target:GetOwner()
-				if( attacker:Alive() ) then
-					local gain = math.min( ply:Health(), dmg )
-					gain = gain/2
-					attacker:SetHealth( attacker:Health() + gain )
-				end
-				ply:SetHealth( ply:Health() - dmg )
-				if( ply:Health() < 1 ) then
-					ply:KillSilent()
-					RemovePlayerProp( ply )
-					net.Start( "Death Notice" )
-						net.WriteString( attacker:Nick() )
-						net.WriteUInt( attacker:Team(), 16 )
-						net.WriteString( "found" )
-						net.WriteString( ply:Nick() )
-						net.WriteUInt( ply:Team(), 16 )
-					net.Broadcast()
-					attacker:AddFrags( 1 )
-				end
+				HurtProp( ply, dmg, attacker )
 			elseif( target:IsPlayer() && target:Team() == TEAM_PROPS ) then
 				local ply = target
-				if( attacker:Alive() ) then
-					local gain = math.min( ply:Health(), dmg )
-					gain = gain/2
-					attacker:SetHealth( attacker:Health() + gain )
-				end
-				ply:SetHealth( ply:Health() - dmg )
-				if( ply:Health() < 1 ) then
-					ply:KillSilent()
-					RemovePlayerProp( ply )
-					net.Start( "Death Notice" )
-						net.WriteString( attacker:Nick() )
-						net.WriteUInt( attacker:Team(), 16 )
-						net.WriteString( "found" )
-						net.WriteString( ply:Nick() )
-						net.WriteUInt( ply:Team(), 16 )
-					net.Broadcast()
-					attacker:AddFrags( 1 )
-				end
+				HurtProp( ply, dmg, attacker )
 			end
 		end
 	end
@@ -219,6 +207,19 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 
 	ply.lastPropChange = os.time()
 
+	local volume = (tHitboxMax.x-tHitboxMin.x)*(tHitboxMax.y-tHitboxMin.y)*(tHitboxMax.z-tHitboxMin.z)
+
+	-- the damage percent is what percent of hp the prop currently has
+	ply.dmgPct = math.min( ply.dmgPct, ply:Health()/ply.oldMaxHP )
+
+	local maxHP = math.Clamp( volume/10, 1, 100 )
+
+	ply.oldMaxHP = maxHP
+
+	-- just enough to see the HP bar at lowest possible hp
+	local newHP = math.Clamp( maxHP*ply.dmgPct, 2, 100 )
+	ply:SetHealth( newHP )
+
 	-- Update the player's mass to be something more reasonable to the prop
 	local phys = ent:GetPhysicsObject()
 	if IsValid(ent) and phys:IsValid() then
@@ -229,12 +230,8 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 	else
 		-- Entity doesn't have a physics object so calculate mass
 		local density = PROP_DEFAULT_DENSITY
-		local volume = (tHitboxMax.x-tHitboxMin.x)*(tHitboxMax.y-tHitboxMin.y)*(tHitboxMax.z-tHitboxMin.z)
 		local mass = volume * density
-
-		mass = math.min(100, mass)
-		mass = math.max(0, mass)
-
+		mass = math.Clamp( mass, 0, 100 )
 		ply:GetPhysicsObject():SetMass(mass)
 	end
 
@@ -263,6 +260,8 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 	ply:SetStepSize( 20 )
 	ply:SetNotSolid( false )
 	if( ply:Team() == TEAM_PROPS ) then
+		ply.oldMaxHP = 100
+		ply.dmgPct = 1
 		-- make the player invisible
 		ply:SetRenderMode( RENDERMODE_TRANSALPHA )
 		ply:SetColor( Color(0,0,0,0) )
