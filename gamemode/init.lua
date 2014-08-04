@@ -81,35 +81,67 @@ function GM:PlayerSetModel( ply )
 	end
 end
 
+-- disable the regular damage system
 function GM:PlayerShouldTakeDamage( victim, attacker )
-	-- props cannot take fall damage
-	if( victim:Team() == TEAM_PROPS && attacker:GetClass() == "worldspawn" ) then
-		return false
-	end
-
-	-- no friendly fire
-	if( attacker:IsPlayer() ) then
-		if( victim:Team() == attacker:Team() && victim != attacker ) then
-			return false
-		end
-	end
-
-	return true
+	return false
 end
 
-hook.Add( "EntityTakeDamage", "damage the correct ent", function( target, dmginfo )
-	local attacker = dmginfo:GetAttacker()
-	-- since player_prop_ent isn't in USABLE_PROP_ENTS this is sufficient logic to prevent
-	-- player owned props from getting hurt
-	if( !target:IsPlayer() && table.HasValue( USABLE_PROP_ENTITIES, target:GetClass() ) ) then
-		if(attacker:IsPlayer()) then
-			attacker:TakeDamage(dmginfo:GetDamage(),attacker,target)
+-- how damage to props is handled
+local function HurtProp( ply, dmg, attacker )
+	if( attacker:Alive() ) then
+		local gain = math.min( ply:Health(), dmg )
+		gain = gain/2
+		attacker:SetHealth( attacker:Health() + gain )
+	end
+	ply:SetHealth( ply:Health() - dmg )
+	if( ply:Health() < 1 && ply:Alive() ) then
+		ply:KillSilent()
+		RemovePlayerProp( ply )
+		net.Start( "Death Notice" )
+			net.WriteString( attacker:Nick() )
+			net.WriteUInt( attacker:Team(), 16 )
+			net.WriteString( "found" )
+			net.WriteString( ply:Nick() )
+			net.WriteUInt( ply:Team(), 16 )
+		net.Broadcast()
+		attacker:AddFrags( 1 )
+	end
+end
+
+-- new damage system
+local function DamageHandler( target, dmgInfo )
+
+	local attacker = dmgInfo:GetAttacker()
+	local dmg = dmgInfo:GetDamage()
+
+	if( attacker:IsPlayer() ) then
+		if( attacker:Team() == TEAM_HUNTERS ) then
+			-- since player_prop_ent isn't in USABLE_PROP_ENTS this is sufficient logic to prevent
+			-- player owned props from getting hurt
+			if( !target:IsPlayer() && table.HasValue( USABLE_PROP_ENTITIES, target:GetClass() ) && attacker:Alive()) then
+				attacker:SetHealth( attacker:Health() - dmg )
+				if( attacker:Health() < 1 ) then
+					attacker:Kill()
+					-- default suicide notice
+				end
+			elseif( target:GetOwner():IsPlayer() ) then
+				local ply = target:GetOwner()
+				HurtProp( ply, dmg, attacker )
+			elseif( target:IsPlayer() && target:Team() == TEAM_PROPS ) then
+				local ply = target
+				HurtProp( ply, dmg, attacker )
+			end
 		end
 	end
+end
+
+hook.Add( "EntityTakeDamage", "forward dmg to new system", function( target, dmg )
+	DamageHandler( target, dmg )
 end )
 
 --[[ All network strings should be precached HERE ]]--
 hook.Add( "Initialize", "Precache all network strings", function()
+	util.AddNetworkString( "Death Notice" )
 	util.AddNetworkString( "Class Selection" )
 	util.AddNetworkString( "Taunt Selection" )
 	util.AddNetworkString( "Map Time" )
@@ -175,6 +207,19 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 
 	ply.lastPropChange = os.time()
 
+	local volume = (tHitboxMax.x-tHitboxMin.x)*(tHitboxMax.y-tHitboxMin.y)*(tHitboxMax.z-tHitboxMin.z)
+
+	-- the damage percent is what percent of hp the prop currently has
+	ply.dmgPct = math.min( ply.dmgPct, ply:Health()/ply.oldMaxHP )
+
+	local maxHP = math.Clamp( volume/10, 1, 100 )
+
+	ply.oldMaxHP = maxHP
+
+	-- just enough to see the HP bar at lowest possible hp
+	local newHP = math.Clamp( maxHP*ply.dmgPct, 2, 100 )
+	ply:SetHealth( newHP )
+
 	-- Update the player's mass to be something more reasonable to the prop
 	local phys = ent:GetPhysicsObject()
 	if IsValid(ent) and phys:IsValid() then
@@ -185,12 +230,8 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 	else
 		-- Entity doesn't have a physics object so calculate mass
 		local density = PROP_DEFAULT_DENSITY
-		local volume = (tHitboxMax.x-tHitboxMin.x)*(tHitboxMax.y-tHitboxMin.y)*(tHitboxMax.z-tHitboxMin.z)
 		local mass = volume * density
-
-		mass = math.min(100, mass)
-		mass = math.max(0, mass)
-
+		mass = math.Clamp( mass, 0, 100 )
 		ply:GetPhysicsObject():SetMass(mass)
 	end
 
@@ -219,12 +260,14 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 	ply:SetStepSize( 20 )
 	ply:SetNotSolid( false )
 	if( ply:Team() == TEAM_PROPS ) then
+		ply.oldMaxHP = 100
+		ply.dmgPct = 1
 		-- make the player invisible
 		ply:SetRenderMode( RENDERMODE_TRANSALPHA )
 		ply:SetColor( Color(0,0,0,0) )
 		ply:SetBloodColor( DONT_BLEED )
 
-		timer.Simple( 1, function()
+		timer.Simple( 0.5, function()
 			ply:SetProp( ents.Create("player_prop_ent") )
 			ply:GetProp():Spawn()
 			ply:GetProp():SetOwner( ply )

@@ -11,7 +11,7 @@ net.Receive( "Prop update", function( length )
 	-- prop height for views, change time for cooldown
 	local propHeight = tHitboxMax.z - tHitboxMin.z
 	LocalPlayer().propHeight = propHeight
-	LocalPlayer().lastPropChange = os.time()
+	LocalPlayer().lastPropChange = CurTime()
 
 	-- initialize stuff here
 	if( LocalPlayer().firstProp ) then
@@ -19,6 +19,8 @@ net.Receive( "Prop update", function( length )
 		LocalPlayer().wantAngleLock = false
 		LocalPlayer().wantAngleSnap = false
 		LocalPlayer().lastPropChange = 0
+		LocalPlayer().lastTaunt = 0
+		LocalPlayer().lastTauntDuration = 1
 		LocalPlayer().firstProp = false
 	end
 
@@ -62,6 +64,17 @@ net.Receive( "Round Update", function()
 	-- pad the local clock so that the time is accurate
 	round.timePad   = net.ReadInt(32) - CurTime()
 
+end )
+
+net.Receive( "Death Notice", function()
+	local attacker = net.ReadString()
+	local attackerTeam = net.ReadUInt( 16 )
+	local verb = net.ReadString()
+	local victim = net.ReadString()
+	local victimTeam = net.ReadUInt( 16 )
+
+	killicon.AddFont("kill", "Sharp HUD", verb, Color(255,255,255,255))
+	GAMEMODE:AddDeathNotice(attacker, attackerTeam, "kill", victim, victimTeam)
 end )
 
 -- disable default hud elements here

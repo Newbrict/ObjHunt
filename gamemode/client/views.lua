@@ -18,7 +18,12 @@ hook.Add("CalcView", "ObjHunt CalcView", function( ply, pos, angles, fov )
 
 	elseif( ply.wantThirdPerson ) then
 		local trace = {}
-		local addToPlayer = Vector(0, 0, ply.propHeight)
+		local addToPlayer
+		if( ply:Team() == TEAM_PROPS ) then
+			addToPlayer = Vector(0, 0, ply.propHeight)
+		else
+			addToPlayer = Vector(0, 0, 64 )
+		end
 		local viewDist = THIRDPERSON_DISTANCE
 
 		trace.start = ply:GetPos() + addToPlayer
@@ -63,8 +68,12 @@ local function stencilColor( ply, ent )
 	if( WouldBeStuck( ply, ent ) ) then return BAD_HOVER_COLOR end
 
 	-- cooldown on switching props
-	if( ply.lastPropChange &&
-		os.time() - ply.lastPropChange < PROP_CHOOSE_COOLDOWN ) then return BAD_HOVER_COLOR end
+	if( ply.lastPropChange && CurTime() - ply.lastPropChange < PROP_CHOOSE_COOLDOWN ) then
+		local frac = math.Clamp( CurTime() - ply.lastPropChange , 0, PROP_CHOOSE_COOLDOWN)/PROP_CHOOSE_COOLDOWN
+		frac = frac/2
+
+		return LerpColor( frac, BAD_HOVER_COLOR, GOOD_HOVER_COLOR )
+	end
 
 	return GOOD_HOVER_COLOR
 end
@@ -74,6 +83,7 @@ local function getViewEnt(ply)
 	if( ply.viewOrigin == nil || ply.wantThirdPerson == nil ) then return end
 
 	local trace = {}
+	trace.mask = MASK_SHOT_HULL
 	trace.start = ply.viewOrigin
 	if( ply.wantThirdPerson ) then
 		trace.endpos = trace.start + ply:GetAngles():Forward() * (THIRDPERSON_DISTANCE+PROP_SELECT_DISTANCE)
