@@ -49,12 +49,6 @@ net.Receive("Class Selection", function( len, ply )
 end )
 
 -- [[ Taunts ]] --
-function GM:ShowSpare1( ply )
-	net.Start( "Taunt Selection" )
-		-- Just used as a hook
-	net.Send( ply )
-end
-
 net.Receive( "Taunt Selection", function( len, ply )
 	local taunt = net.ReadString()
 	-- random pitch sounds == lol

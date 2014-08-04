@@ -1,3 +1,10 @@
+local padding = 10
+local width = 250
+local height = 200
+local btnWidth = width
+local btnHeight = 50
+local tauntPanel
+
 local function playTaunt( taunt )
 	-- only play if the last taunt has ended
 	if( CurTime() < LocalPlayer().lastTaunt + LocalPlayer().lastTauntDuration ) then return end
@@ -10,17 +17,10 @@ local function playTaunt( taunt )
 end
 
 local function tauntSelection()
-	if( LocalPlayer():Team() != TEAM_PROPS ) then return end
+	if( LocalPlayer():Team() != TEAM_PROPS || !LocalPlayer():Alive() ) then return end
 
-	local padding = 10
 
-	local width = 250
-	local height = 200
-
-	local btnWidth = width
-	local btnHeight = 50
-
-	local tauntPanel = vgui.Create( "DPanel" )
+	tauntPanel = vgui.Create( "DPanel" )
 		tauntPanel:SetSize( width + padding*4, height + padding*5 + btnHeight )
 		tauntPanel:Center()
 		tauntPanel:SetVisible( true )
@@ -90,4 +90,19 @@ local function tauntSelection()
 	end
 
 end
-net.Receive("Taunt Selection", tauntSelection)
+hook.Add( "OnSpawnMenuOpen", "Display the taunt menu", function()
+	if( LocalPlayer():Team() != TEAM_PROPS || !LocalPlayer():Alive() ) then return end
+	if( tauntPanel && tauntPanel:IsVisible() ) then
+		tauntPanel:SetVisible( false )
+	end
+	tauntSelection()
+	tauntPanel:SetVisible( true )
+	tauntPanel:MakePopup()
+	tauntPanel:SetKeyboardInputEnabled( false )
+end )
+
+hook.Add( "OnSpawnMenuClose", "Close the context menu", function()
+	if( LocalPlayer():Team() != TEAM_PROPS || !LocalPlayer():Alive() ) then return end
+	tauntPanel:SetKeyboardInputEnabled( true )
+	tauntPanel:SetVisible( false )
+end )
