@@ -83,6 +83,7 @@ local function getViewEnt(ply)
 	if( ply.viewOrigin == nil || ply.wantThirdPerson == nil ) then return end
 
 	local trace = {}
+	trace.mask = MASK_SHOT_HULL
 	trace.start = ply.viewOrigin
 	if( ply.wantThirdPerson ) then
 		trace.endpos = trace.start + ply:GetAngles():Forward() * (THIRDPERSON_DISTANCE+PROP_SELECT_DISTANCE)
