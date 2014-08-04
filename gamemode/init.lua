@@ -81,35 +81,79 @@ function GM:PlayerSetModel( ply )
 	end
 end
 
+-- disable the regular damage system
 function GM:PlayerShouldTakeDamage( victim, attacker )
-	-- props cannot take fall damage
-	if( victim:Team() == TEAM_PROPS && attacker:GetClass() == "worldspawn" ) then
-		return false
-	end
-
-	-- no friendly fire
-	if( attacker:IsPlayer() ) then
-		if( victim:Team() == attacker:Team() && victim != attacker ) then
-			return false
-		end
-	end
-
-	return true
+	return false
 end
 
-hook.Add( "EntityTakeDamage", "damage the correct ent", function( target, dmginfo )
-	local attacker = dmginfo:GetAttacker()
-	-- since player_prop_ent isn't in USABLE_PROP_ENTS this is sufficient logic to prevent
-	-- player owned props from getting hurt
-	if( !target:IsPlayer() && table.HasValue( USABLE_PROP_ENTITIES, target:GetClass() ) ) then
-		if(attacker:IsPlayer()) then
-			attacker:TakeDamage(dmginfo:GetDamage(),attacker,target)
+-- new damage system
+local function DamageHandler( target, dmgInfo )
+
+	local attacker = dmgInfo:GetAttacker()
+	local dmg = dmgInfo:GetDamage()
+
+	if( attacker:IsPlayer() ) then
+		if( attacker:Team() == TEAM_HUNTERS ) then
+			-- since player_prop_ent isn't in USABLE_PROP_ENTS this is sufficient logic to prevent
+			-- player owned props from getting hurt
+			if( !target:IsPlayer() && table.HasValue( USABLE_PROP_ENTITIES, target:GetClass() ) && attacker:Alive()) then
+				attacker:SetHealth( attacker:Health() - dmg )
+				if( attacker:Health() < 1 ) then
+					attacker:Kill()
+					-- default suicide notice
+				end
+			elseif( target:GetOwner():IsPlayer() ) then
+				local ply = target:GetOwner()
+				if( attacker:Alive() ) then
+					local gain = math.min( ply:Health(), dmg )
+					gain = gain/2
+					attacker:SetHealth( attacker:Health() + gain )
+				end
+				ply:SetHealth( ply:Health() - dmg )
+				if( ply:Health() < 1 ) then
+					ply:KillSilent()
+					RemovePlayerProp( ply )
+					net.Start( "Death Notice" )
+						net.WriteString( attacker:Nick() )
+						net.WriteUInt( attacker:Team(), 16 )
+						net.WriteString( "found" )
+						net.WriteString( ply:Nick() )
+						net.WriteUInt( ply:Team(), 16 )
+					net.Broadcast()
+					attacker:AddFrags( 1 )
+				end
+			elseif( target:IsPlayer() && target:Team() == TEAM_PROPS ) then
+				local ply = target
+				if( attacker:Alive() ) then
+					local gain = math.min( ply:Health(), dmg )
+					gain = gain/2
+					attacker:SetHealth( attacker:Health() + gain )
+				end
+				ply:SetHealth( ply:Health() - dmg )
+				if( ply:Health() < 1 ) then
+					ply:KillSilent()
+					RemovePlayerProp( ply )
+					net.Start( "Death Notice" )
+						net.WriteString( attacker:Nick() )
+						net.WriteUInt( attacker:Team(), 16 )
+						net.WriteString( "found" )
+						net.WriteString( ply:Nick() )
+						net.WriteUInt( ply:Team(), 16 )
+					net.Broadcast()
+					attacker:AddFrags( 1 )
+				end
+			end
 		end
 	end
+end
+
+hook.Add( "EntityTakeDamage", "forward dmg to new system", function( target, dmg )
+	DamageHandler( target, dmg )
 end )
 
 --[[ All network strings should be precached HERE ]]--
 hook.Add( "Initialize", "Precache all network strings", function()
+	util.AddNetworkString( "Death Notice" )
 	util.AddNetworkString( "Class Selection" )
 	util.AddNetworkString( "Taunt Selection" )
 	util.AddNetworkString( "Map Time" )
