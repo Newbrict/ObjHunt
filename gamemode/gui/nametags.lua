@@ -7,12 +7,17 @@ surface.CreateFont( "Nametags",
 	outline = true,
 })
 
-hook.Add( "PostDrawOpaqueRenderables", "example", function()
+hook.Add( "PostDrawOpaqueRenderables", "Draw Nametags", function()
 	if( LocalPlayer():Team() != TEAM_HUNTERS &&
 		LocalPlayer():Team() != TEAM_PROPS ) then return end
 	if( !LocalPlayer():Alive() ) then return end
 
 	local toTag = GetLivingPlayers( LocalPlayer():Team() )
+
+	if( LocalPlayer():Team() == TEAM_PROPS ) then
+		table.Add( toTag, GetLivingPlayers( TEAM_HUNTERS ) )
+	end
+
 	for _, v in pairs(toTag) do
 		if( v == LocalPlayer() ) then continue end
 

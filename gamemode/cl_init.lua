@@ -79,6 +79,15 @@ net.Receive( "Death Notice", function()
 	GAMEMODE:AddDeathNotice(attacker, attackerTeam, "kill", victim, victimTeam)
 end )
 
+net.Receive( "Clear Round State", function()
+	LocalPlayer().wantAngleLock = false
+	LocalPlayer().wantAngleSnap = false
+	for _, v in pairs( player.GetAll() ) do
+		v.wantAgnleLock = false
+		v.wantAngleSnap = false
+	end
+end )
+
 -- disable default hud elements here
 function GM:HUDShouldDraw( name )
 	if ( name == "CHudHealth" or name == "CHudBattery" ) then

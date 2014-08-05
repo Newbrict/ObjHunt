@@ -86,8 +86,10 @@ local function HurtProp( ply, dmg, attacker )
 	if( attacker:Alive() ) then
 		local gain = math.min( ply:Health(), dmg )
 		gain = gain/2
-		attacker:SetHealth( attacker:Health() + gain )
+		local newHP = math.Clamp( attacker:Health() + gain, 0, 100 )
+		attacker:SetHealth( newHP )
 	end
+
 	ply:SetHealth( ply:Health() - dmg )
 	if( ply:Health() < 1 && ply:Alive() ) then
 		ply:KillSilent()
@@ -114,6 +116,10 @@ local function DamageHandler( target, dmgInfo )
 			-- since player_prop_ent isn't in USABLE_PROP_ENTS this is sufficient logic to prevent
 			-- player owned props from getting hurt
 			if( !target:IsPlayer() && table.HasValue( USABLE_PROP_ENTITIES, target:GetClass() ) && attacker:Alive()) then
+				-- disable stepping on bottles to hurt
+				local dmgType = dmgInfo:GetDamageType()
+				if( dmgType == DMG_CRUSH ) then return end
+
 				attacker:SetHealth( attacker:Health() - dmg )
 				if( attacker:Health() < 1 ) then
 					attacker:Kill()
@@ -136,6 +142,7 @@ end )
 
 --[[ All network strings should be precached HERE ]]--
 hook.Add( "Initialize", "Precache all network strings", function()
+	util.AddNetworkString( "Clear Round State" )
 	util.AddNetworkString( "Death Notice" )
 	util.AddNetworkString( "Class Selection" )
 	util.AddNetworkString( "Taunt Selection" )
