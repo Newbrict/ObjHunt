@@ -19,8 +19,10 @@ net.Receive( "Prop update", function( length )
 		LocalPlayer().wantAngleLock = false
 		LocalPlayer().wantAngleSnap = false
 		LocalPlayer().lastPropChange = 0
+		LocalPlayer().nextTaunt = 0
 		LocalPlayer().lastTaunt = 0
 		LocalPlayer().lastTauntDuration = 1
+		LocalPlayer().lastTauntPitch = 100
 		LocalPlayer().firstProp = false
 	end
 

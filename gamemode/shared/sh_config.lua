@@ -92,6 +92,9 @@ TAUNT_BAR_COLOR = Color( 0, 255, 255, 150 )
 --[[TAUNT CONFIG]]--
 --[[============]]--
 
+TAUNT_MAX_PITCH = 128
+TAUNT_MIN_PITCH = 64
+
 TAUNTS = {}
 -- USAGE:
 -- TAUNTS["Display Name"] = "taunts/file_name.wav"

@@ -5,15 +5,19 @@ local btnWidth = width
 local btnHeight = 50
 local tauntPanel
 
-local function playTaunt( taunt )
+local function playTaunt( taunt, pitch )
 	-- only play if the last taunt has ended
-	if( CurTime() < LocalPlayer().lastTaunt + LocalPlayer().lastTauntDuration ) then return end
+	if( CurTime() < LocalPlayer().nextTaunt ) then return end
 
 	net.Start( "Taunt Selection" )
 		net.WriteString( taunt )
+		net.WriteUInt( pitch, 10 )
 	net.SendToServer()
+
+	LocalPlayer().nextTaunt = CurTime() + ( SoundDuration( taunt ) * (100/pitch) )
 	LocalPlayer().lastTaunt = CurTime()
-	LocalPlayer().lastTauntDuration = SoundDuration( taunt )
+	LocalPlayer().lastTauntPitch = pitch
+	LocalPlayer().lastTauntDuration = SoundDuration( taunt ) * (100/pitch)
 end
 
 local function tauntSelection()
@@ -21,7 +25,7 @@ local function tauntSelection()
 
 
 	tauntPanel = vgui.Create( "DPanel" )
-		tauntPanel:SetSize( width + padding*4, height + padding*5 + btnHeight )
+		tauntPanel:SetSize( width + padding*4, height + padding*5 + btnHeight*2 )
 		tauntPanel:Center()
 		tauntPanel:SetVisible( true )
 		tauntPanel:SetDrawBackground( false )
@@ -29,7 +33,7 @@ local function tauntSelection()
 
 	local prettyPanel = vgui.Create( "DPanel", tauntPanel )
 		prettyPanel:SetPos( padding, padding )
-		prettyPanel:SetSize( width + padding*2, height + padding*3 + btnHeight )
+		prettyPanel:SetSize( width + padding*2, height + padding*3 + btnHeight*2 )
 
 	local exitBtn = vgui.Create( "DImageButton", tauntPanel )
 		exitBtn:SetImage( "icon16/cancel.png" )
@@ -39,6 +43,15 @@ local function tauntSelection()
 		exitBtn.DoClick = function()
 			tauntPanel:Remove()
 		end
+
+	local pitchSlider = vgui.Create( "DNumSlider", prettyPanel )
+		pitchSlider:SetText( "Pitch" )
+		pitchSlider:SetMin( TAUNT_MIN_PITCH )
+		pitchSlider:SetMax( TAUNT_MAX_PITCH )
+		pitchSlider:SetDecimals( 0 )
+		pitchSlider:SetValue( LocalPlayer().lastTauntPitch )
+		pitchSlider:SetWide( width )
+		pitchSlider:SetPos( padding*2, height + btnHeight + padding*3 )
 
 	local tauntList = vgui.Create( "DListView", prettyPanel )
 		tauntList:SetMultiSelect( false )
@@ -50,7 +63,7 @@ local function tauntSelection()
 		end
 		tauntList.OnClickLine = function(parent, line, isSelected)
 			tauntPanel:SetVisible( false )
-			playTaunt( line:GetValue(2) )
+			playTaunt( line:GetValue(2), pitchSlider:GetValue() )
 		end
 
 	local randomBtn = vgui.Create( "DButton", prettyPanel )
@@ -59,7 +72,8 @@ local function tauntSelection()
 		randomBtn:SetPos( padding, height + padding*2 )
 		randomBtn.DoClick = function()
 			tauntPanel:SetVisible( false )
-			playTaunt( table.Random( TAUNTS ) )
+			local pRange = TAUNT_MAX_PITCH - TAUNT_MIN_PITCH
+			playTaunt( table.Random( TAUNTS ), math.random()*pRange + TAUNT_MIN_PITCH )
 		end
 
 	-- Painting
