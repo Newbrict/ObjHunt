@@ -87,6 +87,7 @@ DEPLETED_COLOR = Color( 255, 0, 0, 150 )
 FULL_COLOR = Color( 0, 255, 0, 150 )
 ROUND_TIME_COLOR = Color( 85, 85, 85, 200 )
 TAUNT_BAR_COLOR = Color( 0, 255, 255, 150 )
+TEXT_COLOR = Color( 255, 255, 255, 255 )
 
 --[[============]]--
 --[[TAUNT CONFIG]]--

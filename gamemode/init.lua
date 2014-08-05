@@ -319,6 +319,9 @@ hook.Add( "PlayerDeath", "Remove ent prop on death", function( ply )
 	RemovePlayerProp( ply )
 	local ragdoll = ply:GetRagdollEntity()
 	SafeRemoveEntityDelayed( ragdoll, 5 )
+	if( ply:IsFrozen() ) then
+		ply:Freeze( false )
+	end
 end )
 
 --[[ remove the ent prop ]]--
