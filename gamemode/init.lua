@@ -350,3 +350,18 @@ function GM:PlayerSelectSpawn( ply )
     local ret, _ = table.Random( spawns )
     return ret
 end
+
+function GM:PlayerCanSeePlayersChat( text, teamOnly, listener, speaker )
+
+	if( speaker:IsAdmin() ) then
+		return true
+	end
+
+	if( DISABLE_GLOBAL_CHAT ) then
+		if( listener:Team() != speaker:Team() ) then
+			return false
+		end
+	end
+
+	return true
+end

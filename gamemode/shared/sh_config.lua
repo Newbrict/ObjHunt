@@ -29,6 +29,9 @@ OBJHUNT_POST_ROUND_TIME = 5
 -- How much time props have before hunters are released
 OBJHUNT_HIDE_TIME = 30
 
+-- Can players talk between teams or only amongst?
+DISABLE_GLOBAL_CHAT = true
+
 -- The minimum Z height that the props view will be set to
 VIEW_MIN_Z = 5
 

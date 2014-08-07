@@ -39,7 +39,7 @@ end
 
 function playerCanBeEnt( ply, ent )
 	-- this caused an issue once
-	if( ent && IsValid( ent ) ) then return false end
+	if( !ent || !IsValid( ent ) ) then return false end
 
 	-- make sure we're living props
 	if( !ply:Alive() || ply:Team() != TEAM_PROPS ) then return false end
