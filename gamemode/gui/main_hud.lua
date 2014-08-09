@@ -148,6 +148,7 @@ local function RoundHUD()
 			local secs = CurTime() - round.startTime + round.timePad
 			secs = OBJHUNT_ROUND_TIME - secs
 			secs = math.max( 0, secs )
+			secs = math.Round( secs, 0 )
 			textToDraw = string.FormattedTime( secs, "%02i:%02i" )
 		end
 		textWidth, textHeight = surface.GetTextSize( textToDraw )

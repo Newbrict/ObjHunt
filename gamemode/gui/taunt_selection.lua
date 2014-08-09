@@ -62,7 +62,6 @@ local function tauntSelection()
 			tauntList:AddLine( k, v )
 		end
 		tauntList.OnClickLine = function(parent, line, isSelected)
-			tauntPanel:SetVisible( false )
 			playTaunt( line:GetValue(2), pitchSlider:GetValue() )
 		end
 
@@ -71,7 +70,6 @@ local function tauntSelection()
 		randomBtn:SetSize( btnWidth, btnHeight )
 		randomBtn:SetPos( padding, height + padding*2 )
 		randomBtn.DoClick = function()
-			tauntPanel:SetVisible( false )
 			local pRange = TAUNT_MAX_PITCH - TAUNT_MIN_PITCH
 			playTaunt( table.Random( TAUNTS ), math.random()*pRange + TAUNT_MIN_PITCH )
 		end
