@@ -88,6 +88,15 @@ net.Receive( "Clear Round State", function()
 	end
 end )
 
+net.Receive( "Taunt Selection", function()
+	local taunt = net.ReadString()
+	local pitch = net.ReadUInt( 8 )
+	local id = net.ReadUInt( 8 )
+	local ply = player.GetByID( id )
+
+	EmitSound( taunt , ply:GetPos(), id, CHAN_AUTO, 1, 100, 2, pitch )
+end )
+
 -- disable default hud elements here
 function GM:HUDShouldDraw( name )
 	if ( name == "CHudHealth" or name == "CHudBattery" ) then

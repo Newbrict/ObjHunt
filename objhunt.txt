@@ -1,7 +1,7 @@
 "objhunt"
 {
 	"base"       "polybase"
-	"title"      "Prop Hunt++"
+	"title"      "Obj Hunt"
 	"maps"       "^ph_|^cs_"
 	"menusystem" "1"
 }

@@ -51,10 +51,13 @@ end )
 -- [[ Taunts ]] --
 net.Receive( "Taunt Selection", function( len, ply )
 	local taunt = net.ReadString()
-	local pitch = net.ReadUInt( 10 )
-	-- random pitch sounds == lol
-	-- ply:EmitSound( taunt, 70, math.random()*255 )
-	ply:EmitSound( taunt, 70, pitch )
+	local pitch = net.ReadUInt( 8 )
+
+	net.Start( "Taunt Selection" )
+		net.WriteString( taunt )
+		net.WriteUInt( pitch, 8 )
+		net.WriteUInt( ply:EntIndex(), 8 )
+	net.Broadcast()
 end )
 
 

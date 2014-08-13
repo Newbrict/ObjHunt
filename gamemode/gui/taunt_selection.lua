@@ -11,7 +11,7 @@ local function playTaunt( taunt, pitch )
 
 	net.Start( "Taunt Selection" )
 		net.WriteString( taunt )
-		net.WriteUInt( pitch, 10 )
+		net.WriteUInt( pitch, 8 )
 	net.SendToServer()
 
 	LocalPlayer().nextTaunt = CurTime() + ( SoundDuration( taunt ) * (100/pitch) )
@@ -115,6 +115,7 @@ end )
 
 hook.Add( "OnSpawnMenuClose", "Close the context menu", function()
 	if( LocalPlayer():Team() != TEAM_PROPS || !LocalPlayer():Alive() ) then return end
+	if( !tauntPanel:IsVisible() ) then return end
 	tauntPanel:SetKeyboardInputEnabled( true )
 	tauntPanel:SetVisible( false )
 end )
