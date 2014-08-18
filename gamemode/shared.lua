@@ -3,8 +3,6 @@ GM.Author  = "Newbrict, TheBerryBeast, Zombie"
 GM.Email   = "N/A"
 GM.Website = "N/A"
 
-DeriveGamemode("PolyBase")
-
 --[[ Add all the files on server/client ]]--
 local resources = {}
 resources["server"] = { "server" }
