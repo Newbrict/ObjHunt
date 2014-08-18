@@ -112,7 +112,6 @@ hook.Add( "PlayerTick", "New Player Use", function( ply )
 	if( ply:KeyPressed( IN_USE ) ) then
 		if( !ply.lastPropChange || os.time() - ply.lastPropChange < PROP_CHOOSE_COOLDOWN ) then return end
 		local prop = getViewEnt( ply )
-		print( prop:GetModel() )
 		local sColor = stencilColor( LocalPlayer(), prop )
 		if( sColor == GOOD_HOVER_COLOR) then
 			net.Start( "Selected Prop" )
