@@ -23,7 +23,6 @@ OBJHUNT_ROUND_TIME = 300
 OBJHUNT_PRE_ROUND_TIME = 30
 
 -- Waiting time before new round starts after first round
---OBJHUNT_POST_ROUND_TIME = 10
 OBJHUNT_POST_ROUND_TIME = 5
 
 -- How much time props have before hunters are released

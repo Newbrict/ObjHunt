@@ -9,7 +9,7 @@ function GetLivingPlayers( onTeam )
 	return livingPly
 end
 
--- now realised there is a flag to ignore ws...
+-- now realised there is a flag to ignore ws, don't use this it's not done....
 function isStuck( ply )
 	local pos = ply:GetPos()
 	local ws = game.GetWorld()

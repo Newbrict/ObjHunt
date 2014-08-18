@@ -1,4 +1,4 @@
-	--[[ Rounds are handled here, obviously ]]--
+--[[ Rounds are handled here, obviously ]]--
 
 -----------------------------------
 -- THE HOOKS THAT THIS CALLS ARE --

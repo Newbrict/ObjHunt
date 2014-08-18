@@ -51,7 +51,6 @@ net.Receive("Class Selection", function( len, ply )
 
 	RemovePlayerProp( ply )
 	ply:KillSilent()
-	ply:Spawn()
 end )
 
 -- [[ Taunts ]] --
