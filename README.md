@@ -10,8 +10,11 @@ A new and improved Garry's Mod prop hunt
     * [server.cfg]
     * [autoexec.cfg]
     * [mount.cfg]
-* You might need [PolyBase] installed in your garrysmod/gamemodes/ directory
 * Lastly you clone this repository into garrysmod/gamemodes/ObjHunt/
+
+
+###Adding taunts
+* Take a look at sh_config.lua and the content/sound/taunts/ directory.
 
 [Garry's Mod Dedicated Server]:http://wiki.garrysmod.com/page/Hosting_A_Dedicated_Server
 [server.cfg]:https://gist.github.com/Newbrict/3e266081b9f405610b34
