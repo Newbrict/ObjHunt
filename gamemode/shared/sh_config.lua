@@ -32,6 +32,12 @@ OBJHUNT_HIDE_TIME = 30
 -- Can players talk between teams or only amongst?
 DISABLE_GLOBAL_CHAT = true
 
+-- Round constants
+ROUND_WAIT  = 0
+ROUND_START = 1
+ROUND_IN    = 2
+ROUND_END   = 3
+
 -- The minimum Z height that the props view will be set to
 VIEW_MIN_Z = 5
 
@@ -61,6 +67,16 @@ THIRDPERSON_DISTANCE = 100
 USABLE_PROP_ENTITIES = {
 	"prop_physics",
 	"prop_physics_multiplayer"
+}
+
+BANNED_PROPS = {
+	"models/props/cs_office/tv_plasma.mdl",
+	"models/props/cs_office/fire_extinguisher.mdl",
+	"models/props/cs_office/snowman_arm.mdl",
+	"models/props/cs_assault/money.mdl",
+	"models/props/cs_assault/dollar.mdl",
+	"models/props_c17/door01_left.mdl",
+	"models/props_c17/signpole001.mdl"
 }
 
 --[[=====================]]--
@@ -96,6 +112,7 @@ TEXT_COLOR = Color( 255, 255, 255, 255 )
 --[[TAUNT CONFIG]]--
 --[[============]]--
 
+-- change within 0 < range < 256
 TAUNT_MAX_PITCH = 128
 TAUNT_MIN_PITCH = 64
 

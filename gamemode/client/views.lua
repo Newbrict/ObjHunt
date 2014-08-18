@@ -58,6 +58,9 @@ local function stencilColor( ply, ent )
 	if( ent:IsPlayer() ) then return false end
 	if( ent:GetOwner():IsPlayer() ) then return false end
 
+	-- can't be a banned prop
+	if( table.HasValue( BANNED_PROPS, ent:GetModel() ) ) then return end
+
 	-- must have a bounding box
 	if( !ent:GetHitBoxBounds(0,0) ) then return false end
 
@@ -109,6 +112,7 @@ hook.Add( "PlayerTick", "New Player Use", function( ply )
 	if( ply:KeyPressed( IN_USE ) ) then
 		if( !ply.lastPropChange || os.time() - ply.lastPropChange < PROP_CHOOSE_COOLDOWN ) then return end
 		local prop = getViewEnt( ply )
+		print( prop:GetModel() )
 		local sColor = stencilColor( LocalPlayer(), prop )
 		if( sColor == GOOD_HOVER_COLOR) then
 			net.Start( "Selected Prop" )

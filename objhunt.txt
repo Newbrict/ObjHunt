@@ -1,6 +1,6 @@
 "objhunt"
 {
-	"base"       "polybase"
+	"base"       "base"
 	"title"      "Obj Hunt"
 	"maps"       "^ph_|^cs_"
 	"menusystem" "1"

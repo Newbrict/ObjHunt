@@ -8,8 +8,14 @@ function GM:PlayerInitialSpawn( ply )
 end
 
 -- [[ Class Selection ]] --
-function GM:ShowHelp( ply ) -- This hook is called everytime F1 is pressed.
+function GM:ShowTeam( ply ) -- This hook is called everytime F1 is pressed.
 	net.Start( "Class Selection" )
+		-- Just used as a hook
+	net.Send( ply )
+end
+
+function GM:ShowHelp( ply )
+	net.Start( "Help" )
 		-- Just used as a hook
 	net.Send( ply )
 end
@@ -149,7 +155,7 @@ hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Death Notice" )
 	util.AddNetworkString( "Class Selection" )
 	util.AddNetworkString( "Taunt Selection" )
-	util.AddNetworkString( "Map Time" )
+	util.AddNetworkString( "Help" )
 	util.AddNetworkString( "Round Update" )
 	util.AddNetworkString( "Prop Update" )
 	util.AddNetworkString( "Reset Prop" )
@@ -163,13 +169,6 @@ end )
 --[[ Map Time ]]--
 hook.Add( "Initialize", "Set Map Time", function()
 	mapStartTime = os.time()
-end )
-
-hook.Add( "PlayerInitialSpawn", "Send Map Time To New Player", function( ply )
-	local toSend = ( mapStartTime || os.time() )
-	net.Start( "Map Time" )
-		net.WriteUInt( toSend, 32 )
-	net.Send( ply )
 end )
 
 --[[ sets the players prop, run PlayerCanBeEnt before using this ]]--

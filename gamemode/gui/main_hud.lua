@@ -175,6 +175,18 @@ local function SpectateHUD()
 	local ply = LocalPlayer()
 
 	if( !ply:IsValid() ) then return end
+
+	if( ply:Team() == TEAM_SPECTATOR ) then
+		-- Help
+		local padding = 10
+		local startX = padding
+		local startY = padding
+		surface.SetFont( "ObjHUDFont" )
+		surface.SetTextColor( Color(255,255,255) )
+		surface.SetTextPos( startX, startY )
+		surface.DrawText("Press F1 for Help")
+	end
+
 	local sTarget = ply:GetObserverTarget()
 	if( !sTarget ) then return end
 	local sNick = sTarget:Nick()
@@ -197,10 +209,9 @@ local function SpectateHUD()
 	local textY = padding*2
 	local width = textWidth + 2*padding
 	local height = textHeight + 2*padding
-	local startY = textY - padding
-	local startX = textX - padding
 	surface.SetTextPos( textX, textY )
 	surface.DrawText( sNick )
+
 
 end
 

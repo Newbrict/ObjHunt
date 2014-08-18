@@ -1,4 +1,3 @@
--- the font I will use for info
 surface.CreateFont( "HideFont",
 {
 	font = "Helvetica",
@@ -8,9 +7,20 @@ surface.CreateFont( "HideFont",
 	outline = false
 })
 
+-- the font I will use for info
+surface.CreateFont( "InfoFont",
+{
+	font = "Helvetica",
+	size = 16,
+	weight = 500,
+	antialias = false,
+	outline = true
+})
+
+
 local function hideTimerHUD()
-	if( LocalPlayer():Team() != TEAM_HUNTERS ) then return end
 	if( !LocalPlayer():Alive() ) then return end
+	if( round.state == ROUND_WAIT ) then return end
 	if( !round.startTime ) then return end
 
 	local textToDraw = round.startTime + round.timePad + OBJHUNT_HIDE_TIME - CurTime()
@@ -18,15 +28,40 @@ local function hideTimerHUD()
 
 	if( textToDraw < 0 ) then return end
 
-	surface.SetFont( "HideFont" )
-	-- Determine some useful coordinates
-	local width, height = surface.GetTextSize( textToDraw )
-	local startX = ScrW()/2 - width/2
-	local startY = ScrH()/2 - height/2
+	if( LocalPlayer():Team() == TEAM_HUNTERS ) then
+		surface.SetFont( "HideFont" )
+		-- Determine some useful coordinates
+		local width, height = surface.GetTextSize( textToDraw )
+		local startX = ScrW()/2 - width/2
+		local startY = ScrH()/2 - height/2
 
-	surface.SetTextColor( 255, 255, 255, 255 )
-	surface.SetTextPos(startX, startY)
-	surface.DrawText( textToDraw )
+		surface.SetTextColor( 255, 255, 255, 255 )
+		surface.SetTextPos(startX, startY)
+		surface.DrawText( textToDraw )
+	elseif( LocalPlayer():Team() == TEAM_PROPS ) then
+		textToDraw = "Hunters Released in "..textToDraw
+		surface.SetFont( "InfoFont" )
+		-- Determine some useful coordinates
+		local width = surface.GetTextSize( textToDraw )
+		local height = 16
+		local padding = 5
+		local startX = ScrW() - (width + 2*padding)
+		local startY = 2*padding
+
+		surface.SetDrawColor( 127, 127, 127, 200 )
+		surface.DrawRect(
+			startX - padding,
+			startY - padding,
+			width + 2*padding,
+			height + 2*padding
+		)
+		surface.SetTextColor( 255, 255, 255, 255 )
+		surface.SetTextPos(startX, startY)
+		surface.DrawText( textToDraw )
+	end
 end
 
 hook.Add( "HUDPaint", "Hide Timer", hideTimerHUD )
+
+
+

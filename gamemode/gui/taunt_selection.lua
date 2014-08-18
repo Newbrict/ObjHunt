@@ -4,6 +4,7 @@ local height = 200
 local btnWidth = width
 local btnHeight = 50
 local tauntPanel
+local pitchSlider
 
 local function playTaunt( taunt, pitch )
 	-- only play if the last taunt has ended
@@ -18,7 +19,9 @@ local function playTaunt( taunt, pitch )
 	LocalPlayer().lastTaunt = CurTime()
 	LocalPlayer().lastTauntPitch = pitch
 	LocalPlayer().lastTauntDuration = SoundDuration( taunt ) * (100/pitch)
+	pitchSlider:SetValue( pitch )
 end
+
 
 local function tauntSelection()
 	if( LocalPlayer():Team() != TEAM_PROPS || !LocalPlayer():Alive() ) then return end
@@ -44,7 +47,7 @@ local function tauntSelection()
 			tauntPanel:Remove()
 		end
 
-	local pitchSlider = vgui.Create( "DNumSlider", prettyPanel )
+	pitchSlider = vgui.Create( "DNumSlider", prettyPanel )
 		pitchSlider:SetText( "Pitch" )
 		pitchSlider:SetMin( TAUNT_MIN_PITCH )
 		pitchSlider:SetMax( TAUNT_MAX_PITCH )

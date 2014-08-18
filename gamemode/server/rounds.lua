@@ -8,11 +8,6 @@
 -- OBJHUNT_RoundLimit            --
 -----------------------------------
 
-local ROUND_WAIT  = 0
-local ROUND_START = 1
-local ROUND_IN    = 2
-local ROUND_END   = 3
-
 -- this var is used outside of this file
 round = {}
 round.state     = ROUND_WAIT
