@@ -177,9 +177,11 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 	if( !hbMin || !hbMax ) then
 		tHitboxMin, tHitboxMax = ent:GetHitBoxBounds( 0, 0 )
 		if( !tHitboxMin || !tHitboxMax ) then return false, "Invalid Hull" end
+		ply:SetCollisionGroup( COLLISION_GROUP_PLAYER )
 	else
 		tHitboxMin = hbMin
 		tHitboxMax = hbMax
+		ply:SetCollisionGroup( COLLISION_GROUP_WEAPON )
 	end
 
 	-- scaling
@@ -188,8 +190,8 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 
 	ply:GetProp():SetModel( ent:GetModel() )
 	ply:GetProp():SetSkin( ent:GetSkin() )
-	ply:GetProp():SetSolid( SOLID_VPHYSICS )
 	ply:GetProp():SetAngles( ply:GetAngles() )
+	ply:GetProp():SetSolid( SOLID_VPHYSICS )
 
 	-- we round to reduce getting stuck
 	tHitboxMin = Vector( math.Round(tHitboxMin.x),math.Round(tHitboxMin.y),math.Round(tHitboxMin.z) )
@@ -258,7 +260,6 @@ end )
 
 --[[ When a player on team_props spawns ]]--
 hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
-	--ply:SetCollisionGroup( COLLISION_GROUP_IN_VEHICLE )
 	-- default prop should be able to step wherever
 	ply:SetStepSize( 20 )
 	ply:SetNotSolid( false )
