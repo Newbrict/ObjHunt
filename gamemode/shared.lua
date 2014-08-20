@@ -71,9 +71,9 @@ function GM:CreateTeams( )
 	team.SetClass( TEAM_PROPS, {"player_prop"})
 	team.SetClass( TEAM_HUNTERS, {"player_hunter"})
 	team.SetClass( TEAM_SPECTATOR, {"player_spectator"})
-	team.SetSpawnPoint( TEAM_PROPS, {"info_player_terrorist", "info_player_rebel", "info_player_deathmatch", "info_player_allies"} )
-	team.SetSpawnPoint( TEAM_HUNTERS, {"info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
-	team.SetSpawnPoint( TEAM_SPECTATOR, {"info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
+	team.SetSpawnPoint( TEAM_PROPS, {"info_player_start", "info_player_terrorist", "info_player_rebel", "info_player_deathmatch", "info_player_allies"} )
+	team.SetSpawnPoint( TEAM_HUNTERS, {"info_player_start", "info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
+	team.SetSpawnPoint( TEAM_SPECTATOR, {"info_player_start", "info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
 end
 
 --[[ some share hooks, disable footsteps and taget id's ]]--
@@ -85,4 +85,14 @@ function GM:PlayerFootstep( ply, pos, foot, sound, volume, rf )
 	if( ply:Team() != TEAM_HUNTERS ) then return true end
 end
 
-
+-- initial collisions for props
+function initNoCollide( ent1, ent2 )
+	if( !IsValid( ent1 ) || !IsValid( ent2 ) ) then return end
+	if( !ent1:IsPlayer() || !ent2:IsPlayer() ) then return end
+	if( ent1:Team() == TEAM_PROPS && ent1.GetProp && IsValid( ent1:GetProp() ) && ent1:GetProp():GetModel() == "models/player.mdl" ) then
+		return false
+	elseif( ent2:Team() == TEAM_PROPS && ent2.GetProp && IsValid( ent2:GetProp() ) && ent2:GetProp():GetModel() == "models/player.mdl" ) then
+		return false
+	end
+end
+hook.Add( "ShouldCollide", "Initial Nocollide For Props", initNoCollide )

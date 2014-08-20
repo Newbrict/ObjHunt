@@ -57,7 +57,7 @@ local function ObjHUD()
 	surface.SetTextColor( 255, 255, 255, 255 )
 	local textToDraw = LocalPlayer():Health()
 	local textWidth, textHeight = surface.GetTextSize( textToDraw )
-	local textX = barX + 2
+	local textX = barX + 3
 	local textY = startY
 	surface.SetTextPos( textX, textY )
 	surface.DrawText( textToDraw )
@@ -94,7 +94,7 @@ local function ObjHUD()
 			surface.SetFont( "barHUD" )
 			surface.SetTextColor( 255, 255, 255, 255 )
 			local textWidth, textHeight = surface.GetTextSize( textToDraw )
-			local textX = barX + 2
+			local textX = barX + 3
 			local textY = startY
 			surface.SetTextPos( textX, textY )
 			surface.DrawText( textToDraw )
@@ -133,7 +133,7 @@ local function ObjHUD()
 			surface.SetFont( "barHUD" )
 			surface.SetTextColor( 255, 255, 255, 255 )
 			local textWidth, textHeight = surface.GetTextSize( textToDraw )
-			local textX = barX + 2
+			local textX = barX + 3
 			local textY = startY
 			surface.SetTextPos( textX, textY )
 			surface.DrawText( textToDraw )

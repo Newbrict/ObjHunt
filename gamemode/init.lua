@@ -5,6 +5,7 @@ include( "shared.lua" )
 function GM:PlayerInitialSpawn( ply )
 	ply:SetTeam( TEAM_SPECTATOR )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
+	ply:SetCustomCollisionCheck( true )
 end
 
 -- [[ Class Selection ]] --
@@ -178,11 +179,9 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 	if( !hbMin || !hbMax ) then
 		tHitboxMin, tHitboxMax = ent:GetHitBoxBounds( 0, 0 )
 		if( !tHitboxMin || !tHitboxMax ) then return false, "Invalid Hull" end
-		ply:SetCollisionGroup( COLLISION_GROUP_PLAYER )
 	else
 		tHitboxMin = hbMin
 		tHitboxMax = hbMax
-		ply:SetCollisionGroup( COLLISION_GROUP_WEAPON )
 	end
 
 	-- scaling
