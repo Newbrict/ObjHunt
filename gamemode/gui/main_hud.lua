@@ -8,6 +8,15 @@ surface.CreateFont( "ObjHUDFont",
 	outline = false
 })
 
+surface.CreateFont( "barHUD",
+{
+	font = "Helvetica",
+	size = 16,
+	weight = 1000,
+	antialias = false,
+	outline = true
+})
+
 --[[=======================]]--
 --[[ This has all the bars ]]--
 --[[=======================]]--
@@ -43,6 +52,16 @@ local function ObjHUD()
 	surface.SetDrawColor( PANEL_BORDER )
 	surface.DrawOutlinedRect( barX, startY, widthOffset, 16)
 
+	--text
+	surface.SetFont( "barHUD" )
+	surface.SetTextColor( 255, 255, 255, 255 )
+	local textToDraw = LocalPlayer():Health()
+	local textWidth, textHeight = surface.GetTextSize( textToDraw )
+	local textX = barX + 2
+	local textY = startY
+	surface.SetTextPos( textX, textY )
+	surface.DrawText( textToDraw )
+
 	if( ply:Team() == TEAM_PROPS ) then
 		-- this needs to be here otherwise some people get errors for some unknown reason
 		if( ply.viewOrigin == nil || ply.wantThirdPerson == nil ) then return end
@@ -67,6 +86,19 @@ local function ObjHUD()
 		surface.DrawRect( barX, startY, widthOffset*propFrac, 16)
 		surface.SetDrawColor( PANEL_BORDER )
 		surface.DrawOutlinedRect( barX, startY, widthOffset, 16)
+
+		--text
+		local textToDraw = PROP_CHOOSE_COOLDOWN - propFrac*PROP_CHOOSE_COOLDOWN
+		textToDraw = math.ceil( textToDraw )
+		if( textToDraw != 0 ) then
+			surface.SetFont( "barHUD" )
+			surface.SetTextColor( 255, 255, 255, 255 )
+			local textWidth, textHeight = surface.GetTextSize( textToDraw )
+			local textX = barX + 2
+			local textY = startY
+			surface.SetTextPos( textX, textY )
+			surface.DrawText( textToDraw )
+		end
 	end
 
 	if( ply:Team() == TEAM_PROPS ) then
@@ -93,6 +125,19 @@ local function ObjHUD()
 		surface.DrawRect( barX, startY, widthOffset*tauntFrac, 16)
 		surface.SetDrawColor( PANEL_BORDER )
 		surface.DrawOutlinedRect( barX, startY, widthOffset, 16)
+
+		--text
+		local textToDraw = ply.lastTauntDuration - tauntFrac*ply.lastTauntDuration
+		textToDraw = math.ceil( textToDraw )
+		if( textToDraw != 0 ) then
+			surface.SetFont( "barHUD" )
+			surface.SetTextColor( 255, 255, 255, 255 )
+			local textWidth, textHeight = surface.GetTextSize( textToDraw )
+			local textX = barX + 2
+			local textY = startY
+			surface.SetTextPos( textX, textY )
+			surface.DrawText( textToDraw )
+		end
 	end
 end
 

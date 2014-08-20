@@ -105,6 +105,7 @@ local function tauntSelection()
 	end
 
 end
+
 hook.Add( "OnSpawnMenuOpen", "Display the taunt menu", function()
 	if( LocalPlayer():Team() != TEAM_PROPS || !LocalPlayer():Alive() ) then return end
 	if( tauntPanel && tauntPanel:IsVisible() ) then
@@ -118,7 +119,7 @@ end )
 
 hook.Add( "OnSpawnMenuClose", "Close the context menu", function()
 	if( LocalPlayer():Team() != TEAM_PROPS || !LocalPlayer():Alive() ) then return end
-	if( !tauntPanel:IsVisible() ) then return end
+	if( tauntPanel && !tauntPanel:IsVisible() ) then return end
 	tauntPanel:SetKeyboardInputEnabled( true )
 	tauntPanel:SetVisible( false )
 end )
