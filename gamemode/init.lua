@@ -110,6 +110,7 @@ local function HurtProp( ply, dmg, attacker )
 			net.WriteUInt( ply:Team(), 16 )
 		net.Broadcast()
 		attacker:AddFrags( 1 )
+		ply:AddDeaths( 1 )
 	end
 end
 

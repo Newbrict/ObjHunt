@@ -3,7 +3,7 @@ surface.CreateFont( "HideFont",
 	font = "Helvetica",
 	size = 256,
 	weight = 1000,
-	antialias = false,
+	antialias = true,
 	outline = false
 })
 
