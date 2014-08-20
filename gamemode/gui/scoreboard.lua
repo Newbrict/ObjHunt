@@ -181,7 +181,7 @@ local HUNTERS_BOARD =
 {
 	Init = function( self )
 
-		self:SetSize( ScrW()/6, ScrH()/2 )
+		self:PerformLayout()
 
 		self.Header = self:Add( "Panel" )
 		self.Header:Dock( TOP )
@@ -220,6 +220,7 @@ local HUNTERS_BOARD =
 
 	PerformLayout = function( self )
 
+		self:SetSize( ScrW()/6, ScrH()/2 )
 		self:Dock( LEFT )
 		self:DockMargin( ScrW()/3-2, ScrH()/7, 0, 0 )
 
@@ -274,7 +275,7 @@ local PROPS_BOARD =
 {
 	Init = function( self )
 
-		self:SetSize( ScrW()/6, ScrH()/2 )
+		self:PerformLayout()
 
 		self.Header = self:Add( "Panel" )
 		self.Header:Dock( TOP )
@@ -315,12 +316,14 @@ local PROPS_BOARD =
 
 	PerformLayout = function( self )
 
+		self:SetSize( ScrW()/6, ScrH()/2 )
 		self:Dock( RIGHT )
 		self:DockMargin(0, ScrH()/7, ScrW()/3-2 , 0)
 
 	end,
 
 	Paint = function( self, w, h )
+
 		w = ScrW()/6
 		h = ScrH()/2
 
@@ -419,7 +422,7 @@ local SPECS_BOARD =
 
 
 	end
-	//self.SpecPlayers:SetTextColor( TEXT_COLOR )
+
 	self.SpecPlayers:SetText( Spectators )
 	self.SpecPlayers:SizeToContentsY()
 
