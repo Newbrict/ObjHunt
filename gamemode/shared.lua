@@ -66,14 +66,16 @@ end
 --[[ set up the teams ]]--
 function GM:CreateTeams( )
 	team.SetUp( TEAM_PROPS , "Props" , TEAM_PROPS_CHAT_COLOR, true )
-	team.SetUp( TEAM_HUNTERS , "Hunters" , TEAM_HUNTERS_CHAT_COLOR, true  )
-	team.SetUp( TEAM_SPECTATOR , "Spectators" , Color( 127, 127, 127 ), true  )
-	team.SetClass( TEAM_PROPS, {"player_prop"})
-	team.SetClass( TEAM_HUNTERS, {"player_hunter"})
-	team.SetClass( TEAM_SPECTATOR, {"player_spectator"})
 	team.SetSpawnPoint( TEAM_PROPS, {"info_player_terrorist", "info_player_rebel", "info_player_deathmatch", "info_player_allies"} )
+	team.SetClass( TEAM_PROPS, {"player_prop"})
+
 	team.SetSpawnPoint( TEAM_HUNTERS, {"info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
+	team.SetUp( TEAM_HUNTERS , "Hunters" , TEAM_HUNTERS_CHAT_COLOR, true  )
+	team.SetClass( TEAM_HUNTERS, {"player_hunter"})
+
+	team.SetUp( TEAM_SPECTATOR , "Spectators" , Color( 127, 127, 127 ), true  )
 	team.SetSpawnPoint( TEAM_SPECTATOR, {"info_player_counterterrorist", "info_player_combine", "info_player_deathmatch", "info_player_axis"} )
+	team.SetClass( TEAM_SPECTATOR, {"player_spectator"})
 end
 
 --[[ some share hooks, disable footsteps and taget id's ]]--
