@@ -32,8 +32,8 @@ local function SwapTeams()
 	for _, v in pairs(hunters) do
 		if( IsValid(v) ) then
 			RemovePlayerProp( v )
-			player_manager.SetPlayerClass( v, "player_prop" )
 			v:SetTeam( TEAM_PROPS )
+			player_manager.SetPlayerClass( v, "player_prop" )
 			v:KillSilent()
 			v:Spawn()
 		end
@@ -42,8 +42,8 @@ local function SwapTeams()
 	for _, v in pairs(props) do
 		if( IsValid(v) ) then
 			RemovePlayerProp( v )
-			player_manager.SetPlayerClass( v, "player_hunter" )
 			v:SetTeam( TEAM_HUNTERS )
+			player_manager.SetPlayerClass( v, "player_hunter" )
 			v:KillSilent()
 			v:Spawn()
 		end
