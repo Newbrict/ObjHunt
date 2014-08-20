@@ -45,11 +45,18 @@ local function hideTimerHUD()
 		local width = surface.GetTextSize( textToDraw )
 		local height = 16
 		local padding = 5
-		local startX = ScrW() - (width + 2*padding)
+		local startX = ScrW()/2 - width/2
 		local startY = 2*padding
 
 		surface.SetDrawColor( 127, 127, 127, 200 )
 		surface.DrawRect(
+			startX - padding,
+			startY - padding,
+			width + 2*padding,
+			height + 2*padding
+		)
+		surface.SetDrawColor( PANEL_BORDER )
+		surface.DrawOutlinedRect(
 			startX - padding,
 			startY - padding,
 			width + 2*padding,

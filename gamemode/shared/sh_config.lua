@@ -29,7 +29,7 @@ OBJHUNT_POST_ROUND_TIME = 5
 OBJHUNT_HIDE_TIME = 30
 
 -- Can players talk between teams or only amongst?
-DISABLE_GLOBAL_CHAT = true
+DISABLE_GLOBAL_CHAT = false
 
 -- Round constants
 ROUND_WAIT  = 0
