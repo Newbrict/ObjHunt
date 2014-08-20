@@ -89,18 +89,18 @@ local function InRound()
 	local hunters = GetLivingPlayers(TEAM_HUNTERS)
 	local props = GetLivingPlayers(TEAM_PROPS)
 
-	if( #hunters == 0 ) then
-		round.state = ROUND_END
-		round.endTime = CurTime()
-		round.winner = "Props"
-		hook.Call( "OBJHUNT_RoundEnd" )
-		return
-	end
-
 	if( #props == 0 ) then
 		round.state = ROUND_END
 		round.endTime = CurTime()
 		round.winner = "Hunters"
+		hook.Call( "OBJHUNT_RoundEnd" )
+		return
+	end
+
+	if( #hunters == 0 ) then
+		round.state = ROUND_END
+		round.endTime = CurTime()
+		round.winner = "Props"
 		hook.Call( "OBJHUNT_RoundEnd" )
 		return
 	end

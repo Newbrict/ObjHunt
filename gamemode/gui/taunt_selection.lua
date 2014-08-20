@@ -10,6 +10,7 @@ local function playTaunt( taunt, pitch )
 	-- only play if the last taunt has ended
 	if( CurTime() < LocalPlayer().nextTaunt ) then return end
 	if( !LocalPlayer():Alive() ) then return end
+	if( LocalPlayer():Team() != TEAM_PROPS ) then return end
 
 	net.Start( "Taunt Selection" )
 		net.WriteString( taunt )
