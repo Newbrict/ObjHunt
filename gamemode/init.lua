@@ -358,6 +358,7 @@ hook.Add( "PlayerDisconnected", "Remove ent prop on dc", function( ply )
 end )
 
 hook.Add( "PlayerDeath", "Remove ent prop on death", function( ply )
+	ply.nextTaunt = 0
 	RemovePlayerProp( ply )
 	local ragdoll = ply:GetRagdollEntity()
 	SafeRemoveEntityDelayed( ragdoll, 5 )

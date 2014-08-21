@@ -29,6 +29,12 @@ net.Receive( "Prop update", function( length )
 end )
 
 net.Receive( "Reset Prop", function( length )
+	-- taunt default
+	LocalPlayer().nextTaunt = 0
+	LocalPlayer().lastTaunt = 0
+	LocalPlayer().lastTauntDuration = 1
+	LocalPlayer().lastTauntPitch = 100
+
 	LocalPlayer():ResetHull()
 	LocalPlayer().firstProp       = true
 	LocalPlayer().wantThirdPerson = false
