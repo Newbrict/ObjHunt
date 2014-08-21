@@ -101,10 +101,13 @@ local function ObjHUD()
 		end
 	end
 
-	if( ply:Team() == TEAM_PROPS ) then
-		-- this needs to be here otherwise some people get errors for some unknown reason
-		if( ply.viewOrigin == nil || ply.wantThirdPerson == nil ) then return end
-		if( ply.lastPropChange == nil ) then return end
+	if( ply:Team() == TEAM_PROPS || ply:Team() == TEAM_HUNTERS ) then
+		-- defaults
+		if( !ply.lastTaunt ) then
+			LocalPlayer().lastTaunt = 0
+			LocalPlayer().lastTauntDuration = 1
+			LocalPlayer().lastTauntPitch = 100
+		end
 
 		-- TAUNT COOLDOWN GUI
 		startY = startY - padding - 16

@@ -7,6 +7,10 @@ local tauntPanel
 local pitchSlider
 
 local function playTaunt( taunt, pitch )
+	if( !LocalPlayer().nextTaunt ) then
+		LocalPlayer().nextTaunt = 0
+	end
+
 	-- only play if the last taunt has ended
 	if( CurTime() < LocalPlayer().nextTaunt ) then return end
 	if( !LocalPlayer():Alive() ) then return end
