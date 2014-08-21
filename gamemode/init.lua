@@ -6,6 +6,7 @@ function GM:PlayerInitialSpawn( ply )
 	ply:SetTeam( TEAM_SPECTATOR )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
 	ply:SetCustomCollisionCheck( true )
+	ply.nextTaunt = 0
 end
 
 -- [[ Class Selection ]] --
@@ -20,6 +21,7 @@ function GM:ShowHelp( ply )
 		-- Just used as a hook
 	net.Send( ply )
 end
+
 
 net.Receive("Class Selection", function( len, ply )
 	local chosen = net.ReadUInt(32)
@@ -55,15 +57,30 @@ net.Receive("Class Selection", function( len, ply )
 end )
 
 -- [[ Taunts ]] --
-net.Receive( "Taunt Selection", function( len, ply )
-	local taunt = net.ReadString()
-	local pitch = net.ReadUInt( 8 )
+function SendTaunt( ply, taunt, pitch )
+	if( CurTime() < ply.nextTaunt ) then return end
+	if( !ply:Alive() ) then return end
+	if( ply:Team() != TEAM_PROPS ) then return end
 
+	ply.nextTaunt = CurTime() + ( SoundDuration( taunt ) * (100/pitch) )
 	net.Start( "Taunt Selection" )
 		net.WriteString( taunt )
 		net.WriteUInt( pitch, 8 )
 		net.WriteUInt( ply:EntIndex(), 8 )
 	net.Broadcast()
+end
+
+function GM:ShowSpare1( ply )
+	local pRange = TAUNT_MAX_PITCH - TAUNT_MIN_PITCH
+	local taunt = table.Random( TAUNTS )
+	local pitch = math.random()*pRange + TAUNT_MIN_PITCH
+	SendTaunt( ply, taunt, pitch )
+end
+
+net.Receive( "Taunt Selection", function( len, ply )
+	local taunt = net.ReadString()
+	local pitch = net.ReadUInt( 8 )
+	SendTaunt( ply, taunt, pitch )
 end )
 
 

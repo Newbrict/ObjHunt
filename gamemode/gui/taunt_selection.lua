@@ -17,10 +17,6 @@ local function playTaunt( taunt, pitch )
 		net.WriteUInt( pitch, 8 )
 	net.SendToServer()
 
-	LocalPlayer().nextTaunt = CurTime() + ( SoundDuration( taunt ) * (100/pitch) )
-	LocalPlayer().lastTaunt = CurTime()
-	LocalPlayer().lastTauntPitch = pitch
-	LocalPlayer().lastTauntDuration = SoundDuration( taunt ) * (100/pitch)
 	pitchSlider:SetValue( pitch )
 end
 
