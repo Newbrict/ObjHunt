@@ -10,7 +10,6 @@ local function playTaunt( taunt, pitch )
 	-- only play if the last taunt has ended
 	if( CurTime() < LocalPlayer().nextTaunt ) then return end
 	if( !LocalPlayer():Alive() ) then return end
-	if( LocalPlayer():Team() != TEAM_PROPS ) then return end
 
 	net.Start( "Taunt Selection" )
 		net.WriteString( taunt )
@@ -22,7 +21,13 @@ end
 
 
 local function tauntSelection()
-	if( LocalPlayer():Team() != TEAM_PROPS || !LocalPlayer():Alive() ) then return end
+	if( LocalPlayer():Team() != TEAM_PROPS && LocalPlayer():Team() != TEAM_HUNTERS || !LocalPlayer():Alive() ) then return end
+	local TAUNTS
+	if( LocalPlayer():Team() == TEAM_PROPS ) then
+		TAUNTS = PROP_TAUNTS
+	else
+		TAUNTS = HUNTER_TAUNTS
+	end
 
 
 	tauntPanel = vgui.Create( "DPanel" )
@@ -105,7 +110,7 @@ local function tauntSelection()
 end
 
 hook.Add( "OnSpawnMenuOpen", "Display the taunt menu", function()
-	if( LocalPlayer():Team() != TEAM_PROPS || !LocalPlayer():Alive() ) then return end
+	if( LocalPlayer():Team() != TEAM_PROPS && LocalPlayer():Team() != TEAM_HUNTERS || !LocalPlayer():Alive() ) then return end
 	if( tauntPanel && tauntPanel:IsVisible() ) then
 		tauntPanel:SetVisible( false )
 	end
@@ -116,7 +121,7 @@ hook.Add( "OnSpawnMenuOpen", "Display the taunt menu", function()
 end )
 
 hook.Add( "OnSpawnMenuClose", "Close the context menu", function()
-	if( LocalPlayer():Team() != TEAM_PROPS || !LocalPlayer():Alive() ) then return end
+	if( LocalPlayer():Team() != TEAM_PROPS && LocalPlayer():Team() != TEAM_HUNTERS || !LocalPlayer():Alive() ) then return end
 	if( tauntPanel && !tauntPanel:IsVisible() ) then return end
 	tauntPanel:SetKeyboardInputEnabled( true )
 	tauntPanel:SetVisible( false )

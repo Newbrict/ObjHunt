@@ -26,7 +26,10 @@ if SERVER then
 	resourceLoader( resources["server"], include )
 	resourceLoader( resources["client"], AddCSLuaFile )
 	-- add the taunts in
-	for _, t in pairs(TAUNTS) do
+	for _, t in pairs(PROP_TAUNTS) do
+		resource.AddFile("sound/"..t)
+	end
+	for _, t in pairs(HUNTER_TAUNTS) do
 		resource.AddFile("sound/"..t)
 	end
 else
@@ -89,7 +92,7 @@ end
 function initNoCollide( ent1, ent2 )
 	if( !IsValid( ent1 ) || !IsValid( ent2 ) ) then return end
 	if( !ent1:IsPlayer() || !ent2:IsPlayer() ) then return end
-	if( ent1:Team() != ent2:Team() ) then return end
+	if( ent1:Team() != ent2:Team() && !( ent1:IsFrozen() || ent2:IsFrozen() ) ) then return end
 	if( ent1:Team() == TEAM_PROPS && ent1.GetProp && IsValid( ent1:GetProp() ) && ent1:GetProp():GetModel() == "models/player.mdl" ) then
 		return false
 	elseif( ent2:Team() == TEAM_PROPS && ent2.GetProp && IsValid( ent2:GetProp() ) && ent2:GetProp():GetModel() == "models/player.mdl" ) then

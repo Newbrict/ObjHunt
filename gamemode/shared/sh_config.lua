@@ -28,6 +28,10 @@ OBJHUNT_POST_ROUND_TIME = 5
 -- How much time props have before hunters are released
 OBJHUNT_HIDE_TIME = 30
 
+-- The damage hunters will take for shooting the wrong prop
+-- Set this negative if you want dynamic damage ( hit 50 damage take 50 damage )
+HUNTER_DAMAGE_PENALTY = -1
+
 -- Can players talk between teams or only amongst?
 DISABLE_GLOBAL_CHAT = false
 
@@ -117,22 +121,29 @@ TEXT_COLOR = Color( 255, 255, 255, 255 )
 TAUNT_MAX_PITCH = 128
 TAUNT_MIN_PITCH = 64
 
-TAUNTS = {}
+PROP_TAUNTS = {}
 -- USAGE:
--- TAUNTS["Display Name"] = "taunts/file_name.wav"
-TAUNTS["Jihad"]                    = "taunts/jihad.wav"
-TAUNTS["Atatatat"]                 = "taunts/atatatat.wav"
-TAUNTS["Boom, Headshot!"]          = "taunts/boom_headshot.wav"
-TAUNTS["Doh!"]                     = "taunts/doh.wav"
-TAUNTS["I Guarantee it"]           = "taunts/guarantee_it.wav"
-TAUNTS["LEEROY... JENKINS!"]       = "taunts/leeroy_jenkins.wav"
-TAUNTS["Negative"]                 = "taunts/negative.wav"
-TAUNTS["Never Do Laundry Again"]   = "taunts/never_again.wav"
-TAUNTS["Over 9000"]                = "taunts/over_9000.wav"
-TAUNTS["Pingas"]                   = "taunts/pingas.wav"
-TAUNTS["Please Come Again"]        = "taunts/please_come_again.wav"
-TAUNTS["What do you like to play"] = "taunts/pokemon.wav"
-TAUNTS["Vince With Shamwow"]       = "taunts/shamwow.wav"
-TAUNTS["This Is SPARTA!"]          = "taunts/sparta.wav"
-TAUNTS["Woohoo!"]                  = "taunts/woohoo.wav"
-TAUNTS["What you mean flames?"]    = "taunts/flames.wav"
+-- PROP_TAUNTS["Display Name"] = "taunts/file_name.wav"
+PROP_TAUNTS["Jihad"]                    = "taunts/jihad.wav"
+PROP_TAUNTS["Atatatat"]                 = "taunts/atatatat.wav"
+PROP_TAUNTS["Boom, Headshot!"]          = "taunts/boom_headshot.wav"
+PROP_TAUNTS["Doh!"]                     = "taunts/doh.wav"
+PROP_TAUNTS["I Guarantee it"]           = "taunts/guarantee_it.wav"
+PROP_TAUNTS["LEEROY... JENKINS!"]       = "taunts/leeroy_jenkins.wav"
+PROP_TAUNTS["Negative"]                 = "taunts/negative.wav"
+PROP_TAUNTS["Never Do Laundry Again"]   = "taunts/never_again.wav"
+PROP_TAUNTS["Over 9000"]                = "taunts/over_9000.wav"
+PROP_TAUNTS["Pingas"]                   = "taunts/pingas.wav"
+PROP_TAUNTS["Please Come Again"]        = "taunts/please_come_again.wav"
+PROP_TAUNTS["What Do You Like To Play"] = "taunts/pokemon.wav"
+PROP_TAUNTS["Vince With Shamwow"]       = "taunts/shamwow.wav"
+PROP_TAUNTS["This Is SPARTA!"]          = "taunts/sparta.wav"
+PROP_TAUNTS["Woohoo!"]                  = "taunts/woohoo.wav"
+PROP_TAUNTS["What You Mean Flames?"]    = "taunts/flames.wav"
+
+HUNTER_TAUNTS = {}
+-- USAGE:
+-- HUNTER_TAUNTS["Display Name"] = "taunts/file_name.wav"
+HUNTER_TAUNTS["Jaws Theme"]       = "taunts/jaws.wav"
+HUNTER_TAUNTS["I Will Find You"]  = "taunts/taken.wav"
+HUNTER_TAUNTS["Where Are You!"]   = "taunts/where.wav"

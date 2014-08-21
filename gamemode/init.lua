@@ -7,6 +7,9 @@ function GM:PlayerInitialSpawn( ply )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
 	ply:SetCustomCollisionCheck( true )
 	ply.nextTaunt = 0
+	net.Start( "Class Selection" )
+		-- Just used as a hook
+	net.Send( ply )
 end
 
 -- [[ Class Selection ]] --
@@ -60,7 +63,8 @@ end )
 function SendTaunt( ply, taunt, pitch )
 	if( CurTime() < ply.nextTaunt ) then return end
 	if( !ply:Alive() ) then return end
-	if( ply:Team() != TEAM_PROPS ) then return end
+	if( ply:Team() == TEAM_PROPS && !table.HasValue( PROP_TAUNTS, taunt ) ) then return end
+	if( ply:Team() == TEAM_HUNTERS && !table.HasValue( HUNTER_TAUNTS, taunt ) ) then return end
 
 	ply.nextTaunt = CurTime() + ( SoundDuration( taunt ) * (100/pitch) )
 	net.Start( "Taunt Selection" )
@@ -71,6 +75,13 @@ function SendTaunt( ply, taunt, pitch )
 end
 
 function GM:ShowSpare1( ply )
+	local TAUNTS
+	if( ply:Team() == TEAM_PROPS ) then
+		TAUNTS = PROP_TAUNTS
+	else
+		TAUNTS = HUNTER_TAUNTS
+	end
+
 	local pRange = TAUNT_MAX_PITCH - TAUNT_MIN_PITCH
 	local taunt = table.Random( TAUNTS )
 	local pitch = math.random()*pRange + TAUNT_MIN_PITCH
@@ -136,7 +147,12 @@ end
 local function DamageHandler( target, dmgInfo )
 
 	local attacker = dmgInfo:GetAttacker()
+	-- dynamic damage
 	local dmg = dmgInfo:GetDamage()
+	-- static damage
+	if( HUNTER_DAMAGE_PENALTY > 0 ) then
+		dmg = HUNTER_DAMAGE_PENALTY
+	end
 
 	if( attacker:IsPlayer() ) then
 		if( attacker:Team() == TEAM_HUNTERS ) then
@@ -382,5 +398,10 @@ function GM:PlayerCanSeePlayersChat( text, teamOnly, listener, speaker )
 		end
 	end
 
+	return true
+end
+
+function GM:PlayerCanPickupWeapon(ply, wep)
+	if( ply:Team() == TEAM_PROPS ) then return false end
 	return true
 end
