@@ -124,6 +124,9 @@ local function BroadcastPlayerDeath( ply )
 		-- the player who died, so sad, too bad.
 		net.WriteUInt( ply:EntIndex(), 8 )
 	net.Broadcast()
+	-- remove ragdoll
+	local ragdoll = ply:GetRagdollEntity()
+	SafeRemoveEntityDelayed( ragdoll, 5 )
 end
 
 
@@ -374,8 +377,6 @@ hook.Add( "PlayerDeath", "Remove ent prop on death", function( ply )
 
 	ply.nextTaunt = 0
 	RemovePlayerProp( ply )
-	local ragdoll = ply:GetRagdollEntity()
-	SafeRemoveEntityDelayed( ragdoll, 5 )
 	if( ply:IsFrozen() ) then
 		ply:Freeze( false )
 	end
