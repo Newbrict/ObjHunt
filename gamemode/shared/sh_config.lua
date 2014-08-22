@@ -30,7 +30,7 @@ OBJHUNT_HIDE_TIME = 30
 
 -- The damage hunters will take for shooting the wrong prop
 -- Set this negative if you want dynamic damage ( hit 50 damage take 50 damage )
-HUNTER_DAMAGE_PENALTY = -1
+HUNTER_DAMAGE_PENALTY = 5
 
 -- Can players talk between teams or only amongst?
 DISABLE_GLOBAL_CHAT = false

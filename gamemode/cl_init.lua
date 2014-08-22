@@ -1,5 +1,11 @@
 include( "shared.lua" )
 
+local function KillTaunt( ply )
+	if( ply.tauntPatch && ply.tauntPatch:IsPlaying() ) then
+		ply.tauntPatch:Stop()
+	end
+end
+
 --[ Prop Updates ]--
 net.Receive( "Prop update", function( length )
 	-- set up the hitbox
@@ -107,7 +113,27 @@ net.Receive( "Taunt Selection", function()
 		ply.lastTauntDuration = SoundDuration( taunt ) * (100/pitch)
 	end
 
-	EmitSound( taunt , ply:GetPos(), id, CHAN_AUTO, 1, 100, 2, pitch )
+	local s = Sound(taunt)
+
+	-- need to delete the gc function so my ents remain
+	ply.tauntPatch = CreateSound( ply, s )
+	if( ply.tauntPatch.__gc ) then
+		local smeta = getmetatable(ply.tauntPatch)
+		smeta.__gc = function()
+		end
+	end
+
+	ply.tauntPatch:SetSoundLevel( 100 )
+	ply.tauntPatch:PlayEx(1, pitch)
+
+	-- old not stoppable method
+	--EmitSound( taunt , ply:GetPos(), id, CHAN_AUTO, 1, 100, 2, pitch )
+end )
+
+net.Receive( "Player Death", function()
+	local id = net.ReadUInt( 8 )
+	local ply = player.GetByID( id )
+	KillTaunt( ply )
 end )
 
 -- disable default hud elements here
@@ -117,3 +143,4 @@ function GM:HUDShouldDraw( name )
 	end
 	return true
 end
+

@@ -67,6 +67,7 @@ function SendTaunt( ply, taunt, pitch )
 	if( ply:Team() == TEAM_HUNTERS && !table.HasValue( HUNTER_TAUNTS, taunt ) ) then return end
 
 	ply.nextTaunt = CurTime() + ( SoundDuration( taunt ) * (100/pitch) )
+
 	net.Start( "Taunt Selection" )
 		net.WriteString( taunt )
 		net.WriteUInt( pitch, 8 )
@@ -191,6 +192,7 @@ hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Taunt Selection" )
 	util.AddNetworkString( "Help" )
 	util.AddNetworkString( "Round Update" )
+	util.AddNetworkString( "Player Death" )
 	util.AddNetworkString( "Prop Update" )
 	util.AddNetworkString( "Reset Prop" )
 	util.AddNetworkString( "Selected Prop" )
@@ -358,6 +360,11 @@ hook.Add( "PlayerDisconnected", "Remove ent prop on dc", function( ply )
 end )
 
 hook.Add( "PlayerDeath", "Remove ent prop on death", function( ply )
+	net.Start( "Player Death" )
+		-- the player who died, so sad, too bad.
+		net.WriteUInt( ply:EntIndex(), 8 )
+	net.Broadcast()
+
 	ply.nextTaunt = 0
 	RemovePlayerProp( ply )
 	local ragdoll = ply:GetRagdollEntity()
