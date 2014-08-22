@@ -150,10 +150,6 @@ local function DamageHandler( target, dmgInfo )
 	local attacker = dmgInfo:GetAttacker()
 	-- dynamic damage
 	local dmg = dmgInfo:GetDamage()
-	-- static damage
-	if( HUNTER_DAMAGE_PENALTY > 0 ) then
-		dmg = HUNTER_DAMAGE_PENALTY
-	end
 
 	if( attacker:IsPlayer() ) then
 		if( attacker:Team() == TEAM_HUNTERS ) then
@@ -163,6 +159,10 @@ local function DamageHandler( target, dmgInfo )
 				-- disable stepping on bottles to hurt
 				local dmgType = dmgInfo:GetDamageType()
 				if( dmgType == DMG_CRUSH ) then return end
+				-- static damage
+				if( HUNTER_DAMAGE_PENALTY > 0 ) then
+					dmg = HUNTER_DAMAGE_PENALTY
+				end
 
 				attacker:SetHealth( attacker:Health() - dmg )
 				if( attacker:Health() < 1 ) then
