@@ -119,6 +119,14 @@ function GM:PlayerShouldTakeDamage( victim, attacker )
 	return false
 end
 
+local function BroadcastPlayerDeath( ply )
+	net.Start( "Player Death" )
+		-- the player who died, so sad, too bad.
+		net.WriteUInt( ply:EntIndex(), 8 )
+	net.Broadcast()
+end
+
+
 -- how damage to props is handled
 local function HurtProp( ply, dmg, attacker )
 	if( attacker:Alive() ) then
@@ -131,7 +139,9 @@ local function HurtProp( ply, dmg, attacker )
 	ply:SetHealth( ply:Health() - dmg )
 	if( ply:Health() < 1 && ply:Alive() ) then
 		ply:KillSilent()
+		ply:CreateRagdoll( )
 		RemovePlayerProp( ply )
+		BroadcastPlayerDeath( ply )
 		net.Start( "Death Notice" )
 			net.WriteString( attacker:Nick() )
 			net.WriteUInt( attacker:Team(), 16 )
@@ -360,10 +370,7 @@ hook.Add( "PlayerDisconnected", "Remove ent prop on dc", function( ply )
 end )
 
 hook.Add( "PlayerDeath", "Remove ent prop on death", function( ply )
-	net.Start( "Player Death" )
-		-- the player who died, so sad, too bad.
-		net.WriteUInt( ply:EntIndex(), 8 )
-	net.Broadcast()
+	BroadcastPlayerDeath( ply )
 
 	ply.nextTaunt = 0
 	RemovePlayerProp( ply )
