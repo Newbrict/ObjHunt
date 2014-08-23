@@ -182,7 +182,7 @@ local function DamageHandler( target, dmgInfo )
 					attacker:Kill()
 					-- default suicide notice
 				end
-			elseif( target:GetOwner():IsPlayer() ) then
+			elseif( target:GetOwner():IsPlayer() && target:GetOwner():Team() == TEAM_PROPS ) then
 				local ply = target:GetOwner()
 				HurtProp( ply, dmg, attacker )
 			elseif( target:IsPlayer() && target:Team() == TEAM_PROPS ) then
@@ -219,6 +219,26 @@ end )
 hook.Add( "Initialize", "Set Map Time", function()
 	mapStartTime = os.time()
 end )
+
+--[[ Door Exploit fix ]]--
+function GM:PlayerUse( ply, ent )
+	-- default value
+	if( !ply.lastDoorTrigger ) then
+		ply.lastDoorTrigger = CurTime()
+		ply.nextDoorTrigger = CurTime() + ( 0.5 + math.random() )
+		return true
+	end
+
+	if( table.HasValue( DOORS, ent:GetClass() ) && CurTime() < ply.nextDoorTrigger ) then
+		return false
+	else
+		ply.lastDoorTrigger = CurTime()
+		ply.nextDoorTrigger = CurTime() + ( 0.5 + math.random() )
+		return true
+	end
+
+
+end
 
 --[[ sets the players prop, run PlayerCanBeEnt before using this ]]--
 function SetPlayerProp( ply, ent, scale, hbMin, hbMax )

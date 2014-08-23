@@ -82,6 +82,11 @@ BANNED_PROPS = {
 	"models/props_c17/signpole001.mdl"
 }
 
+DOORS = {
+	"func_door",
+	"func_door_rotating",
+	"prop_door_rotating"
+}
 --[[=====================]]--
 --[[COLORS AND HUD CONFIG]]--
 --[[=====================]]--

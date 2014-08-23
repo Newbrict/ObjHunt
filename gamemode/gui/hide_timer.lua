@@ -20,7 +20,7 @@ surface.CreateFont( "InfoFont",
 
 local function hideTimerHUD()
 	if( !LocalPlayer():Alive() ) then return end
-	if( round.state == ROUND_WAIT ) then return end
+	if( round.state != ROUND_IN ) then return end
 	if( !round.startTime ) then return end
 
 	local textToDraw = round.startTime + round.timePad + OBJHUNT_HIDE_TIME - CurTime()
@@ -30,6 +30,10 @@ local function hideTimerHUD()
 
 	if( LocalPlayer():Team() == TEAM_HUNTERS ) then
 		surface.SetFont( "HideFont" )
+
+		surface.SetDrawColor( 0, 0, 0, 255 )
+		surface.DrawRect( 0, 0, ScrW(), ScrH() )
+
 		-- Determine some useful coordinates
 		local width, height = surface.GetTextSize( textToDraw )
 		local startX = ScrW()/2 - width/2
@@ -68,7 +72,7 @@ local function hideTimerHUD()
 	end
 end
 
-hook.Add( "HUDPaint", "Hide Timer", hideTimerHUD )
+hook.Add( "HUDPaintBackground", "Hide Timer", hideTimerHUD )
 
 
 
