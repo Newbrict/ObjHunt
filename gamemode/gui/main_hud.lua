@@ -22,52 +22,55 @@ surface.CreateFont( "barHUD",
 --[[=======================]]--
 local function ObjHUD()
 	local ply = LocalPlayer()
-	if( !ply:IsValid() || !ply:Alive() || ply:Team() == TEAM_SPECTATOR) then return end
+	if( !ply:IsValid() ) then return end
 
 	local width = 200
 	local height = 125
 	local padding = 10
 	local iconX = padding
 	local barX = padding*2 + 16
-	local startY = ScrH() - padding -16
+	local startY = ScrH()
 
 	-- random color just to let the icon draw
 	surface.SetDrawColor( PANEL_BORDER )
 
 	-- HP GUI
+	if( ply:Alive() && ( ply:Team() == TEAM_PROPS || ply:Team() == TEAM_HUNTERS ) ) then
+		startY = startY - padding - 16
 
-	-- icon
-	local heartMat = Material("icon16/heart.png", "unlitgeneric")
-	surface.SetMaterial( heartMat )
-	surface.DrawTexturedRect( iconX, startY, 16 , 16)
+		-- icon
+		local heartMat = Material("icon16/heart.png", "unlitgeneric")
+		surface.SetMaterial( heartMat )
+		surface.DrawTexturedRect( iconX, startY, 16 , 16)
 
-	-- bar
-	hpFrac = math.Clamp( ply:Health(), 0, 100 )/100
+		-- bar
+		hpFrac = math.Clamp( ply:Health(), 0, 100 )/100
 
-	local widthOffset = width - (padding*3) - 16
-	surface.SetDrawColor( PANEL_FILL )
-	surface.DrawRect( barX, startY, widthOffset, 16)
-	surface.SetDrawColor( HP_COLOR )
-	surface.DrawRect( barX, startY, widthOffset*hpFrac, 16)
-	surface.SetDrawColor( PANEL_BORDER )
-	surface.DrawOutlinedRect( barX, startY, widthOffset, 16)
+		local widthOffset = width - (padding*3) - 16
+		surface.SetDrawColor( PANEL_FILL )
+		surface.DrawRect( barX, startY, widthOffset, 16)
+		surface.SetDrawColor( HP_COLOR )
+		surface.DrawRect( barX, startY, widthOffset*hpFrac, 16)
+		surface.SetDrawColor( PANEL_BORDER )
+		surface.DrawOutlinedRect( barX, startY, widthOffset, 16)
 
-	--text
-	surface.SetFont( "barHUD" )
-	surface.SetTextColor( 255, 255, 255, 255 )
-	local textToDraw = LocalPlayer():Health()
-	local textWidth, textHeight = surface.GetTextSize( textToDraw )
-	local textX = barX + 3
-	local textY = startY
-	surface.SetTextPos( textX, textY )
-	surface.DrawText( textToDraw )
+		--text
+		surface.SetFont( "barHUD" )
+		surface.SetTextColor( 255, 255, 255, 255 )
+		local textToDraw = LocalPlayer():Health()
+		local textWidth, textHeight = surface.GetTextSize( textToDraw )
+		local textX = barX + 3
+		local textY = startY
+		surface.SetTextPos( textX, textY )
+		surface.DrawText( textToDraw )
+	end
 
-	if( ply:Team() == TEAM_PROPS ) then
+	-- PROP COOLDOWN GUI
+	if( ply:Alive() && ply:Team() == TEAM_PROPS ) then
 		-- this needs to be here otherwise some people get errors for some unknown reason
 		if( ply.viewOrigin == nil || ply.wantThirdPerson == nil ) then return end
 		if( ply.lastPropChange == nil ) then return end
 
-		-- PROP COOLDOWN GUI
 		startY = startY - padding - 16
 
 		-- icon
@@ -101,7 +104,8 @@ local function ObjHUD()
 		end
 	end
 
-	if( ply:Team() == TEAM_PROPS || ply:Team() == TEAM_HUNTERS ) then
+	-- TAUNT COOLDOWN GUI
+	if( ply:Alive() && ( ply:Team() == TEAM_PROPS || ply:Team() == TEAM_HUNTERS ) ) then
 		-- defaults
 		if( !ply.lastTaunt ) then
 			LocalPlayer().lastTaunt = 0
@@ -109,7 +113,6 @@ local function ObjHUD()
 			LocalPlayer().lastTauntPitch = 100
 		end
 
-		-- TAUNT COOLDOWN GUI
 		startY = startY - padding - 16
 
 		-- icon
@@ -142,6 +145,24 @@ local function ObjHUD()
 			surface.DrawText( textToDraw )
 		end
 	end
+
+	-- INFO GUI
+	startY = startY - padding - 16
+
+	-- icon
+	local infoMat = Material("icon16/information.png", "unlitgeneric")
+	surface.SetMaterial( infoMat )
+	surface.DrawTexturedRect( iconX, startY, 16 , 16)
+
+	--text
+	surface.SetFont( "barHUD" )
+	surface.SetTextColor( 255, 255, 255, 255 )
+	local textToDraw = "Press F1 For Information"
+	local textWidth, textHeight = surface.GetTextSize( textToDraw )
+	local textX = barX
+	local textY = startY
+	surface.SetTextPos( textX, textY )
+	surface.DrawText( textToDraw )
 end
 
 --[[=========================]]--
@@ -223,17 +244,6 @@ local function SpectateHUD()
 	local ply = LocalPlayer()
 
 	if( !ply:IsValid() ) then return end
-
-	if( ply:Team() == TEAM_SPECTATOR ) then
-		-- Help
-		local padding = 10
-		local startX = padding
-		local startY = padding
-		surface.SetFont( "ObjHUDFont" )
-		surface.SetTextColor( Color(255,255,255) )
-		surface.SetTextPos( startX, startY )
-		surface.DrawText("Press F1 for Help")
-	end
 
 	local sTarget = ply:GetObserverTarget()
 	if( !sTarget ) then return end
