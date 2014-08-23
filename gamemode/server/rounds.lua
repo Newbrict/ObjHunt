@@ -52,7 +52,7 @@ end
 
 local function WaitRound()
 	-- wait for everyone to connect and what not
-	local mapTime = os.time() - mapStartTime
+	local mapTime = CurTime()
 	if( mapTime < OBJHUNT_PRE_ROUND_TIME ) then return end
 
 	-- make sure we have at least one player on each team
