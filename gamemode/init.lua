@@ -424,11 +424,17 @@ end
 
 function GM:PlayerCanSeePlayersChat( text, teamOnly, listener, speaker )
 
-	if( speaker:IsAdmin() ) then
-		return true
+	if( DISABLE_GLOBAL_CHAT ) then
+		if( speaker:IsAdmin() ) then
+			return true
+		end
+
+		if( listener:Team() != speaker:Team() ) then
+			return false
+		end
 	end
 
-	if( DISABLE_GLOBAL_CHAT ) then
+	if( teamOnly ) then
 		if( listener:Team() != speaker:Team() ) then
 			return false
 		end
