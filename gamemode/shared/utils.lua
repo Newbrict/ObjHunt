@@ -42,6 +42,10 @@ function WouldBeStuck( ply, prop )
 	if( !hbMin || !hbMax ) then return true end
 	local hbMin = Vector( math.Round(hbMin.x),math.Round(hbMin.y),math.Round(hbMin.z) )
 	local hbMax = Vector( math.Round(hbMax.x),math.Round(hbMax.y),math.Round(hbMax.z) )
+	-- Adjust height
+	hbMax = Vector(hbMax.x,hbMax.y,hbMax.z + hbMax.z)
+	hbMin = Vector(hbMin.x,hbMin.y,0)
+
 	td.mins = hbMin
 	td.maxs = hbMax
 	local trace = util.TraceHull( td )
@@ -61,4 +65,16 @@ function LerpColor(frac,from,to)
 		Lerp(frac,from.b,to.b),
 		Lerp(frac,from.a,to.a)
 	)
+end
+
+function TeamString(teamID)
+	if(teamID == TEAM_HUNTERS) then
+		return "Hunters"
+	elseif(teamID == TEAM_PROPS) then
+		return "Props"
+	elseif(teamID == TEAM_SPECTATOR) then
+		return "Spectators"
+	else
+		return "UNKNOWN"
+	end
 end

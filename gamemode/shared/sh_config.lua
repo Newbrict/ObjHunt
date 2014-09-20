@@ -74,6 +74,7 @@ USABLE_PROP_ENTITIES = {
 
 BANNED_PROPS = {
 	"models/props/cs_office/tv_plasma.mdl",
+	"models/props_c17/chair02a.mdl",
 	"models/props/cs_office/fire_extinguisher.mdl",
 	"models/props/cs_office/snowman_arm.mdl",
 	"models/props/cs_assault/money.mdl",

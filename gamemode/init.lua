@@ -29,6 +29,7 @@ end
 net.Receive("Class Selection", function( len, ply )
 	local chosen = net.ReadUInt(32)
 	local playerTable = {}
+	local oldTeam = ply:Team()
 
 	if chosen == ply:Team() then
 		ply:ChatPrint( "You are already on that team." )
@@ -55,6 +56,7 @@ net.Receive("Class Selection", function( len, ply )
 		player_manager.SetPlayerClass( ply, "player_hunter" )
 	end
 
+	PrintMessage( HUD_PRINTTALK, ply:Nick().." moved from "..TeamString(oldTeam) .. " to ".. TeamString(ply:Team()))
 	RemovePlayerProp( ply )
 	ply:KillSilent()
 end )
@@ -245,7 +247,10 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 
 	local tHitboxMin, tHitboxMax
 	if( !hbMin || !hbMax ) then
-		tHitboxMin, tHitboxMax = ent:GetHitBoxBounds( 0, 0 )
+		local obj = ent:GetPhysicsObject()
+		if( !IsValid(obj) ) then
+			return false, "Invalid physobject" end
+		tHitboxMin, tHitboxMax = obj:GetAABB()
 		if( !tHitboxMin || !tHitboxMax ) then return false, "Invalid Hull" end
 	else
 		tHitboxMin = hbMin
@@ -264,6 +269,10 @@ function SetPlayerProp( ply, ent, scale, hbMin, hbMax )
 	-- we round to reduce getting stuck
 	tHitboxMin = Vector( math.Round(tHitboxMin.x),math.Round(tHitboxMin.y),math.Round(tHitboxMin.z) )
 	tHitboxMax = Vector( math.Round(tHitboxMax.x),math.Round(tHitboxMax.y),math.Round(tHitboxMax.z) )
+
+	--Adjust Position for no stuck
+	local ppos = ply:GetPos()
+	ply:SetPos(Vector(ppos.x,ppos.y,ppos.z-tHitboxMin.z))
 
 	ply:SetHull( tHitboxMin, tHitboxMax )
 	ply:SetHullDuck( tHitboxMin, tHitboxMax )
