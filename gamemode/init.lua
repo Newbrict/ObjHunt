@@ -344,8 +344,7 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 		ply.oldMaxHP = 100
 		ply.dmgPct = 1
 		-- make the player invisible
-		ply:SetRenderMode( RENDERMODE_TRANSALPHA )
-		ply:SetColor( Color(0,0,0,0) )
+		ply:SetRenderMode( RENDERMODE_NONE )
 		ply:SetBloodColor( DONT_BLEED )
 
 		timer.Simple( 0.5, function()
