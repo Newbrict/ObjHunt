@@ -415,7 +415,7 @@ local SPECS_BOARD =
 
 			if(Spectators:find( pl:Nick()) == nil ) then
 
-			Spectators = Spectators..pl:Nick()..","
+				Spectators = Spectators == "" and pl:Nick() or Spectators .. ", " .. pl:Nick()
 
 			end
 		end
