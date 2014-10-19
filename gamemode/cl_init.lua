@@ -106,6 +106,8 @@ net.Receive( "Taunt Selection", function()
 	local id = net.ReadUInt( 8 )
 	local ply = player.GetByID( id )
 
+	if not IsValid( ply ) then return end
+
 	if( ply == LocalPlayer() ) then
 		ply.nextTaunt = CurTime() + ( SoundDuration( taunt ) * (100/pitch) )
 		ply.lastTaunt = CurTime()
