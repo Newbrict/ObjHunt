@@ -1,12 +1,14 @@
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
+include( "server/autotaunt.lua" )
 
 function GM:PlayerInitialSpawn( ply )
 	ply:SetTeam( TEAM_SPECTATOR )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
 	ply:SetCustomCollisionCheck( true )
 	ply.nextTaunt = 0
+	ply.lastTauntTime = CurTime()
 	net.Start( "Class Selection" )
 		-- Just used as a hook
 	net.Send( ply )
@@ -69,11 +71,17 @@ function SendTaunt( ply, taunt, pitch )
 	if( ply:Team() == TEAM_HUNTERS && !table.HasValue( HUNTER_TAUNTS, taunt ) ) then return end
 
 	ply.nextTaunt = CurTime() + ( SoundDuration( taunt ) * (100/pitch) )
-
+	ply.lastTauntTime = CurTime()
+	
+    local filter = RecipientFilter();
+    filter:AddPlayer( ply );
+ 
 	net.Start( "Taunt Selection" )
 		net.WriteString( taunt )
 		net.WriteUInt( pitch, 8 )
 		net.WriteUInt( ply:EntIndex(), 8 )
+        net.WriteFloat( ply.lastTauntTime )
+        net.WriteFloat( OBJHUNT_AUTOTAUNT_INTERVAL )
 	net.Broadcast()
 end
 
@@ -215,12 +223,18 @@ hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Prop Angle Lock BROADCAST" )
 	util.AddNetworkString( "Prop Angle Snap" )
 	util.AddNetworkString( "Prop Angle Snap BROADCAST" )
+    util.AddNetworkString( "AutoTaunt Update" )
 end )
 
 --[[ Map Time ]]--
-hook.Add( "Initialize", "Set Map Time", function()
+function CreateAutoTauntTimer()
+	PrintMessage(HUD_PRINTTALK, "CREATING TIMER")
+	timer.Create("AutoTauntTimer",.1,0,function () runAutoTaunter() end)
+end
+hook.Add( "Initialize", "Set Map Time",  function ()
 	mapStartTime = os.time()
-end )
+	CreateAutoTauntTimer()
+end)
 
 --[[ Door Exploit fix ]]--
 function GM:PlayerUse( ply, ent )
@@ -455,3 +469,22 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 	if( ply:Team() == TEAM_PROPS ) then return false end
 	return true
 end
+
+hook.Add("OBJHUNT_RoundStart", "Restart the Timer", function ()
+	local players = team.GetPlayers(TEAM_PROPS)
+	for _,ply in pairs(players) do
+		ply.lastTauntTime = CurTime()
+--        hook.Run("AutoTauntHUDRerender", ply)
+        net.Start( "AutoTaunt Update" )
+            net.WriteFloat( ply.lastTauntTime )
+            net.WriteFloat( OBJHUNT_AUTOTAUNT_INTERVAL + OBJHUNT_HIDE_TIME )
+	    net.Broadcast()
+	end
+
+	if timer.Exists("AutoTauntTimer") then
+		timer.Start("AutoTauntTimer")
+	else
+		CreateAutoTauntTimer()
+	end
+	
+end)

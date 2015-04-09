@@ -16,18 +16,15 @@ PLAYER.TeammateNoCollide = false
 PLAYER.MaxHealth         = 100
 PLAYER.DuckSpeed         = 0.1
 PLAYER.UnDuckSpeed       = 0.1
+PLAYER.lastTauntTime	 = 0.0
 
 
 function PLAYER:Loadout()
-
 	self.Player:RemoveAllAmmo()
-
 end
 
 function PLAYER:SetupDataTables()
-
 	self.Player:NetworkVar( "Entity", 0, "Prop" );
-
 end
 
 player_manager.RegisterClass( "player_prop", PLAYER, "player_default" )

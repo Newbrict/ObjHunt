@@ -27,6 +27,7 @@ OBJHUNT_POST_ROUND_TIME = 5
 
 -- How much time props have before hunters are released
 OBJHUNT_HIDE_TIME = 30
+OBJHUNT_AUTOTAUNT_INTERVAL = 30
 
 -- The damage hunters will take for shooting the wrong prop
 -- Set this negative if you want dynamic damage ( hit 50 damage take 50 damage )
@@ -130,6 +131,8 @@ TAUNT_MIN_PITCH = 64
 PROP_TAUNTS = {}
 -- USAGE:
 -- PROP_TAUNTS["Display Name"] = "taunts/file_name.wav"
+PROP_TAUNTS["Aaaaa"]                    = "taunts/aaaa.wav"
+PROP_TAUNTS["Ahhhh"]                    = "taunts/ahhhh.wav"
 PROP_TAUNTS["Jihad"]                    = "taunts/jihad.wav"
 PROP_TAUNTS["Atatatat"]                 = "taunts/atatatat.wav"
 PROP_TAUNTS["Boom, Headshot!"]          = "taunts/boom_headshot.wav"
@@ -150,6 +153,11 @@ PROP_TAUNTS["What You Mean Flames?"]    = "taunts/flames.wav"
 HUNTER_TAUNTS = {}
 -- USAGE:
 -- HUNTER_TAUNTS["Display Name"] = "taunts/file_name.wav"
-HUNTER_TAUNTS["Jaws Theme"]       = "taunts/jaws.wav"
-HUNTER_TAUNTS["I Will Find You"]  = "taunts/taken.wav"
-HUNTER_TAUNTS["Where Are You!"]   = "taunts/where.wav"
+HUNTER_TAUNTS["GlaDoS - President"]     = "taunts/glados-president.wav"
+HUNTER_TAUNTS["Come To Papa"]     		= "taunts/come_to_papa.wav"
+HUNTER_TAUNTS["No Soul"]   		 		= "taunts/soul.wav"
+HUNTER_TAUNTS["Jaws Theme"]       		= "taunts/jaws.wav"
+HUNTER_TAUNTS["I am your Father"] 		= "taunts/father.wav"
+HUNTER_TAUNTS["I Will Find You"]  		= "taunts/taken.wav"
+HUNTER_TAUNTS["Rude"]             		= "taunts/rude.wav"
+HUNTER_TAUNTS["Where Are You!"]   		= "taunts/where.wav"

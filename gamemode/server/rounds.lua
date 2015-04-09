@@ -58,7 +58,7 @@ local function WaitRound()
 	-- make sure we have at least one player on each team
 	local hunters = team.GetPlayers(TEAM_HUNTERS)
 	local props = team.GetPlayers(TEAM_PROPS)
-	if( #props == 0 || #hunters == 0 ) then return end
+	if( #props == 0 && #hunters == 0 ) then return end
 
 	round.state = ROUND_START
 end
@@ -89,21 +89,21 @@ local function InRound()
 	local hunters = GetLivingPlayers(TEAM_HUNTERS)
 	local props = GetLivingPlayers(TEAM_PROPS)
 
-	if( #props == 0 ) then
-		round.state = ROUND_END
-		round.endTime = CurTime()
-		round.winner = "Hunters"
-		hook.Call( "OBJHUNT_RoundEnd" )
-		return
-	end
+	 if( #props == 0 ) then
+		 round.state = ROUND_END
+		 round.endTime = CurTime()
+		 round.winner = "Hunters"
+		 hook.Call( "OBJHUNT_RoundEnd" )
+		 return
+	 end
 
-	if( #hunters == 0 ) then
-		round.state = ROUND_END
-		round.endTime = CurTime()
-		round.winner = "Props"
-		hook.Call( "OBJHUNT_RoundEnd" )
-		return
-	end
+	 if( #hunters == 0 ) then
+		 round.state = ROUND_END
+		 round.endTime = CurTime()
+		 round.winner = "Props"
+		 hook.Call( "OBJHUNT_RoundEnd" )
+		 return
+	 end
 
 	-- unfreeze the hunters after their time is up
 	if( roundTime > OBJHUNT_HIDE_TIME && hunters[1]:IsFrozen() ) then
@@ -124,7 +124,7 @@ local function EndRound()
 	-- make sure we have at least one player on each team
 	local hunters = team.GetPlayers(TEAM_HUNTERS)
 	local props = team.GetPlayers(TEAM_PROPS)
-	if( #props == 0 || #hunters == 0 ) then return end
+	if( #props == 0 && #hunters == 0 ) then return end
 
 	-- start the round after we've waiting long enough
 	local waitTime = CurTime() - round.endTime
