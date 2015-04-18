@@ -6,7 +6,7 @@ GM.Website = "N/A"
 --[[ Add all the files on server/client ]]--
 local resources = {}
 resources["server"] = { "server" }
-resources["shared"] = { "shared","player_class" }
+resources["shared"] = { "shared","player_class", "autotaunt" }
 resources["client"] = { "client", "gui" }
 
 local function resourceLoader(dirs, includeFunc)

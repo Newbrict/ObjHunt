@@ -8,7 +8,7 @@ function GM:PlayerInitialSpawn( ply )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
 	ply:SetCustomCollisionCheck( true )
 	ply.nextTaunt = 0
-	ply.lastTauntTime = CurTime()
+	ply.lastTaunt = CurTime()
 	net.Start( "Class Selection" )
 		-- Just used as a hook
 	net.Send( ply )
@@ -70,9 +70,11 @@ function SendTaunt( ply, taunt, pitch )
 	if( ply:Team() == TEAM_PROPS && !table.HasValue( PROP_TAUNTS, taunt ) ) then return end
 	if( ply:Team() == TEAM_HUNTERS && !table.HasValue( HUNTER_TAUNTS, taunt ) ) then return end
 
-	ply.nextTaunt = CurTime() + ( SoundDuration( taunt ) * (100/pitch) )
-	ply.lastTauntTime = CurTime()
-	
+    local soundDur = SoundDuration( taunt ) * (100/pitch)
+	ply.nextTaunt = CurTime() + soundDur
+	ply.lastTaunt = CurTime()
+    ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL
+
     local filter = RecipientFilter();
     filter:AddPlayer( ply );
  
@@ -80,10 +82,25 @@ function SendTaunt( ply, taunt, pitch )
 		net.WriteString( taunt )
 		net.WriteUInt( pitch, 8 )
 		net.WriteUInt( ply:EntIndex(), 8 )
-        net.WriteFloat( ply.lastTauntTime )
-        net.WriteFloat( OBJHUNT_AUTOTAUNT_INTERVAL )
+        net.WriteFloat( ply.lastTaunt )
+        net.WriteFloat( ply.autoTauntInterval )
 	net.Broadcast()
 end
+
+net.Receive( "Update Taunt Times", function() 
+	local id = net.ReadUInt( 8 )
+	local ply = player.GetByID( id )
+    local nextTaunt = net.ReadFloat()
+    local lastTaunt = net.ReadFloat()
+    local autoTauntInterval = net.ReadFloat()
+
+    ply.nextTaunt = nextTaunt
+    ply.lastTaunt = lastTaunt
+    ply.autoTauntInterval = autoTauntInterval
+
+    print( ply:GetName "'s AutoTaunt Interval:" .. ply.autoTauntInterval)
+    print( ply:GetName "'s Last  Taunt Time:" .. ply.lastTaunt)
+end)
 
 function GM:ShowSpare1( ply )
 	local TAUNTS
@@ -114,6 +131,7 @@ function GM:PlayerSetModel( ply )
 		-- default
 		ply:SetViewOffset( Vector(0,0,64) )
 	elseif( class == "player_prop" ) then
+        print( "Setting as Prop" )
 		ply:SetModel( TEAM_PROPS_DEFAULT_MODEL )
 
 		-- this fixes ent culling when head in ceiling
@@ -127,6 +145,51 @@ end
 -- disable the regular damage system
 function GM:PlayerShouldTakeDamage( victim, attacker )
 	return false
+end
+
+
+function GM:PlayerSay(ply, text, teamChat)
+	if (string.sub( text, 1, 4 ) == "/rtv") then
+        local requiredVotes = math.ceil(#player.GetAll() * ROCK_THE_VOTE_PERCENTAGE)
+
+        if ROCK_THE_VOTE_LOCKED then
+            ply:PrintMessage(HUD_PRINTTALK, "The vote cannot be rocked for the next " .. math.Round(timer.TimeLeft("RockTheVoteLockTimer")) .. " seconds")
+            return false
+        elseif ROCK_THE_VOTE_COUNT == 0 then
+            timer.Create("RockTheVoteTimer", 30, 0, checkRockTheVote )
+            PrintMessage(HUD_PRINTTALK, ply:GetName() .. " has initiated a rock the vote.")
+        end
+        ROCK_THE_VOTE_COUNT = ROCK_THE_VOTE_COUNT + 1
+
+        if ROCK_THE_VOTE_COUNT == requiredVotes then
+            --Rock the vote was successful, initiate a vote rocking.
+            PrintMessage(HUD_PRINTTALK, "Vote rocked! Starting map vote...")
+            MapVote.Start(30, false, 50, {"cs_", "ph_"})
+            return false
+        end
+
+        PrintMessage(HUD_PRINTTALK, ply:GetName() .. " rocked the vote. Require " .. requiredVotes - ROCK_THE_VOTE_COUNT .. " more votes.")
+        return false
+    end
+
+    return text
+end
+
+function checkRockTheVote()
+    local requiredVotes = math.ceil(#player.GetAll() * ROCK_THE_VOTE_PERCENTAGE)
+
+    if (ROCK_THE_VOTE_COUNT < requiredVotes) then
+        timer.Destroy("RockTheVoteTimer")
+        PrintMessage(HUD_PRINTTALK, "Rock the vote failed!")
+        ROCK_THE_VOTE_COUNT = 0
+        ROCK_THE_VOTE_LOCKED = true
+        timer.Create("RockTheVoteLockTimer", 30, 0, unlockRockTheVote )
+    end
+end
+
+function unlockRockTheVote()
+    ROCK_THE_VOTE_LOCKED = false
+    timer.Destroy("RockTheVoteLockTimer")
 end
 
 local function BroadcastPlayerDeath( ply )
@@ -224,11 +287,11 @@ hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Prop Angle Snap" )
 	util.AddNetworkString( "Prop Angle Snap BROADCAST" )
     util.AddNetworkString( "AutoTaunt Update" )
+    util.AddNetworkString( "Update Taunt Times" )
 end )
 
 --[[ Map Time ]]--
 function CreateAutoTauntTimer()
-	PrintMessage(HUD_PRINTTALK, "CREATING TIMER")
 	timer.Create("AutoTauntTimer",.1,0,function () runAutoTaunter() end)
 end
 hook.Add( "Initialize", "Set Map Time",  function ()
@@ -390,7 +453,7 @@ net.Receive( "Prop Angle Lock", function( len, ply )
 	net.Start( "Prop Angle Lock BROADCAST" )
 		net.WriteEntity( ply )
 		net.WriteBit( lockStatus )
-		net.WriteAngle( propAngle )
+		net.WriteAngle( propAngle) 
 	net.Broadcast()
 end )
 
@@ -469,22 +532,3 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 	if( ply:Team() == TEAM_PROPS ) then return false end
 	return true
 end
-
-hook.Add("OBJHUNT_RoundStart", "Restart the Timer", function ()
-	local players = team.GetPlayers(TEAM_PROPS)
-	for _,ply in pairs(players) do
-		ply.lastTauntTime = CurTime()
---        hook.Run("AutoTauntHUDRerender", ply)
-        net.Start( "AutoTaunt Update" )
-            net.WriteFloat( ply.lastTauntTime )
-            net.WriteFloat( OBJHUNT_AUTOTAUNT_INTERVAL + OBJHUNT_HIDE_TIME )
-	    net.Broadcast()
-	end
-
-	if timer.Exists("AutoTauntTimer") then
-		timer.Start("AutoTauntTimer")
-	else
-		CreateAutoTauntTimer()
-	end
-	
-end)

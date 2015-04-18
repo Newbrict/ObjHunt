@@ -1,3 +1,8 @@
+
+function GM:PlayerInitialSpawn( ply )
+	ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + OBJHUNT_HIDE_TIME
+end
+
 function runAutoTaunter()
 	local players = team.GetPlayers(TEAM_PROPS)
 	local pRange = TAUNT_MAX_PITCH - TAUNT_MIN_PITCH
@@ -9,10 +14,70 @@ function runAutoTaunter()
 		local taunt = table.Random( PROP_TAUNTS )
 
         if ply:Alive() && ply:Team() == TEAM_PROPS then
-            if ply.lastTauntTime != nil && (CurTime() - ply.lastTauntTime > OBJHUNT_AUTOTAUNT_INTERVAL)  then
-			    SendTaunt(ply, taunt, math.random()*pRange + TAUNT_MIN_PITCH )
+            if ply.lastTaunt != nil && (CurTime() - ply.lastTaunt > ply.autoTauntInterval)  then
+                local lastAutoTaunt = math.Round(CurTime() - ply.lastTaunt)
+
+                --Check if the lastAutoTaunt exceeds the autoTauntInterval
+                if (lastAutoTaunt > ply.autoTauntInterval) then
+                    --Send the Taunt to the player
+                    local pRange = TAUNT_MAX_PITCH - TAUNT_MIN_PITCH
+                    local pitch = math.random()*pRange + TAUNT_MIN_PITCH
+			        SendTaunt(ply, taunt, pitch )
+                elseif (math.mod(lastAutoTaunt,  5) == 0) then
+                    --Re-sync the connection 
+                    print( "Resyncing autotaunt" )
+                    net.Start( "AutoTaunt Update" )
+                        net.WriteUInt( ply:EntIndex(), 8 )
+                        net.WriteFloat( ply.lastTaunt )
+                        net.WriteFloat( ply.autoTauntInterval )
+	                net.Broadcast()
+                end
 		    end
         end
 	end
-	
 end
+
+net.Receive( "Taunt Selection", function()
+	local taunt = net.ReadString()
+	local pitch = net.ReadUInt( 8 )
+	local id = net.ReadUInt( 8 )
+	local ply = player.GetByID( id )
+
+	if not IsValid( ply ) then return end
+
+	if( ply == LocalPlayer() ) then
+        local soundDur = SoundDuration( taunt ) * (100/pitch)
+		ply.lastTaunt = CurTime()
+        ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + soundDur
+        hook.Run("AutoTauntHUDRerender")
+
+        net.Start( "Update Taunt Times" )
+            net.WriteUInt( id, 8 )
+            net.WriteFloat( ply.nextTaunt )
+            net.WriteFloat( ply.lastTaunt )
+            net.WriteFloat( ply.autoTauntInterval )
+	    net.SendToServer()
+	end
+
+end )
+
+hook.Add("OBJHUNT_RoundStart", "Restart the Timer", function ()
+	local players = team.GetPlayers(TEAM_PROPS)
+	for _,ply in pairs(players) do
+		ply.lastTaunt = CurTime()
+        ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + OBJHUNT_HIDE_TIME
+
+        net.Start( "AutoTaunt Update" )
+            net.WriteUInt( ply:EntIndex(), 8 )
+            net.WriteFloat( ply.lastTaunt )
+            net.WriteFloat( ply.autoTauntInterval )
+	    net.Broadcast()
+	end
+
+	if timer.Exists("AutoTauntTimer") then
+		timer.Start("AutoTauntTimer")
+	else
+		CreateAutoTauntTimer()
+	end
+	
+end)

@@ -10,7 +10,7 @@ PLAYER.DisplayName      = "Spectator"
 PLAYER.SetObserverMode  = 6
 PLAYER.CanUseFlashlight = false
 PLAYER.AvoidPlayers     = false
-PLAYER.lastTauntTime     = 0.0
+PLAYER.lastTaunt     = 0.0
 
 function PLAYER:Spawn()
 	self.Player:Spectate( OBS_MODE_ROAMING )

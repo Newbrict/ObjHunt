@@ -18,7 +18,7 @@ net.Receive( "Prop update", function( length )
 	local propHeight = tHitboxMax.z - tHitboxMin.z
 	LocalPlayer().propHeight = propHeight
 	LocalPlayer().lastPropChange = CurTime()
-    LocalPlayer().lastTauntTime = CurTime()
+    LocalPlayer().lastTaunt = CurTime()
 
 	-- initialize stuff here
 	if( LocalPlayer().firstProp ) then
@@ -31,7 +31,7 @@ net.Receive( "Prop update", function( length )
 		LocalPlayer().lastTauntDuration = 1
 		LocalPlayer().lastTauntPitch = 100
 		LocalPlayer().firstProp = false
-        LocalPlayer().autoTauntInterval = 30
+        LocalPlayer().autoTauntInterval = 60
 	end
 
 end )
@@ -107,18 +107,15 @@ net.Receive( "Taunt Selection", function()
 	local pitch = net.ReadUInt( 8 )
 	local id = net.ReadUInt( 8 )
 	local ply = player.GetByID( id )
-    local lastTauntTime = net.ReadFloat( 8 )
-    local autoTauntInterval = net.ReadFloat( 8 )
 
 	if not IsValid( ply ) then return end
 
 	if( ply == LocalPlayer() ) then
-		ply.nextTaunt = CurTime() + ( SoundDuration( taunt ) * (100/pitch) )
+        local soundDur = SoundDuration( taunt ) * (100/pitch)
+		ply.nextTaunt = CurTime() + soundDur
 		ply.lastTaunt = CurTime()
 		ply.lastTauntPitch = pitch
-		ply.lastTauntDuration = SoundDuration( taunt ) * (100/pitch)
-        ply.lastTauntTime = lastTauntTime
-        ply.autoTauntInterval = autoTauntInterval
+		ply.lastTauntDuration = soundDur
 	end
 
 	local s = Sound(taunt)
@@ -139,11 +136,14 @@ net.Receive( "Taunt Selection", function()
 end )
 
 net.Receive( "AutoTaunt Update", function()
-    local lastTauntTime = net.ReadFloat( 8 )
-    local autoTauntInterval = net.ReadFloat( 8 )
+    local id = net.ReadUInt( 8 )
+    local ply = player.GetByID( id )
+    local lastTaunt = net.ReadFloat()
+    local autoTauntInterval = net.ReadFloat()
     if( ply == LocalPlayer() ) then
-        ply.lastTauntTime = lastTauntTime
+        ply.lastTaunt = lastTaunt
         ply.autoTauntInterval = autoTauntInterval
+        hook.Add("AutoTauntHUDRerender")
 	end
 end)
 

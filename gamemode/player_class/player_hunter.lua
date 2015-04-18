@@ -15,7 +15,7 @@ PLAYER.TeammateNoCollide = true
 PLAYER.MaxHealth         = 100
 PLAYER.DuckSpeed         = 0.1
 PLAYER.UnDuckSpeed       = 0.1
-PLAYER.lastTauntTime     = 0.0
+PLAYER.lastTaunt     = 0.0
 
 function PLAYER:Loadout()
 
