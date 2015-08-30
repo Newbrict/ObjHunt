@@ -25,7 +25,6 @@ function runAutoTaunter()
 			        SendTaunt(ply, taunt, pitch )
                 elseif (math.mod(lastAutoTaunt,  5) == 0) then
                     --Re-sync the connection 
-                    print( "Resyncing autotaunt" )
                     net.Start( "AutoTaunt Update" )
                         net.WriteUInt( ply:EntIndex(), 8 )
                         net.WriteFloat( ply.lastTaunt )
@@ -37,35 +36,36 @@ function runAutoTaunter()
 	end
 end
 
-net.Receive( "Taunt Selection", function()
-	local taunt = net.ReadString()
-	local pitch = net.ReadUInt( 8 )
-	local id = net.ReadUInt( 8 )
-	local ply = player.GetByID( id )
+--net.Receive( "Taunt Selection", function()
+--	local taunt = net.ReadString()
+--	local pitch = net.ReadUInt( 8 )
+--	local id = net.ReadUInt( 8 )
+--	local ply = player.GetByID( id )
 
-	if not IsValid( ply ) then return end
+--	if not IsValid( ply ) then return end
 
-	if( ply == LocalPlayer() ) then
-        local soundDur = SoundDuration( taunt ) * (100/pitch)
-		ply.lastTaunt = CurTime()
-        ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + soundDur
-        hook.Run("AutoTauntHUDRerender")
+--	if( ply == LocalPlayer() ) then
+--        local soundDur = SoundDuration( taunt ) * (100/pitch)
+--        ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + soundDur
+--		ply.lastTaunt = CurTime()
+--        hook.Run("AutoTauntHUDRerender")
 
-        net.Start( "Update Taunt Times" )
-            net.WriteUInt( id, 8 )
-            net.WriteFloat( ply.nextTaunt )
-            net.WriteFloat( ply.lastTaunt )
-            net.WriteFloat( ply.autoTauntInterval )
-	    net.SendToServer()
-	end
+--        net.Start( "Update Taunt Times" )
+--            net.WriteUInt( id, 8 )
+--            net.WriteFloat( ply.nextTaunt )
+--            net.WriteFloat( ply.lastTaunt )
+--            net.WriteFloat( ply.autoTauntInterval )
+--	    net.SendToServer()
+--	end
 
-end )
+--end )
 
 hook.Add("OBJHUNT_RoundStart", "Restart the Timer", function ()
 	local players = team.GetPlayers(TEAM_PROPS)
 	for _,ply in pairs(players) do
-		ply.lastTaunt = CurTime()
+
         ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + OBJHUNT_HIDE_TIME
+		ply.lastTaunt = CurTime()
 
         net.Start( "AutoTaunt Update" )
             net.WriteUInt( ply:EntIndex(), 8 )

@@ -27,11 +27,11 @@ net.Receive( "Prop update", function( length )
 		LocalPlayer().wantAngleSnap = false
 		LocalPlayer().lastPropChange = 0
 		LocalPlayer().nextTaunt = 0
-		LocalPlayer().lastTaunt = 0
+		LocalPlayer().lastTaunt = CurTime()
 		LocalPlayer().lastTauntDuration = 1
 		LocalPlayer().lastTauntPitch = 100
 		LocalPlayer().firstProp = false
-        LocalPlayer().autoTauntInterval = 60
+        LocalPlayer().autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + OBJHUNT_HIDE_TIME
 	end
 
 end )
@@ -39,9 +39,10 @@ end )
 net.Receive( "Reset Prop", function( length )
 	-- taunt default
 	LocalPlayer().nextTaunt = 0
-	LocalPlayer().lastTaunt = 0
+	LocalPlayer().lastTaunt = CurTime()
 	LocalPlayer().lastTauntDuration = 1
 	LocalPlayer().lastTauntPitch = 100
+    LocalPlayer().autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + OBJHUNT_HIDE_TIME
 
 	LocalPlayer():ResetHull()
 	LocalPlayer().firstProp       = true
@@ -116,6 +117,14 @@ net.Receive( "Taunt Selection", function()
 		ply.lastTaunt = CurTime()
 		ply.lastTauntPitch = pitch
 		ply.lastTauntDuration = soundDur
+        ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + soundDur
+
+        net.Start( "Update Taunt Times" )
+            net.WriteUInt( id, 8 )
+            net.WriteFloat( ply.nextTaunt )
+            net.WriteFloat( ply.lastTaunt )
+            net.WriteFloat( ply.autoTauntInterval )
+	    net.SendToServer()
 	end
 
 	local s = Sound(taunt)
@@ -143,7 +152,7 @@ net.Receive( "AutoTaunt Update", function()
     if( ply == LocalPlayer() ) then
         ply.lastTaunt = lastTaunt
         ply.autoTauntInterval = autoTauntInterval
-        hook.Add("AutoTauntHUDRerender")
+        hook.Run("AutoTauntHUDRerender")
 	end
 end)
 

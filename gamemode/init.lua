@@ -27,7 +27,6 @@ function GM:ShowHelp( ply )
 	net.Send( ply )
 end
 
-
 net.Receive("Class Selection", function( len, ply )
 	local chosen = net.ReadUInt(32)
 	local playerTable = {}
@@ -73,10 +72,11 @@ function SendTaunt( ply, taunt, pitch )
     local soundDur = SoundDuration( taunt ) * (100/pitch)
 	ply.nextTaunt = CurTime() + soundDur
 	ply.lastTaunt = CurTime()
-    ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL
+    ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + soundDur -- Offset the interval by the sound dur
 
     local filter = RecipientFilter();
     filter:AddPlayer( ply );
+    print(ply:GetName() .. "  LastTaunt?:" .. ply.lastTaunt .. "  Interval?:" .. ply.autoTauntInterval)
  
 	net.Start( "Taunt Selection" )
 		net.WriteString( taunt )

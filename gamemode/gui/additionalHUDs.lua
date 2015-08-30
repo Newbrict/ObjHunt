@@ -29,46 +29,37 @@ function draw.Circle( x, y, radius, seg )
 	surface.DrawPoly( cir )
 end
 
-function loadAdditionalHUDs()
-    
+function loadExtraHuds()
+
     --Loads the auto-taunt HUD
-    autoTauntHUD()
+    autotauntHud()
 
     --Loads the allied players HUD
-    alliedPlayersHUD()
+--    alliedPlayersHUD()
 
 end
 
-function validateProp()
-    if( !ply:IsValid() ) then return false end
-    if( !ply:Alive()  ) then return false end
-	if ( ply:Team() != TEAM_PROPS ) then return false end
-
-    return true
+function validateProp(ply)
+    return (ply:IsValid() && ply:Alive() && ply:Team() == TEAM_PROPS )
 end
 
-function autoTauntHUD(ply)
+function autotauntHud()
 
-    if ply == nil then
-	    ply = LocalPlayer()
-    end
-
+	local ply = LocalPlayer()
 	local padding = 60
     local paddingL = 100
 
     -- Check if the player is valid, alive, and is a prop
-	if( !ply:IsValid() ) then return end
-    if( !ply:Alive()  ) then return end
-	if ( ply:Team() != TEAM_PROPS ) then return end
+	if ( !validateProp(ply) ) then return end
 
     local radius = 50
     local timer = 30.00
     local timerRadius = 0
-    local players = team.GetPlayers(TEAM_PROPS)
 
 	if ply.lastTaunt != nil then
-		timer = math.Round(ply.autoTauntInterval - (CurTime() - ply.lastTaunt), 0)
-        timerRadius = ((CurTime() - ply.lastTaunt)/ply.autoTauntInterval) * 50
+        local tDiff = CurTime() - ply.lastTaunt
+		timer = math.Round(ply.autoTauntInterval - tDiff, 0)
+        timerRadius = (tDiff/ply.autoTauntInterval) * 50
 	end
 
     local x = surface.ScreenWidth() - paddingL
@@ -103,6 +94,23 @@ function autoTauntHUD(ply)
 
 end
 
+local function getViewEnt(ply)
+	-- this needs to be here otherwise some people get errors for some unknown reason
+	if( ply.viewOrigin == nil || ply.wantThirdPerson == nil ) then return end
+
+	local trace = {}
+	trace.mask = MASK_SHOT_HULL
+	trace.start = ply.viewOrigin
+	if( ply.wantThirdPerson ) then
+		trace.endpos = trace.start + ply:GetAngles():Forward() * (THIRDPERSON_DISTANCE+PROP_SELECT_DISTANCE)
+	else
+		trace.endpos = trace.start + ply:GetAngles():Forward() * (PROP_SELECT_DISTANCE)
+	end
+	trace.filter = { ply:GetProp() }
+	tr = util.TraceLine(trace)
+	return tr.Entity
+end
+
 function alliedPlayersHUD()
 
     local ply = LocalPlayer()
@@ -111,13 +119,13 @@ function alliedPlayersHUD()
     if( !ply:IsValid() || !ply:Alive() ) then return end
 
     -- Get this player's allies
-    local allies = ply:Team().GetPlayers()
+    local allies = team.GetPlayers(ply:Team())
 
     -- Loop through all of the allies
     for _,ally in pairs(allies) do
-		halo.Add(ally, brightBlue, 1, 1, 2, false, true)
+		halo.Add({getViewEnt(ally)}, brightBlue, 1, 1, 2, false, true)
 	end
 end
 
-hook.Add("HUDPaint", "Load Additional HUD", loadAdditionalHUDs )
-hook.Add("AutoTauntHUDRerender", "Re-render Auto Taunt HUD", autoTauntHUD )
+hook.Add("HUDPaint", "Load Additional HUDS", loadExtraHuds )
+hook.Add("AutoTauntHUDRerender", "Re-render Auto Taunt HUD", autotauntHud )
