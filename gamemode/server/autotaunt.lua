@@ -3,7 +3,7 @@ function GM:PlayerInitialSpawn( ply )
 	ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + OBJHUNT_HIDE_TIME
 end
 
-function runAutoTaunter()
+local function runAutoTaunter()
 	local players = team.GetPlayers(TEAM_PROPS)
 	local pRange = TAUNT_MAX_PITCH - TAUNT_MIN_PITCH
 
@@ -59,6 +59,15 @@ end
 --	end
 
 --end )
+
+function CreateAutoTauntTimer()
+	timer.Create("AutoTauntTimer",.1,0,function () runAutoTaunter() end)
+end
+
+hook.Add( "Initialize", "Set Map Time",  function ()
+	mapStartTime = os.time()
+	CreateAutoTauntTimer()
+end)
 
 hook.Add("OBJHUNT_RoundStart", "Restart the Timer", function ()
 	local players = team.GetPlayers(TEAM_PROPS)

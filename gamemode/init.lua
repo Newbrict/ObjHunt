@@ -246,13 +246,6 @@ hook.Add( "Initialize", "Precache all network strings", function()
 end )
 
 --[[ Map Time ]]--
-function CreateAutoTauntTimer()
-	timer.Create("AutoTauntTimer",.1,0,function () runAutoTaunter() end)
-end
-hook.Add( "Initialize", "Set Map Time",  function ()
-	mapStartTime = os.time()
-	CreateAutoTauntTimer()
-end)
 
 --[[ Door Exploit fix ]]--
 function GM:PlayerUse( ply, ent )
