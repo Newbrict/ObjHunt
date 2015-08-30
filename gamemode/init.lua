@@ -147,51 +147,6 @@ function GM:PlayerShouldTakeDamage( victim, attacker )
 	return false
 end
 
-
-function GM:PlayerSay(ply, text, teamChat)
-	if (string.sub( text, 1, 4 ) == "/rtv") then
-        local requiredVotes = math.ceil(#player.GetAll() * ROCK_THE_VOTE_PERCENTAGE)
-
-        if ROCK_THE_VOTE_LOCKED then
-            ply:PrintMessage(HUD_PRINTTALK, "The vote cannot be rocked for the next " .. math.Round(timer.TimeLeft("RockTheVoteLockTimer")) .. " seconds")
-            return false
-        elseif ROCK_THE_VOTE_COUNT == 0 then
-            timer.Create("RockTheVoteTimer", 30, 0, checkRockTheVote )
-            PrintMessage(HUD_PRINTTALK, ply:GetName() .. " has initiated a rock the vote.")
-        end
-        ROCK_THE_VOTE_COUNT = ROCK_THE_VOTE_COUNT + 1
-
-        if ROCK_THE_VOTE_COUNT == requiredVotes then
-            --Rock the vote was successful, initiate a vote rocking.
-            PrintMessage(HUD_PRINTTALK, "Vote rocked! Starting map vote...")
-            MapVote.Start(30, false, 50, {"cs_", "ph_"})
-            return false
-        end
-
-        PrintMessage(HUD_PRINTTALK, ply:GetName() .. " rocked the vote. Require " .. requiredVotes - ROCK_THE_VOTE_COUNT .. " more votes.")
-        return false
-    end
-
-    return text
-end
-
-function checkRockTheVote()
-    local requiredVotes = math.ceil(#player.GetAll() * ROCK_THE_VOTE_PERCENTAGE)
-
-    if (ROCK_THE_VOTE_COUNT < requiredVotes) then
-        timer.Destroy("RockTheVoteTimer")
-        PrintMessage(HUD_PRINTTALK, "Rock the vote failed!")
-        ROCK_THE_VOTE_COUNT = 0
-        ROCK_THE_VOTE_LOCKED = true
-        timer.Create("RockTheVoteLockTimer", 30, 0, unlockRockTheVote )
-    end
-end
-
-function unlockRockTheVote()
-    ROCK_THE_VOTE_LOCKED = false
-    timer.Destroy("RockTheVoteLockTimer")
-end
-
 local function BroadcastPlayerDeath( ply )
 	net.Start( "Player Death" )
 		-- the player who died, so sad, too bad.
