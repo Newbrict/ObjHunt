@@ -93,7 +93,7 @@ local function getViewEnt(ply)
 	else
 		trace.endpos = trace.start + ply:GetAngles():Forward() * (PROP_SELECT_DISTANCE)
 	end
-	trace.filter = { ply:GetProp() }
+	trace.filter = { ply:GetProp(), ply }
 	tr = util.TraceLine(trace)
 	return tr.Entity
 end
