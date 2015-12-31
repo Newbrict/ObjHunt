@@ -68,7 +68,7 @@ local function tauntSelection()
 		tauntList:SetSize( width, height )
 		tauntList:SetPos( padding, padding )
 		tauntList:AddColumn( "Select A Taunt" )
-		for k, v in pairs( TAUNTS ) do
+		for k, v in orderedPairs( TAUNTS ) do
 			tauntList:AddLine( k, v )
 		end
 		tauntList.OnClickLine = function(parent, line, isSelected)
