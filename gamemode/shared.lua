@@ -3,6 +3,8 @@ GM.Author  = "Newbrict, TheBerryBeast, Zombie"
 GM.Email   = "N/A"
 GM.Website = "N/A"
 
+GM.BaseDir = "ObjHunt/gamemode/"
+
 --[[ Add all the files on server/client ]]--
 local resources = {}
 resources["server"] = { "server" }
@@ -12,7 +14,7 @@ resources["client"] = { "client", "gui" }
 local function resourceLoader(dirs, includeFunc)
 	for _, addDir in pairs(dirs) do
 		print( "-- " .. addDir )
-		local csFiles, _ = file.Find( "ObjHunt/gamemode/"..addDir.."/*", "LUA" )
+		local csFiles, _ = file.Find( GM.BaseDir..addDir.."/*", "LUA" )
 		for _, csFile in ipairs(csFiles) do
 		   	includeFunc( addDir.."/"..csFile )
 			print( " + " .. csFile )
@@ -36,6 +38,11 @@ else
 	print( "Adding Client Side Lua Files..." )
 	resourceLoader( resources["shared"], include )
 	resourceLoader( resources["client"], include )
+end
+
+print( "Adding Config Of Current Map..." )
+if file.Exists( GM.BaseDir.."maps/"..game.GetMap()..".lua", "LUA" ) then
+	include( GM.BaseDir.."maps/"..game.GetMap()..".lua" )
 end
 
 function playerCanBeEnt( ply, ent )
