@@ -27,13 +27,16 @@ if SERVER then
 	resourceLoader( resources["shared"], function(x) include(x) AddCSLuaFile(x) end )
 	resourceLoader( resources["server"], include )
 	resourceLoader( resources["client"], AddCSLuaFile )
+	resourceLoader( resources["maps"], AddCSLuaFile )
 	-- add the taunts in
-	for _, t in pairs(PROP_TAUNTS) do
-		resource.AddFile("sound/"..t)
-	end
-	for _, t in pairs(HUNTER_TAUNTS) do
-		resource.AddFile("sound/"..t)
-	end
+	for _,t in pairs(PROP_TAUNTS) do
+		if file.Exists( "sound/"..t, "MOD" ) then
+			resource.AddSingleFile("sound/"..t)
+		end
+	for _,t in pairs(HUNTER_TAUNTS) do
+		if file.Exists( "sound/"..t, "MOD" ) then
+			resource.AddSingleFile("sound/"..t)
+		end
 else
 	print( "Adding Client Side Lua Files..." )
 	resourceLoader( resources["shared"], include )
