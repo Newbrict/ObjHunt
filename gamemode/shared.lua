@@ -33,10 +33,12 @@ if SERVER then
 		if file.Exists( "sound/"..t, "MOD" ) then
 			resource.AddSingleFile("sound/"..t)
 		end
+	end
 	for _,t in pairs(HUNTER_TAUNTS) do
 		if file.Exists( "sound/"..t, "MOD" ) then
 			resource.AddSingleFile("sound/"..t)
 		end
+	end
 else
 	print( "Adding Client Side Lua Files..." )
 	resourceLoader( resources["shared"], include )
