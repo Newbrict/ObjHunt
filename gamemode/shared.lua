@@ -3,6 +3,8 @@ GM.Author  = "Newbrict, TheBerryBeast, Zombie"
 GM.Email   = "N/A"
 GM.Website = "N/A"
 
+GM.BaseDir = "ObjHunt/gamemode/"
+
 --[[ Add all the files on server/client ]]--
 local resources = {}
 resources["server"] = { "server" }
@@ -12,7 +14,7 @@ resources["client"] = { "client", "gui" }
 local function resourceLoader(dirs, includeFunc)
 	for _, addDir in pairs(dirs) do
 		print( "-- " .. addDir )
-		local csFiles, _ = file.Find( "ObjHunt/gamemode/"..addDir.."/*", "LUA" )
+		local csFiles, _ = file.Find( GM.BaseDir..addDir.."/*", "LUA" )
 		for _, csFile in ipairs(csFiles) do
 		   	includeFunc( addDir.."/"..csFile )
 			print( " + " .. csFile )
@@ -25,17 +27,25 @@ if SERVER then
 	resourceLoader( resources["shared"], function(x) include(x) AddCSLuaFile(x) end )
 	resourceLoader( resources["server"], include )
 	resourceLoader( resources["client"], AddCSLuaFile )
+	resourceLoader( resources["maps"], AddCSLuaFile )
 	-- add the taunts in
-	for _, t in pairs(PROP_TAUNTS) do
-		resource.AddFile("sound/"..t)
-	end
-	for _, t in pairs(HUNTER_TAUNTS) do
-		resource.AddFile("sound/"..t)
-	end
+	for _,t in pairs(PROP_TAUNTS) do
+		if file.Exists( "sound/"..t, "MOD" ) then
+			resource.AddSingleFile("sound/"..t)
+		end
+	for _,t in pairs(HUNTER_TAUNTS) do
+		if file.Exists( "sound/"..t, "MOD" ) then
+			resource.AddSingleFile("sound/"..t)
+		end
 else
 	print( "Adding Client Side Lua Files..." )
 	resourceLoader( resources["shared"], include )
 	resourceLoader( resources["client"], include )
+end
+
+print( "Adding Config Of Current Map..." )
+if file.Exists( GM.BaseDir.."maps/"..game.GetMap()..".lua", "LUA" ) then
+	include( GM.BaseDir.."maps/"..game.GetMap()..".lua" )
 end
 
 function playerCanBeEnt( ply, ent )
