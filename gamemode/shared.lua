@@ -27,25 +27,29 @@ if SERVER then
 	resourceLoader( resources["shared"], function(x) include(x) AddCSLuaFile(x) end )
 	resourceLoader( resources["server"], include )
 	resourceLoader( resources["client"], AddCSLuaFile )
-	resourceLoader( resources["maps"], AddCSLuaFile )
 	-- add the taunts in
 	for _,t in pairs(PROP_TAUNTS) do
 		if file.Exists( "sound/"..t, "MOD" ) then
 			resource.AddSingleFile("sound/"..t)
 		end
+	end
 	for _,t in pairs(HUNTER_TAUNTS) do
 		if file.Exists( "sound/"..t, "MOD" ) then
 			resource.AddSingleFile("sound/"..t)
 		end
+	end
 else
 	print( "Adding Client Side Lua Files..." )
 	resourceLoader( resources["shared"], include )
 	resourceLoader( resources["client"], include )
 end
 
-print( "Adding Config Of Current Map..." )
-if file.Exists( GM.BaseDir.."maps/"..game.GetMap()..".lua", "LUA" ) then
-	include( GM.BaseDir.."maps/"..game.GetMap()..".lua" )
+if file.Exists( GM.BaseDir .. "maps/" .. game.GetMap() .. ".lua", "LUA" ) then
+	print( "Adding Config Of Current Map..." )
+	print( "-- maps" )
+	print( " + " .. game.GetMap() .. ".lua" )
+	include( "maps/" .. game.GetMap() .. ".lua" )
+	if SERVER then AddCSLuaFile( "maps/"..game.GetMap()..".lua" ) end
 end
 
 function playerCanBeEnt( ply, ent )

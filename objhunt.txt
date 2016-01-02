@@ -1,9 +1,9 @@
 "objhunt"
 {
-	"base		"base"
-	"title		"Obj Hunt"
-	"maps		"^ph_|^de_|^cs_"
-	
+	"base"		"base"
+	"title"		"Obj Hunt"
+	"maps"		"^ph_|^de_|^cs_"
+
 	"menusystem"	"1"
 	"workshopid"	"302390067"
 }
