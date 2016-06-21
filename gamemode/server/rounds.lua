@@ -58,6 +58,7 @@ local function WaitRound()
 	-- make sure we have at least one player on each team
 	local hunters = team.GetPlayers(TEAM_HUNTERS)
 	local props = team.GetPlayers(TEAM_PROPS)
+
 	if( #props == 0 || #hunters == 0 ) then return end
 
 	round.state = ROUND_START

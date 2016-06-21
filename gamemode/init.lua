@@ -1,12 +1,15 @@
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
+include( "server/autotaunt.lua" )
 
 function GM:PlayerInitialSpawn( ply )
 	ply:SetTeam( TEAM_SPECTATOR )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
 	ply:SetCustomCollisionCheck( true )
 	ply.nextTaunt = 0
+	ply.lastTaunt = CurTime()
+	ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + OBJHUNT_HIDE_TIME
 	net.Start( "Class Selection" )
 		-- Just used as a hook
 	net.Send( ply )
@@ -24,7 +27,6 @@ function GM:ShowHelp( ply )
 		-- Just used as a hook
 	net.Send( ply )
 end
-
 
 net.Receive("Class Selection", function( len, ply )
 	local chosen = net.ReadUInt(32)
@@ -69,14 +71,34 @@ function SendTaunt( ply, taunt, pitch )
 	if( ply:Team() == TEAM_PROPS && !table.HasValue( PROP_TAUNTS, taunt ) ) then return end
 	if( ply:Team() == TEAM_HUNTERS && !table.HasValue( HUNTER_TAUNTS, taunt ) ) then return end
 
-	ply.nextTaunt = CurTime() + ( SoundDuration( taunt ) * (100/pitch) )
+	local soundDur = SoundDuration( taunt ) * (100/pitch)
+	ply.nextTaunt = CurTime() + soundDur
+	ply.lastTaunt = CurTime()
+	ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + soundDur -- Offset the interval by the sound dur
+
+	local filter = RecipientFilter();
+	filter:AddPlayer( ply );
 
 	net.Start( "Taunt Selection" )
 		net.WriteString( taunt )
 		net.WriteUInt( pitch, 8 )
 		net.WriteUInt( ply:EntIndex(), 8 )
+		net.WriteFloat( ply.lastTaunt )
+		net.WriteFloat( ply.autoTauntInterval )
 	net.Broadcast()
 end
+
+net.Receive( "Update Taunt Times", function() 
+	local id = net.ReadUInt( 8 )
+	local ply = player.GetByID( id )
+	local nextTaunt = net.ReadFloat()
+	local lastTaunt = net.ReadFloat()
+	local autoTauntInterval = net.ReadFloat()
+
+	ply.nextTaunt = nextTaunt
+	ply.lastTaunt = lastTaunt
+	ply.autoTauntInterval = autoTauntInterval
+end)
 
 function GM:ShowSpare1( ply )
 	local TAUNTS
@@ -216,12 +238,11 @@ hook.Add( "Initialize", "Precache all network strings", function()
 	util.AddNetworkString( "Prop Angle Lock BROADCAST" )
 	util.AddNetworkString( "Prop Angle Snap" )
 	util.AddNetworkString( "Prop Angle Snap BROADCAST" )
+	util.AddNetworkString( "AutoTaunt Update" )
+	util.AddNetworkString( "Update Taunt Times" )
 end )
 
 --[[ Map Time ]]--
-hook.Add( "Initialize", "Set Map Time", function()
-	mapStartTime = os.time()
-end )
 
 --[[ Door Exploit fix ]]--
 function GM:PlayerUse( ply, ent )
@@ -427,8 +448,8 @@ function GM:PlayerSelectSpawn( ply )
 	local spawns = team.GetSpawnPoints( ply:Team() )
 	if( !spawns ) then return false end
 
-    local ret, _ = table.Random( spawns )
-    return ret
+	local ret, _ = table.Random( spawns )
+	return ret
 end
 
 function GM:PlayerCanSeePlayersChat( text, teamOnly, listener, speaker )

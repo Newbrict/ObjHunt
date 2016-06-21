@@ -129,7 +129,7 @@ local function DrawContextMenu()
 
 			surface.SetFont( "Toggle Buttons" )
 			surface.SetTextColor( Color( 255,255,255,255 ) )
-			local text = "Angle Snaping"
+			local text = "Angle Snapping"
 			local tw, th = surface.GetTextSize( text )
 			surface.SetTextPos( w/2 - tw/2, h/2 - th/2 )
 			surface.DrawText( text )
