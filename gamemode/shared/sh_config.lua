@@ -66,6 +66,12 @@ PROP_DEFAULT_DENSITY = 0.0025879917184265
 -- the maximum distance from the player the camera will render when in third person
 THIRDPERSON_DISTANCE = 100
 
+-- this enables TEAM_HUNTERS to pick up props
+OBJHUNT_TEAM_HUNTERS_CAN_MOVE_PROPS = true
+
+-- this enables TEAM_PROPS to pick up props
+OBJHUNT_TEAM_PROPS_CAN_MOVE_PROPS = true
+
 -- entities that are capable of being chosen by props
 USABLE_PROP_ENTITIES = {
 	"prop_physics",

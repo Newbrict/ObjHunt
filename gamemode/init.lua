@@ -59,6 +59,7 @@ net.Receive("Class Selection", function( len, ply )
 	PrintMessage( HUD_PRINTTALK, ply:Nick().." moved from "..TeamString(oldTeam) .. " to ".. TeamString(ply:Team()))
 	RemovePlayerProp( ply )
 	ply:KillSilent()
+	--ply:Spawn()
 end )
 
 -- [[ Taunts ]] --
@@ -457,6 +458,6 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 end
 
 function GM:AllowPlayerPickup(ply, ent)
-	if( ply:Team() != TEAM_HUNTERS ) then return false end
-	return true
+	return (OBJHUNT_TEAM_HUNTERS_CAN_MOVE_PROPS and ply:Team() == TEAM_HUNTERS) or
+		   (OBJHUNT_TEAM_PROPS_CAN_MOVE_PROPS   and ply:Team() == TEAM_PROPS)
 end
