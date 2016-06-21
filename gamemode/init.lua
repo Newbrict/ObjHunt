@@ -1,12 +1,14 @@
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
+include( "server/autotaunt.lua" )
 
 function GM:PlayerInitialSpawn( ply )
 	ply:SetTeam( TEAM_SPECTATOR )
 	player_manager.SetPlayerClass( ply, "player_spectator" )
 	ply:SetCustomCollisionCheck( true )
 	ply.nextTaunt = 0
+	ply.lastTaunt = CurTime()
 	net.Start( "Class Selection" )
 		-- Just used as a hook
 	net.Send( ply )
@@ -24,7 +26,6 @@ function GM:ShowHelp( ply )
 		-- Just used as a hook
 	net.Send( ply )
 end
-
 
 net.Receive("Class Selection", function( len, ply )
 	local chosen = net.ReadUInt(32)
@@ -69,14 +70,38 @@ function SendTaunt( ply, taunt, pitch )
 	if( ply:Team() == TEAM_PROPS && !table.HasValue( PROP_TAUNTS, taunt ) ) then return end
 	if( ply:Team() == TEAM_HUNTERS && !table.HasValue( HUNTER_TAUNTS, taunt ) ) then return end
 
-	ply.nextTaunt = CurTime() + ( SoundDuration( taunt ) * (100/pitch) )
+    local soundDur = SoundDuration( taunt ) * (100/pitch)
+	ply.nextTaunt = CurTime() + soundDur
+	ply.lastTaunt = CurTime()
+    ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + soundDur -- Offset the interval by the sound dur
 
+    local filter = RecipientFilter();
+    filter:AddPlayer( ply );
+    print(ply:GetName() .. "  LastTaunt?:" .. ply.lastTaunt .. "  Interval?:" .. ply.autoTauntInterval)
+ 
 	net.Start( "Taunt Selection" )
 		net.WriteString( taunt )
 		net.WriteUInt( pitch, 8 )
 		net.WriteUInt( ply:EntIndex(), 8 )
+        net.WriteFloat( ply.lastTaunt )
+        net.WriteFloat( ply.autoTauntInterval )
 	net.Broadcast()
 end
+
+net.Receive( "Update Taunt Times", function() 
+	local id = net.ReadUInt( 8 )
+	local ply = player.GetByID( id )
+    local nextTaunt = net.ReadFloat()
+    local lastTaunt = net.ReadFloat()
+    local autoTauntInterval = net.ReadFloat()
+
+    ply.nextTaunt = nextTaunt
+    ply.lastTaunt = lastTaunt
+    ply.autoTauntInterval = autoTauntInterval
+
+    print( ply:GetName "'s AutoTaunt Interval:" .. ply.autoTauntInterval)
+    print( ply:GetName "'s Last  Taunt Time:" .. ply.lastTaunt)
+end)
 
 function GM:ShowSpare1( ply )
 	local TAUNTS
@@ -107,6 +132,7 @@ function GM:PlayerSetModel( ply )
 		-- default
 		ply:SetViewOffset( Vector(0,0,64) )
 	elseif( class == "player_prop" ) then
+        print( "Setting as Prop" )
 		ply:SetModel( TEAM_PROPS_DEFAULT_MODEL )
 
 		-- this fixes ent culling when head in ceiling
@@ -202,26 +228,25 @@ end )
 
 --[[ All network strings should be precached HERE ]]--
 hook.Add( "Initialize", "Precache all network strings", function()
-	util.AddNetworkString( "Clear Round State" )
-	util.AddNetworkString( "Death Notice" )
-	util.AddNetworkString( "Class Selection" )
-	util.AddNetworkString( "Taunt Selection" )
-	util.AddNetworkString( "Help" )
-	util.AddNetworkString( "Round Update" )
-	util.AddNetworkString( "Player Death" )
-	util.AddNetworkString( "Prop Update" )
-	util.AddNetworkString( "Reset Prop" )
-	util.AddNetworkString( "Selected Prop" )
-	util.AddNetworkString( "Prop Angle Lock" )
-	util.AddNetworkString( "Prop Angle Lock BROADCAST" )
-	util.AddNetworkString( "Prop Angle Snap" )
-	util.AddNetworkString( "Prop Angle Snap BROADCAST" )
+    util.AddNetworkString( "Clear Round State" )
+    util.AddNetworkString( "Death Notice" )
+    util.AddNetworkString( "Class Selection" )
+    util.AddNetworkString( "Taunt Selection" )
+    util.AddNetworkString( "Help" )
+    util.AddNetworkString( "Round Update" )
+    util.AddNetworkString( "Player Death" )
+    util.AddNetworkString( "Prop Update" )
+    util.AddNetworkString( "Reset Prop" )
+    util.AddNetworkString( "Selected Prop" )
+    util.AddNetworkString( "Prop Angle Lock" )
+    util.AddNetworkString( "Prop Angle Lock BROADCAST" )
+    util.AddNetworkString( "Prop Angle Snap" )
+    util.AddNetworkString( "Prop Angle Snap BROADCAST" )
+    util.AddNetworkString( "AutoTaunt Update" )
+    util.AddNetworkString( "Update Taunt Times" )
 end )
 
 --[[ Map Time ]]--
-hook.Add( "Initialize", "Set Map Time", function()
-	mapStartTime = os.time()
-end )
 
 --[[ Door Exploit fix ]]--
 function GM:PlayerUse( ply, ent )
@@ -377,7 +402,7 @@ net.Receive( "Prop Angle Lock", function( len, ply )
 	net.Start( "Prop Angle Lock BROADCAST" )
 		net.WriteEntity( ply )
 		net.WriteBit( lockStatus )
-		net.WriteAngle( propAngle )
+		net.WriteAngle( propAngle ) 
 	net.Broadcast()
 end )
 

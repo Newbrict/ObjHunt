@@ -18,6 +18,7 @@ net.Receive( "Prop update", function( length )
 	local propHeight = tHitboxMax.z - tHitboxMin.z
 	LocalPlayer().propHeight = propHeight
 	LocalPlayer().lastPropChange = CurTime()
+    LocalPlayer().lastTaunt = CurTime()
 
 	-- initialize stuff here
 	if( LocalPlayer().firstProp ) then
@@ -26,10 +27,11 @@ net.Receive( "Prop update", function( length )
 		LocalPlayer().wantAngleSnap = false
 		LocalPlayer().lastPropChange = 0
 		LocalPlayer().nextTaunt = 0
-		LocalPlayer().lastTaunt = 0
+		LocalPlayer().lastTaunt = CurTime()
 		LocalPlayer().lastTauntDuration = 1
 		LocalPlayer().lastTauntPitch = 100
 		LocalPlayer().firstProp = false
+        LocalPlayer().autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + OBJHUNT_HIDE_TIME
 	end
 
 end )
@@ -37,9 +39,10 @@ end )
 net.Receive( "Reset Prop", function( length )
 	-- taunt default
 	LocalPlayer().nextTaunt = 0
-	LocalPlayer().lastTaunt = 0
+	LocalPlayer().lastTaunt = CurTime()
 	LocalPlayer().lastTauntDuration = 1
 	LocalPlayer().lastTauntPitch = 100
+    LocalPlayer().autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + OBJHUNT_HIDE_TIME
 
 	LocalPlayer():ResetHull()
 	LocalPlayer().firstProp       = true
@@ -109,10 +112,19 @@ net.Receive( "Taunt Selection", function()
 	if not IsValid( ply ) then return end
 
 	if( ply == LocalPlayer() ) then
-		ply.nextTaunt = CurTime() + ( SoundDuration( taunt ) * (100/pitch) )
+        local soundDur = SoundDuration( taunt ) * (100/pitch)
+		ply.nextTaunt = CurTime() + soundDur
 		ply.lastTaunt = CurTime()
 		ply.lastTauntPitch = pitch
-		ply.lastTauntDuration = SoundDuration( taunt ) * (100/pitch)
+		ply.lastTauntDuration = soundDur
+        ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + soundDur
+
+        net.Start( "Update Taunt Times" )
+            net.WriteUInt( id, 8 )
+            net.WriteFloat( ply.nextTaunt )
+            net.WriteFloat( ply.lastTaunt )
+            net.WriteFloat( ply.autoTauntInterval )
+	    net.SendToServer()
 	end
 
 	local s = Sound(taunt)
@@ -131,6 +143,18 @@ net.Receive( "Taunt Selection", function()
 	-- old not stoppable method
 	--EmitSound( taunt , ply:GetPos(), id, CHAN_AUTO, 1, 100, 2, pitch )
 end )
+
+net.Receive( "AutoTaunt Update", function()
+    local id = net.ReadUInt( 8 )
+    local ply = player.GetByID( id )
+    local lastTaunt = net.ReadFloat()
+    local autoTauntInterval = net.ReadFloat()
+    if( ply == LocalPlayer() ) then
+        ply.lastTaunt = lastTaunt
+        ply.autoTauntInterval = autoTauntInterval
+        hook.Run("AutoTauntHUDRerender")
+	end
+end)
 
 net.Receive( "Player Death", function()
 	local id = net.ReadUInt( 8 )
