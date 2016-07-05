@@ -1,3 +1,5 @@
+if AUTOTAUNT_ENABLED = true then
+
 surface.CreateFont( "AutoTauntFont",
 {
 	font = "coolvetica",
@@ -95,3 +97,5 @@ end
 
 hook.Add("HUDPaint", "Load Additional HUDS", loadExtraHuds )
 hook.Add("AutoTauntHUDRerender", "Re-render Auto Taunt HUD", autotauntHud )
+
+end

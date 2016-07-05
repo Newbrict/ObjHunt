@@ -1,3 +1,5 @@
+if AUTOTAUNT_ENABLED = true then
+
 local function runAutoTaunter()
 	local players = team.GetPlayers(TEAM_PROPS)
 	local pRange = TAUNT_MAX_PITCH - TAUNT_MIN_PITCH
@@ -53,3 +55,5 @@ hook.Add("OBJHUNT_RoundStart", "Restart the Timer", function ()
 	end
 	
 end)
+
+end

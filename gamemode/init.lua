@@ -125,15 +125,8 @@ function GM:PlayerSetModel( ply )
 	class = player_manager.GetPlayerClass( ply )
 	if( class == "player_hunter" ) then
 		ply:SetModel( TEAM_HUNTERS_DEFAULT_MODEL )
-
-		-- default
-		ply:SetViewOffset( Vector(0,0,64) )
 	elseif( class == "player_prop" ) then
 		ply:SetModel( TEAM_PROPS_DEFAULT_MODEL )
-
-		-- this fixes ent culling when head in ceiling
-		-- should be based on default hit box!
-		ply:SetViewOffset( Vector(0,0,35) )
 	else
 		return
 	end
@@ -377,9 +370,16 @@ hook.Add( "PlayerSpawn", "Set ObjHunt model", function ( ply )
 			SetPlayerProp( ply, ply:GetProp(), PROP_DEFAULT_SCALE, PROP_DEFAULT_HB_MIN, PROP_DEFAULT_HB_MAX )
 		end )
 
+		-- this fixes ent culling when head in ceiling
+		-- should be based on default hit box!
+		ply:SetViewOffset( Vector(0,0,35) )
+
 	elseif( ply:Team() == TEAM_HUNTERS ) then
 		ply:SetRenderMode( RENDERMODE_NORMAL )
 		ply:SetColor( Color(255,255,255,255) )
+
+		-- default
+		ply:SetViewOffset( Vector(0,0,64) )
 	end
 
 end )

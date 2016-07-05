@@ -28,6 +28,9 @@ OBJHUNT_POST_ROUND_TIME = 5
 -- How much time props have before hunters are released
 OBJHUNT_HIDE_TIME = 30
 
+-- This enables autotaunt
+AUTOTAUNT_ENABLED = true
+
 -- Auto taunting interval in seconds
 OBJHUNT_AUTOTAUNT_INTERVAL = 45
 
