@@ -1,9 +1,9 @@
-GM.Name    = "ObjHunt"
+GM.Name    = "Prop Hunt"
 GM.Author  = "Newbrict, TheBerryBeast, Zombie"
-GM.Email   = "N/A"
-GM.Website = "N/A"
+GM.Email   = "newbrict@gmail.com"
+GM.Website = "www.objhunt.com"
 
-GM.BaseDir = "ObjHunt/gamemode/"
+GM.BaseDir = "prop_hunt/gamemode/"
 
 --[[ Add all the files on server/client ]]--
 local resources = {}

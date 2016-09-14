@@ -1,7 +1,7 @@
 "objhunt"
 {
 	"base"		"base"
-	"title"		"Obj Hunt"
+	"title"		"Prop Hunt"
 	"maps"		"^ph_|^de_|^cs_"
 
 	"menusystem"	"1"
