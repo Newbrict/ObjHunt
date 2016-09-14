@@ -10,8 +10,10 @@ A new and improved Garry's Mod prop hunt
     * [server.cfg]
     * [autoexec.cfg]
     * [mount.cfg]
-* Lastly you clone this repository into garrysmod/gamemodes/ObjHunt/
+* Lastly you clone this repository into garrysmod/gamemodes/prop_hunt
 
+
+The game now runs under the Prop Hunt tab in the server browser so look there for your servers!
 
 ###Adding taunts
 * Take a look at sh_config.lua and the content/sound/taunts/ directory.
