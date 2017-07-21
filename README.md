@@ -3,7 +3,7 @@ ObjHunt
 
 A new and improved Garry's Mod prop hunt
 
-###Install guide
+##Install guide
 
 * You will need a [Garry's Mod Dedicated Server]
 * Set up your config files to run ObjHunt in garrysmod/cfg/ *( these are mine as an example )*
@@ -15,7 +15,7 @@ A new and improved Garry's Mod prop hunt
 
 The game now runs under the Prop Hunt tab in the server browser so look there for your servers!
 
-###Adding taunts
+##Adding taunts
 * Take a look at sh_config.lua and the content/sound/taunts/ directory.
 
 [Garry's Mod Dedicated Server]:http://wiki.garrysmod.com/page/Hosting_A_Dedicated_Server
