@@ -247,6 +247,7 @@ local function SpectateHUD()
 
 	local sTarget = ply:GetObserverTarget()
 	if( !sTarget ) then return end
+	if( !sTarget:IsPlayer() ) then return end --Fix console errors--
 	local sNick = sTarget:Nick()
 
 	local padding = 10
