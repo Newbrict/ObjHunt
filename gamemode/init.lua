@@ -10,9 +10,17 @@ function GM:PlayerInitialSpawn( ply )
 	ply.nextTaunt = 0
 	ply.lastTaunt = CurTime()
 	ply.autoTauntInterval = OBJHUNT_AUTOTAUNT_INTERVAL + OBJHUNT_HIDE_TIME
-	net.Start( "Class Selection" )
+	if ( ply:IsBot() ) then
+		if ( team.NumPlayers( TEAM_HUNTERS ) >= team.NumPlayers( TEAM_PROPS ) ) then
+			ChangeTeam ( ply, TEAM_PROPS )
+		else
+			ChangeTeam ( ply, TEAM_HUNTERS )
+		end
+	else
+		net.Start("Class Selection")
 		-- Just used as a hook
-	net.Send( ply )
+		net.Send( ply )
+	end
 end
 
 -- [[ Class Selection ]] --
@@ -28,15 +36,29 @@ function GM:ShowHelp( ply )
 	net.Send( ply )
 end
 
-net.Receive("Class Selection", function( len, ply )
-	local chosen = net.ReadUInt(32)
-	local playerTable = {}
+function ChangeTeam ( ply, newTeam )
 	local oldTeam = ply:Team()
 
-	if chosen == ply:Team() then
+	ply:SetTeam( newTeam )
+
+	if( newTeam == TEAM_PROPS ) then
+		player_manager.SetPlayerClass( ply, "player_prop" )
+	elseif( newTeam == TEAM_HUNTERS ) then
+		player_manager.SetPlayerClass( ply, "player_hunter" )
+	end
+
+	PrintMessage( HUD_PRINTTALK, ply:Nick().." moved from "..TeamString(oldTeam) .. " to ".. TeamString(ply:Team()))
+	RemovePlayerProp( ply )
+	ply:KillSilent()
+	--ply:Spawn()
+end
+
+net.Receive("Class Selection", function( len, ply )
+	local playerTable = {}
+	if newTeam == ply:Team() then
 		ply:ChatPrint( "You are already on that team." )
 		return end
-	if chosen == TEAM_SPECTATOR then
+	if newTeam == TEAM_SPECTATOR then
 		player_manager.SetPlayerClass( ply, "player_spectator" )
 	end
 
@@ -46,22 +68,12 @@ net.Receive("Class Selection", function( len, ply )
 	playerTable[ ply:Team() ] = playerTable[ ply:Team() ] - 1
 
 	if math.abs( playerTable[ TEAM_PROPS ] - playerTable[ TEAM_HUNTERS ] ) >= MAX_TEAM_NUMBER_DIFFERENCE then
-		if playerTable[ chosen ] == math.max( playerTable[ TEAM_PROPS ], playerTable[ TEAM_HUNTERS ] ) then
+		if playerTable[ newTeam ] == math.max( playerTable[ TEAM_PROPS ], playerTable[ TEAM_HUNTERS ] ) then
 			ply:ChatPrint( "Sorry, that team is currently full." )
 			return end
 	end
 
-	ply:SetTeam( chosen )
-	if( chosen == TEAM_PROPS ) then
-		player_manager.SetPlayerClass( ply, "player_prop" )
-	elseif( chosen == TEAM_HUNTERS ) then
-		player_manager.SetPlayerClass( ply, "player_hunter" )
-	end
-
-	PrintMessage( HUD_PRINTTALK, ply:Nick().." moved from "..TeamString(oldTeam) .. " to ".. TeamString(ply:Team()))
-	RemovePlayerProp( ply )
-	ply:KillSilent()
-	--ply:Spawn()
+	ChangeTeam( ply, net.ReadUInt(32) )
 end )
 
 -- [[ Taunts ]] --
